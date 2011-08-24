@@ -1,32 +1,30 @@
-
-/* FIZEMOS:
+/* ESSE EXEMPLO CONTEM:
  * 
- * FUNCOES
- * PROCEDURES
- * COMANDOS:
- * 	- CONDICIONAIS (if/else; if/elseif/else e switch)
- *  - ITERATIVOS (for, foreach, while e do-while)
- *  - ATRIBUICAO (=, +=, /=, ++)
- * EXPRESSÕES:
- *  - ARITMETICAS (+, -, * e /)
- *  - BOOLEANAS ()
- *  - RELACIONAIS (<, ==, >=, <= e >)
- * LITERAIS
- * ARRANJOS (String e int)
- * CHAMADA DE FUNCOES
- * SEQUENCIADORES DE ESCAPE (break e return)
+ * 	FUNCOES
+ * 	PROCEDURES
+ * 	COMANDOS:
+ * 		- CONDICIONAIS (if/else; if/else-if/else e switch)
+ *  	- ITERATIVOS (for, foreach, while e do-while)
+ *  	- ATRIBUICAO (=, +=, /=, ++)
+ * 	EXPRESSOES:
+ *  	- ARITMETICAS (+, -, * e /)
+ *  	- BOOLEANAS (||, !)
+ *  	- RELACIONAIS (<, ==, >=, <=, >, !=)
+ * 	LITERAIS
+ * 	ARRANJOS (String e int)
+ * 	CHAMADA DE FUNCOES
+ * 	CHAMADA DE PROCEDURES
+ * 	SEQUENCIADORES DE ESCAPE (break e return)
  */
 
-/* NAO FIZEMOS:
- * COMANDOS:
- * - ATRIBUICAO (-=, %=, --)
- * EXPRESSÕES:
- * - ARITMETICAS (%, >>, <<, ~)
- * - BOOLEANAS (&, &&, |, ||, !)
- * - RELACIONAIS (!=)
- * CHAMADA DE PROCEDURES
- * 
+/* FALTA NESSE EXEMPLO:
+ * 	COMANDOS:
+ * 		- ATRIBUICAO (-=, %=, --)
+ * 	EXPRESSOES:
+ * 		- ARITMETICAS (%, >>, <<, ~)
+ * 		- BOOLEANAS (&, &&, |)
  */
+
 public class Classroom {
 
 	final int MAX_STUDENTS = 25;
@@ -35,32 +33,82 @@ public class Classroom {
 
 	String[] studentNamesClassA = new String[MAX_STUDENTS];
 	double[] studentGradesClassA = new double[MAX_STUDENTS];
+	int classASize = 0;
 
 	String[] studentNamesClassB = new String[MAX_STUDENTS];
 	double[] studentGradesClassB = new double[MAX_STUDENTS];
+	int classBSize = 0;
 
-	public void setStudentNamesClassA(String[] studentNames) {
-		this.studentNamesClassA = studentNames;
+	public int getStudentIndexClassA(String name) {
+		int index = 0;
+		while (index < classASize) {
+			if (name.equals(name)) {
+				break;
+			}
+			index++;
+		}
+		return index;
 	}
 
-	public void setStudentNamesClassB(String[] studentNames) {
-		this.studentNamesClassB = studentNames;
+	public int getStudentIndexClassB(String name) {
+		int index = 0;
+		while (index < classBSize) {
+			if (name.equals(name)) {
+				break;
+			}
+			index++;
+		}
+		return index;
 	}
 
-	public void fillStudentNames() {
-
+	public void addStudentName(String newName, int studentClass) {
+		switch (studentClass) {
+		case (CLASS_A):
+			if (classASize < MAX_STUDENTS) {
+				this.studentNamesClassA[classASize++] = newName;
+			}
+			break;
+		case (CLASS_B):
+			if (classBSize < MAX_STUDENTS) {
+				this.studentNamesClassB[classBSize++] = newName;
+			}
+			break;
+		default:
+			// do nothing, it will return false
+		}
 	}
 
-	public void fillStudentGrades() {
-
+	public boolean setStudentGrade(String name, int studentClass, double grade) {
+		boolean result = false;
+		switch (studentClass) {
+		case (CLASS_A):
+			int indexA = getStudentIndexClassA(name);
+			if (indexA < classASize || indexA < MAX_STUDENTS) {
+				this.studentGradesClassA[indexA] = grade;
+				result = !result;
+			}
+			break;
+		case (CLASS_B):
+			int indexB = getStudentIndexClassA(name);
+			if (classBSize < MAX_STUDENTS) {
+				this.studentGradesClassB[indexB] = grade;
+				result = !result;
+			}
+			break;
+		default:
+			// do nothing, it will return false
+		}
+		return result;
 	}
 
 	public boolean hasFailed(int index, int studentClass) {
-		if (index >= 0 && index <= MAX_STUDENTS - 1) {
+		if (index >= 0) {
 			if (studentClass == CLASS_A) {
-				return (studentGradesClassA[index] < 5);
+				if (index <= classASize - 1)
+					return (studentGradesClassA[index] < 5);
 			} else if (studentClass == CLASS_B) {
-				return (studentGradesClassB[index] < 5);
+				if (index <= classBSize - 1)
+					return (studentGradesClassB[index] < 5);
 			} else {
 				return false;
 			}
@@ -87,23 +135,6 @@ public class Classroom {
 			meanGrade = 0.0;
 		}
 		return meanGrade;
-	}
-
-	public void printNamesClassA() {
-		int i = 0;
-		while (true) {
-			if (i < MAX_STUDENTS){
-				break;
-			}
-			System.out.println("Nome: " + studentNamesClassA[i]);
-		}
-	}
-
-	public void printNamesClassB() {
-		int i = 0;
-		do {
-			System.out.println("Nome: " + studentNamesClassB[i]);
-		} while (i < MAX_STUDENTS);
 	}
 
 	public double getDiffMaxMinGrades() {
@@ -153,6 +184,41 @@ public class Classroom {
 			//
 		}
 		return result;
+	}
+
+	public void printNamesClassA() {
+		System.out.println("Class A Students:");
+		int i = 0;
+		while (true) {
+			if (i >= classASize) {
+				break;
+			}
+			System.out.println("\t" + studentNamesClassA[i]);
+			i++;
+		}
+	}
+
+	public void printNamesClassB() {
+		System.out.println("Class B Students:");
+		int i = 0;
+		do {
+			if (studentNamesClassB[i] != null) {
+				System.out.println("\t" + studentNamesClassB[i]);
+			}
+			i++;
+		} while (i < classBSize);
+	}
+
+	public static void main(String[] args) {
+		Classroom c = new Classroom();
+
+		c.addStudentName("Jose Almeida", c.CLASS_A);
+		c.addStudentName("Joaquim Barros", c.CLASS_A);
+		c.addStudentName("Maria da Silva", c.CLASS_A);
+
+		c.printNamesClassA();
+		System.out.println();
+		c.printNamesClassB();
 	}
 
 }
