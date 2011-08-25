@@ -1,4 +1,5 @@
 /* ESSE EXEMPLO CONTEM:
+
  * 
  * 	FUNCOES
  * 	PROCEDURES
@@ -23,9 +24,10 @@
  * 	EXPRESSOES:
  * 		- ARITMETICAS (%, >>, <<, ~)
  * 		- BOOLEANAS (&, &&, |)
+ *  SEQUENCIADORES DE ESCAPE (continue)
  */
 
-public class Classroom {
+class Classroom {
 
 	final int MAX_STUDENTS = 25;
 	final int CLASS_A = 1;
@@ -39,7 +41,7 @@ public class Classroom {
 	double[] studentGradesClassB = new double[MAX_STUDENTS];
 	int classBSize = 0;
 
-	public int getStudentIndexClassA(String name) {
+	int getStudentIndexClassA(String name) {
 		int index = 0;
 		while (index < classASize) {
 			if (name.equals(name)) {
@@ -50,7 +52,7 @@ public class Classroom {
 		return index;
 	}
 
-	public int getStudentIndexClassB(String name) {
+	int getStudentIndexClassB(String name) {
 		int index = 0;
 		while (index < classBSize) {
 			if (name.equals(name)) {
@@ -61,7 +63,7 @@ public class Classroom {
 		return index;
 	}
 
-	public void addStudentName(String newName, int studentClass) {
+	void addStudentName(String newName, int studentClass) {
 		switch (studentClass) {
 		case (CLASS_A):
 			if (classASize < MAX_STUDENTS) {
@@ -78,7 +80,7 @@ public class Classroom {
 		}
 	}
 
-	public boolean setStudentGrade(String name, int studentClass, double grade) {
+	boolean setStudentGrade(String name, int studentClass, double grade) {
 		boolean result = false;
 		switch (studentClass) {
 		case (CLASS_A):
@@ -101,7 +103,7 @@ public class Classroom {
 		return result;
 	}
 
-	public boolean hasFailed(int index, int studentClass) {
+	boolean hasFailed(int index, int studentClass) {
 		if (index >= 0) {
 			if (studentClass == CLASS_A) {
 				if (index <= classASize - 1)
@@ -116,7 +118,7 @@ public class Classroom {
 		return false;
 	}
 
-	public double calculateMeanGradeByClass(int myClass) {
+	double calculateMeanGradeByClass(int myClass) {
 		double meanGrade, tmp = 0.0;
 		switch (myClass) {
 		case (CLASS_A):
@@ -137,11 +139,11 @@ public class Classroom {
 		return meanGrade;
 	}
 
-	public double getDiffMaxMinGrades() {
+	double getDiffMaxMinGrades() {
 		return getHighestGrade() - getLowestGrade();
 	}
 
-	public double getHighestGrade() {
+	double getHighestGrade() {
 		double high = 0.0;
 		for (double grade : studentGradesClassA) {
 			high = (grade > high) ? grade : high;
@@ -152,7 +154,7 @@ public class Classroom {
 		return high;
 	}
 
-	public double getLowestGrade() {
+	double getLowestGrade() {
 		double low = 10;
 		for (double grade : studentGradesClassA) {
 			low = (grade < low) ? grade : low;
@@ -163,7 +165,7 @@ public class Classroom {
 		return low;
 	}
 
-	public double getStandardDeviation(int myClass) {
+	double getStandardDeviation(int myClass) {
 
 		double result = 0.0;
 		double mean = calculateMeanGradeByClass(myClass);
@@ -186,7 +188,7 @@ public class Classroom {
 		return result;
 	}
 
-	public void printNamesClassA() {
+	void printNamesClassA() {
 		System.out.println("Class A Students:");
 		int i = 0;
 		while (true) {
@@ -198,7 +200,7 @@ public class Classroom {
 		}
 	}
 
-	public void printNamesClassB() {
+	void printNamesClassB() {
 		System.out.println("Class B Students:");
 		int i = 0;
 		do {
@@ -209,7 +211,7 @@ public class Classroom {
 		} while (i < classBSize);
 	}
 
-	public static void main(String[] args) {
+	static void main(String[] args) {
 		Classroom c = new Classroom();
 
 		c.addStudentName("Jose Almeida", c.CLASS_A);
