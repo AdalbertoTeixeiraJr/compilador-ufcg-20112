@@ -1,5 +1,5 @@
 
-public class ExemploExpressoes {
+class ExemploExpressoes {
 
 	/**
 	 * +, -, /, *, uso de parenteses.

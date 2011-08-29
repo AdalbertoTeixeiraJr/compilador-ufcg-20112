@@ -1,5 +1,5 @@
 
-public class ExemploComandosAtribuicao {
+class ExemploComandosAtribuicao {
 
 	/**
 	 * = 

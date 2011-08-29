@@ -1,5 +1,4 @@
 /* ESSE EXEMPLO CONTEM:
-
  * 
  * 	FUNCOES
  * 	PROCEDURES
@@ -27,7 +26,7 @@
  *  SEQUENCIADORES DE ESCAPE (continue)
  */
 
-class Classroom {
+class ExemploCompleto {
 
 	final int MAX_STUDENTS = 25;
 	final int CLASS_A = 1;
@@ -212,7 +211,7 @@ class Classroom {
 	}
 
 	static void main(String[] args) {
-		Classroom c = new Classroom();
+		ExemploCompleto c = new ExemploCompleto();
 
 		c.addStudentName("Jose Almeida", c.CLASS_A);
 		c.addStudentName("Joaquim Barros", c.CLASS_A);
