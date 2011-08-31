@@ -1,49 +1,69 @@
-
 class ExemploSequenciadoresEscape {
 
-	/** 
-	 *  BREAK
+	/**
+	 * BREAK
 	 */
-	void calculateTable(int value){
+	static void calculateTable(int value) {
 		int mult = 1;
-		while(true){
-			if(mult > 10) break;
+		while (true) {
+			if (mult > 10)
+				break;
 			else {
-				System.out.println(value + " * " + mult + " = " + (value*mult) );
+				System.out.println(value + " * " + mult + " = "
+						+ (value * mult));
 				mult++;
 			}
 		}
-		
 	}
-	
-	
+
+	/**
+	 * GOTO
+	 */
+	static void increaseGrade(int value) {
+
+		validation: {
+			if (value < 0) {
+				break validation;
+			}
+			validation2: {
+				int mult = 1;
+				while (true) {
+					if (mult > 10) {
+						break validation2;
+					} else {
+						System.out.println(value + " * " + mult + " = "
+								+ (value * mult));
+						mult++;
+					}
+				}
+			}
+		}
+	}
+
 	/**
 	 * RETURN
 	 */
-	int calculateSquare(int x){
-		return x*x;		
+	static int calculateSquare(int x) {
+		return x * x;
 	}
-	
-	
-	
+
 	/**
 	 * CONTINUE
 	 */
-	void calculateSquares(int initialValue, int finalValue){
-		for(int i = initialValue; i <= finalValue; i++){
-			if(i==0) continue;
-			else	System.out.println("Square (" + i + ") : " + (i*i) );
-		}		
+	static void calculateSquares(int initialValue, int finalValue) {
+		for (int i = initialValue; i <= finalValue; i++) {
+			if (i == 0)
+				continue;
+			else
+				System.out.println("Square (" + i + ") : " + (i * i));
+		}
 	}
-	
-	
-	
+
 	public static void main(String[] args) {
-		ExemploSequenciadoresEscape e = new ExemploSequenciadoresEscape();
-		e.calculateTable(4);
-		System.out.println(e.calculateSquare(7));
-		e.calculateSquares(-4, 7);
+
+		ExemploSequenciadoresEscape.calculateTable(4);
+		ExemploSequenciadoresEscape.increaseGrade(-1);
+		System.out.println(ExemploSequenciadoresEscape.calculateSquare(7));
+		ExemploSequenciadoresEscape.calculateSquares(-4, 7);
 	}
-
 }
-
