@@ -1,4 +1,4 @@
-/* ESSE EXEMPLO CONTEM:
+/** ESSE EXEMPLO CONTEM:
  * 
  * 	FUNCOES
  * 	PROCEDURES
@@ -17,30 +17,30 @@
  * 	SEQUENCIADORES DE ESCAPE (break e return)
  */
 
-/* FALTA NESSE EXEMPLO:
+/* AINDA FALTARAM ALGUNS NESSE EXEMPLO:
  * 	COMANDOS:
  * 		- ATRIBUICAO (-=, %=, --)
  * 	EXPRESSOES:
  * 		- ARITMETICAS (%, >>, <<, ~)
  * 		- BOOLEANAS (&, &&, |)
- *  SEQUENCIADORES DE ESCAPE (continue)
+ *  SEQUENCIADORES DE ESCAPE (continue e goto)
  */
 
 class ExemploCompleto {
 
-	final int MAX_STUDENTS = 25;
-	final int CLASS_A = 1;
-	final int CLASS_B = 2;
+	static final int MAX_STUDENTS = 25;
+	static final int CLASS_A = 1;
+	static final int CLASS_B = 2;
 
-	String[] studentNamesClassA = new String[MAX_STUDENTS];
-	double[] studentGradesClassA = new double[MAX_STUDENTS];
-	int classASize = 0;
+	static String[] studentNamesClassA = new String[MAX_STUDENTS];
+	static double[] studentGradesClassA = new double[MAX_STUDENTS];
+	static int classASize = 0;
 
-	String[] studentNamesClassB = new String[MAX_STUDENTS];
-	double[] studentGradesClassB = new double[MAX_STUDENTS];
-	int classBSize = 0;
+	static String[] studentNamesClassB = new String[MAX_STUDENTS];
+	static double[] studentGradesClassB = new double[MAX_STUDENTS];
+	static int classBSize = 0;
 
-	int getStudentIndexClassA(String name) {
+	static int getStudentIndexClassA(String name) {
 		int index = 0;
 		while (index < classASize) {
 			if (name.equals(name)) {
@@ -51,7 +51,7 @@ class ExemploCompleto {
 		return index;
 	}
 
-	int getStudentIndexClassB(String name) {
+	static int getStudentIndexClassB(String name) {
 		int index = 0;
 		while (index < classBSize) {
 			if (name.equals(name)) {
@@ -62,16 +62,16 @@ class ExemploCompleto {
 		return index;
 	}
 
-	void addStudentName(String newName, int studentClass) {
+	static void addStudentName(String newName, int studentClass) {
 		switch (studentClass) {
 		case (CLASS_A):
 			if (classASize < MAX_STUDENTS) {
-				this.studentNamesClassA[classASize++] = newName;
+				studentNamesClassA[classASize++] = newName;
 			}
 			break;
 		case (CLASS_B):
 			if (classBSize < MAX_STUDENTS) {
-				this.studentNamesClassB[classBSize++] = newName;
+				studentNamesClassB[classBSize++] = newName;
 			}
 			break;
 		default:
@@ -79,20 +79,20 @@ class ExemploCompleto {
 		}
 	}
 
-	boolean setStudentGrade(String name, int studentClass, double grade) {
+	static boolean setStudentGrade(String name, int studentClass, double grade) {
 		boolean result = false;
 		switch (studentClass) {
 		case (CLASS_A):
 			int indexA = getStudentIndexClassA(name);
 			if (indexA < classASize || indexA < MAX_STUDENTS) {
-				this.studentGradesClassA[indexA] = grade;
+				studentGradesClassA[indexA] = grade;
 				result = !result;
 			}
 			break;
 		case (CLASS_B):
 			int indexB = getStudentIndexClassA(name);
 			if (classBSize < MAX_STUDENTS) {
-				this.studentGradesClassB[indexB] = grade;
+				studentGradesClassB[indexB] = grade;
 				result = !result;
 			}
 			break;
@@ -102,7 +102,7 @@ class ExemploCompleto {
 		return result;
 	}
 
-	boolean hasFailed(int index, int studentClass) {
+	static boolean hasFailed(int index, int studentClass) {
 		if (index >= 0) {
 			if (studentClass == CLASS_A) {
 				if (index <= classASize - 1)
@@ -117,7 +117,7 @@ class ExemploCompleto {
 		return false;
 	}
 
-	double calculateMeanGradeByClass(int myClass) {
+	static double calculateMeanGradeByClass(int myClass) {
 		double meanGrade, tmp = 0.0;
 		switch (myClass) {
 		case (CLASS_A):
@@ -138,11 +138,11 @@ class ExemploCompleto {
 		return meanGrade;
 	}
 
-	double getDiffMaxMinGrades() {
+	static double getDiffMaxMinGrades() {
 		return getHighestGrade() - getLowestGrade();
 	}
 
-	double getHighestGrade() {
+	static double getHighestGrade() {
 		double high = 0.0;
 		for (double grade : studentGradesClassA) {
 			high = (grade > high) ? grade : high;
@@ -153,7 +153,7 @@ class ExemploCompleto {
 		return high;
 	}
 
-	double getLowestGrade() {
+	static double getLowestGrade() {
 		double low = 10;
 		for (double grade : studentGradesClassA) {
 			low = (grade < low) ? grade : low;
@@ -164,7 +164,7 @@ class ExemploCompleto {
 		return low;
 	}
 
-	double getStandardDeviation(int myClass) {
+	static double getStandardDeviation(int myClass) {
 
 		double result = 0.0;
 		double mean = calculateMeanGradeByClass(myClass);
@@ -182,12 +182,11 @@ class ExemploCompleto {
 			result /= studentGradesClassA.length;
 			break;
 		default:
-			//
 		}
 		return result;
 	}
 
-	void printNamesClassA() {
+	static void printNamesClassA() {
 		System.out.println("Class A Students:");
 		int i = 0;
 		while (true) {
@@ -199,7 +198,7 @@ class ExemploCompleto {
 		}
 	}
 
-	void printNamesClassB() {
+	static void printNamesClassB() {
 		System.out.println("Class B Students:");
 		int i = 0;
 		do {
@@ -210,16 +209,16 @@ class ExemploCompleto {
 		} while (i < classBSize);
 	}
 
-	static void main(String[] args) {
-		ExemploCompleto c = new ExemploCompleto();
+	public static void main(String[] args) {
+		ExemploCompleto.addStudentName("Jose Almeida", ExemploCompleto.CLASS_A);
+		ExemploCompleto.addStudentName("Joaquim Barros", ExemploCompleto.CLASS_A);
+		ExemploCompleto.addStudentName("Maria da Silva", ExemploCompleto.CLASS_A);
+		ExemploCompleto.addStudentName("Maria das Dores", ExemploCompleto.CLASS_B);
+		ExemploCompleto.addStudentName("Carlos Siqueira", ExemploCompleto.CLASS_B);
+		ExemploCompleto.addStudentName("Zeze di Camargo", ExemploCompleto.CLASS_B);
 
-		c.addStudentName("Jose Almeida", c.CLASS_A);
-		c.addStudentName("Joaquim Barros", c.CLASS_A);
-		c.addStudentName("Maria da Silva", c.CLASS_A);
-
-		c.printNamesClassA();
+		ExemploCompleto.printNamesClassA();
 		System.out.println();
-		c.printNamesClassB();
+		ExemploCompleto.printNamesClassB();
 	}
-
 }
