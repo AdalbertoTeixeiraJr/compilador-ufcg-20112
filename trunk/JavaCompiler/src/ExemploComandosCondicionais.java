@@ -3,8 +3,22 @@ class ExemploComandosCondicionais {
 	static int[] notas = { 8, 7, 7, 6, 10, 3 };
 
 	/**
-	 * Funcao utilizando comando condicional if. Dado um aluno na posicao aluno,
-	 * e informado se ele foi aprovado ou nao
+	 * If-Else
+	 */
+	static int mediaAprovados() {
+		int media = 0;
+		for (int y = 0; y < notas.length; y++) {
+			if (notas[y] >= 7) {
+				media += notas[y];
+			} else {
+				media += (notas[y] * (60 / 100));
+			}
+		}
+		return media;
+	}
+	
+	/**
+	 * If-Elseif-Else
 	 */
 	static String aprovado(int aluno) {
 		if (notas[aluno] >= 7) {
@@ -17,24 +31,7 @@ class ExemploComandosCondicionais {
 	}
 
 	/**
-	 * Funcao utilizando outra forma de comando condicional Retorna a media dos
-	 * aprovados
-	 */
-	static int mediaAprovados(int[] x) {
-		int media = 0;
-		for (int y = 0; y < x.length; y++) {
-			if (x[y] >= 7) {
-				media += x[y];
-			} else if (x[y] >= 5) {
-				media += (x[y] * (60 / 100));
-			}
-		}
-		return media;
-	}
-
-	/**
-	 * Funcao utilizando outra forma de comando condicional Informa o dia da
-	 * semana que representa o numero diaSemana
+	 * Switch
 	 */
 	static String diaSemana(int diaSemana) {
 		switch (diaSemana) {
@@ -55,5 +52,11 @@ class ExemploComandosCondicionais {
 		default:
 			return "Este dia nao existe!";
 		}
+	}
+	
+	public static void main(String[] args) {
+		ExemploComandosCondicionais.mediaAprovados();
+		ExemploComandosCondicionais.aprovado(1);
+		ExemploComandosCondicionais.diaSemana(2);
 	}
 }
