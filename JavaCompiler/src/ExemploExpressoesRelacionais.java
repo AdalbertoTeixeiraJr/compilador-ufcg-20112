@@ -3,23 +3,22 @@ class ExemploExpressoesRelacionais {
 	static int[] notas = { 8, 7, 7, 6, 10, 3 };
 
 	/**
-	 * Utilizacao da expressao relacional ">="
+	 * >=, <=
 	 */
-	static int mediaAprovados(int[] x) {
+	static int mediaAprovados() {
 		int media = 0;
-		for (int y = 0; y < x.length; y++) {
-			if (x[y] >= 7) {
-				media += x[y];
-			} else if (x[y] >= 5) {
-				media += (x[y] * (60 / 100));
+		for (int y = 0; y < notas.length; y++) {
+			if (notas[y] >= 7) {
+				media += notas[y];
+			} else if (notas[y] <= 5) {
+				media += (notas[y] * (60 / 100));
 			}
 		}
 		return media;
 	}
 
 	/**
-	 *  Utiizacao das expressoes relacionais "!=", "==", ">", "<"
-	 * Procedimento que atualiza nota do aluno
+	 * !=, ==, >, <
 	 */
 	static void atualizarNota(int aluno, int nota) {
 		int k = notas[aluno];
@@ -34,5 +33,10 @@ class ExemploExpressoesRelacionais {
 		if (k == nota) {
 			notas[aluno] = k + 2;
 		}
+	}
+	
+	public static void main(String[] args) {
+		ExemploExpressoesRelacionais.mediaAprovados();
+		ExemploExpressoesRelacionais.atualizarNota(1, 10);
 	}
 }

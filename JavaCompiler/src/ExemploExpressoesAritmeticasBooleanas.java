@@ -1,4 +1,4 @@
-class ExemploExpressoes {
+class ExemploExpressoesAritmeticasBooleanas {
 
 	/**
 	 * +, -, /, *, uso de parenteses.
@@ -41,9 +41,8 @@ class ExemploExpressoes {
 	}
 
 	public static void main(String[] args) {
-
-		ExemploExpressoes.expAritmeticas();
-		ExemploExpressoes.expBooleanas();
-		ExemploExpressoes.expBooleanasBitWise();
+		ExemploExpressoesAritmeticasBooleanas.expAritmeticas();
+		ExemploExpressoesAritmeticasBooleanas.expBooleanas();
+		ExemploExpressoesAritmeticasBooleanas.expBooleanasBitWise();
 	}
 }
