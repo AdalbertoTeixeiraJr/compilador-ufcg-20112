@@ -18,7 +18,8 @@ CC	= gcc
 LEX     = flex
 LEX_REPORT  = --report=all --report-file=lex_report.txt
 CFLAGS  = -std=gnu99 
+LEXICO = lexico
 
-
-lexico: $(LEX) -o$(lexico).c $^
-	$(CC) $(CFLAGS) -o $@ -c $(lexico).c
+lexico: $(LEXICO).yy
+	$(LEX) -o $(LEXICO).c $^
+	$(CC) $(CFLAGS) -o $@ -c $(LEXICO).c
