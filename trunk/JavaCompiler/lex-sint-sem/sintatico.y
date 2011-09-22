@@ -416,3 +416,10 @@ dims@ : OPEN_COLC CLOSE_COLC dims@
 
 array_access : expression_name OPEN_COLC expression CLOSE_COLC 
 				| primary_no_new_array OPEN_COLC expression CLOSE_COLC		;
+
+				
+%%
+
+void yyerror(){
+
+}
