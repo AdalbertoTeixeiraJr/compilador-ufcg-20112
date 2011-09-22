@@ -113,13 +113,13 @@ id				{updateCol();yylval.strval = strdup(yytext);return ID;}
 %%
 
 
-void nextLine(){
+void updateLine(){
    //segue para proxima linha e reseta a coluna
    line++;
    col = 1;
 }
 
-void nextCol(){
+void updateCol(){
    //segue para proxima coluna
    col += yyleng;
 }
