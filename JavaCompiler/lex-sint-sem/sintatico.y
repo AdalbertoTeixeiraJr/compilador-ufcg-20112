@@ -13,7 +13,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "tkvalues.h"
-int yylex(void); //funcao do lexico para retornar o token  --  Vi ele nos exemplos, mas nao achei implementacao! o0
+int yylex(void);
+int yyerror(char *msg); //funcao de erro (sobrescrita)
 int line = 1; //declarado no lexico
 int col  = 0; // declarado no lexico
 char* yytext = ""; //declarado no lexico
@@ -421,6 +422,18 @@ array_access : expression_name OPEN_COLC expression CLOSE_COLC
 				
 %%
 
-void yyerror(){
+int main(void) {
+	return yyparse();
+}
 
+//funcao de erro - imprime linha e coluna do erro sintatico
+int yyerror(char *msg){
+	int tk = YYTRANSLATE(yychar);
+	if(strcmp("syntax error", msg) == 0){
+		msg = "Erro Sintatico";
+	}
+	fprintf(stderr,"%s:\n",msg);
+	fprintf(stderr,"\tLinha %d, Coluna %d\n", line, col);
+	fprintf(stderr,"\tUltimo token lido: %s - %s\n",yytname[tk],yytext);
+	return 1;
 }
