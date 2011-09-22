@@ -55,8 +55,7 @@ string_char		{letter} | {digit}								// melhoria: mapear unicode
 string_literal	"{string_chars}?"
 string_chars	{string_char} | {string_chars}{string_char}
 null_literal	null
-rel_oper		< | > | == | != | <= | >= 
-
+rel_oper		< | > | == | != | <= | >= | instanceof
 
 
 %%
@@ -78,8 +77,38 @@ while			{updateCol();return WHILE;}
 "float"			{updateCol();return TYPE_FLOAT;}
 "double"		{updateCol();return TYPE_DOUBLE;}
 "string"		{updateCol();return TYPE_STRING;}
+";"				{updateCol();return PT_VIRGULA;}
+","				{updateCol();return VIRGULA;}
+"=" 			{updateCol();return EQUAL;}
+"*"				{updateCol();return MULT;}
+"/"				{updateCol();return DIV;}
+"%"				{updateCol();return MOD;}
+"+"				{updateCol();return PLUS;}
+"-"				{updateCol();return MINUS;}
+"<"				{updateCol();return LEFT;}
+">"				{updateCol();return RIGHT;}
+":"				{updateCol();return TWO_POINT;}
+"^"				{updateCol();return OR_EXC;}
+"&"				{updateCol();return AND;}
+"|"				{updateCol();return OR;}
+"||"			{updateCol();return OR_LOGIC;}
+"&&"			{updateCol();return AND_LOGIC;}
+"=="			{updateCol();return EQUAL_COMP;}
+"!="			{updateCol();return DIFF_COMP;}
+"<<"			{updateCol();return SHIFT_LEFT;}
+">>"			{updateCol();return SHIFT_RIGHT;}
+">>>"			{updateCol();return SHIFT_RIGHT_LOGIC;}
+"++"			{updateCol();return INCREMENT;}
+"--"			{updateCol();return DECREMENT;}
+"!"				{updateCol();return NOT;}
+"~"				{updateCol();return NOT_BIT;}
+"."				{updateCol();return POINT;}
+"new"			{updateCol();return NEW;}
+"["				{updateCol();return OPEN_COLC;}
+"]"				{updateCol();return CLOSE_COLC;}
 rel_oper		{updateCol();yylval.strval = strdup(yytext);return RELOP;}
 id				{updateCol();yylval.strval = strdup(yytext);return ID;}
+
 
 %%
 
