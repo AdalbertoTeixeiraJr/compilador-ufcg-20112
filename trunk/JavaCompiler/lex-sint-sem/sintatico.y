@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "tkvalues.h"
-int yylex(void); //funcao do lexico para retornar o token  --  Vi ele nos exemplos, mas nao achei implementação! o0
+int yylex(void); //funcao do lexico para retornar o token  --  Vi ele nos exemplos, mas nao achei implementacao! o0
 int line = 1; //declarado no lexico
 int col  = 0; // declarado no lexico
 char* yytext = ""; //declarado no lexico
@@ -23,35 +23,38 @@ char* yytext = ""; //declarado no lexico
 	char* strval;
 }
 
-%token BOOLEAN BREAK BYTE CASE CHAR CLASS CONST CONTINUE DEFAULT DO DOUBLE ELSE FINAL FLOAT FOR GOTO IF INT LONG NEW RETURN SHORT STATIC SWITCH TRANSIENT VOID VOLATILE WHILE
+%token BOOLEAN BREAK BYTE CASE CHAR CLASS CONST CONTINUE DEFAULT DO DOUBLE ELSE FINAL FLOAT FOR GOTO 
+%token IF INT LONG NEW RETURN SHORT STATIC SWITCH TRANSIENT VOID VOLATILE WHILE PT_VIRGULA MULT DIV 
+%token PLUS MINUS LEFT RIGHT TWO_POINT OR_EXC AND OR AND_LOGIC OR_LOGIC EQUAL_COMP NOT NOT_BIT
+%token INCREMENT DECREMENT NEW OPEN_COLC CLOSE_COLC POINT
 %token <strval>  //Quais? Tambem nao soube fazer!
 
 %type <strval>  //Quais os tipos??? Nao to sabendo fazer
 
 %%
 
-compilation_unit : 		class_declaration				;
+compilation_unit : 			class_declaration							;
 
-class_declaration : 		CLASS <identifier> <class body>			;
+class_declaration : 		CLASS <identifier> <class body>				;
 
-class_body : 			{ class_body_declaration }			;
+class_body : 				{ class_body_declaration }					;
 
 class_body_declaration : 	class_member_declaration
-			|	static_initializer				;
-
+			|				static_initializer							;
+	
 class_member_declaration : 	field_declaration
-			|	method_declaration				;
+			|				method_declaration							;
 
-static_initializer : 		STATIC block					;
+static_initializer : 		STATIC block								;
 
 formal_parameter_list : 	formal_parameter formal_parameter_list@		;
 
 formal_parameter_list@ : 	formal_parameter formal_parameter_list@
-			|	/** empty **/					;
+			|				/** empty **/								;
 
-formal_parameter : 		type variable_declarator_id			;
+formal_parameter : 			type variable_declarator_id					;
 
-class_type_list : 		class_type class_type_list@			;
+class_type_list : 			class_type class_type_list@					;
 
 class_type_list@ : 		class_type class_type_list@
 			|	/** empty **/					;
@@ -101,8 +104,8 @@ method_modifier :  		STATIC						;
 method_declarator : 		identifier ( formal_parameter_list? )		;
 
 method_body : 			block 
-				| ;		//** COMO COLOCA ; **/		
-				| /** empty **/					;
+			| 		PT_VIRGULA		
+			| 		/** empty **/					;
 
 constant_declaration : 		constant_modifiers type variable_declarator	;
 
@@ -160,7 +163,7 @@ block_statements : 		block_statement block_statements@
 block_statement : 		local_variable_declaration_statement 
 			| 	statement					;
 	
-local_variable_declaration_statement : local_variable_declaration 		;
+local_variable_declaration_statement : local_variable_declaration PT_VIRGULA ;
 
 local_variable_declaration : 	type variable_declarators			;
 
@@ -174,7 +177,7 @@ statement : 			statement_without_trailing_substatement
 
 statement_no_short_if : 	statement_without_trailing_substatement 
 			| 	identifier : statement_no_short_if 
-			| 	IF ( expression ) statement_no_short_if ELSE 								statement_no_short_if 
+			| 	IF ( expression ) statement_no_short_if ELSE statement_no_short_if 
 			|  	WHILE ( expression ) statement_no_short_if 
 			|  	FOR ( for_init? ; expression? ; for_update? ) 
 							statement_no_short_if	;
@@ -188,13 +191,13 @@ statement_without_trailing_substatement : block
 			| 	continue_statement
 			| 	return_statement				;
 
-empty_statement : 		; /** COMO COLOCA ; **/				;
+empty_statement : 		PT_VIRGULA			;
 
 labeled_statement : 		identifier : statement				;
 
 labeled_statement no short if : identifier : statement_no_short_if		;
 
-expression_statement : 		statement_expression				;
+expression_statement : 		statement_expression PT_VIRGULA				;
 
 statement_expression : 		assignment 
 			| 	preincrement_expression 
@@ -204,243 +207,212 @@ statement_expression : 		assignment
 			| 	method_invocation 
 			|	class_instance_creation_expression		;
 
-<if then statement>: if ( <expression> ) <statement>	;
+if_then_statement: IF ( expression ) statement	;
 
-<if then else statement>: if ( <expression> ) <statement no short if> else <statement>	;
+if_then_else_statement: IF ( expression ) statement_no_short_if ELSE statement	;
 
-<if then else statement no short if> : if ( <expression> ) <statement no short if> else <statement no short if>	;
+if_then_else_statement_no_short_if : IF ( expression ) statement_no_short_if ELSE statement_no_short_if	;
 
-<switch statement> : switch ( <expression> ) <switch block>	;
+switch_statement : SWITCH ( expression ) switch_block	;
 
-<switch block> : { <switch block statement groups>? <switch labels>? }	;
+switch_block : { switch_block_statement_groups? switch_labels? }	;
 
-<switch block statement groups> : <switch block statement group> <switch block statement groups@>	;
+switch_block_statement_groups : switch_block_statement_group switch_block_statement_groups@	;
 
-<switch block statement groups@> : <switch block statement group> <switch block statement groups@> 
-	| E
-	;
+switch_block_statement_groups@ : switch_block_statement_group switch_block_statement_groups@ 
+			| 						/** empty **/						;
 
-<switch block statement group> : <switch labels> <block statements>	;
+switch_block_statement_group : switch_labels block_statements			;
 
-<switch labels> : <switch label> <switch labels@>	;
+switch_labels : switch_label switch_labels@	;
 
-<switch labels@> : <switch label> <switch labels@> 
-	| E
-	;
+switch_labels@ : switch_label switch_labels@ 
+			| 						/** empty **/						;
 
-<switch label> : case <constant expression> : 
-	| default :
-	;
+switch_label : CASE constant_expression TWO_POINTS
+			| 	DEFAULT TWO_POINTS										;
 
-<while statement> : while ( <expression> ) <statement>	;
+while_statement : WHILE ( expression ) statement	;
 
-<while statement no short if> : while ( <expression> ) <statement no short if>	;
+while_statement_no_short_if> : WHILE ( expression ) statement_no_short_if	;
 
-<do statement> : do <statement> while ( <expression> ) ;	;
+do_statement : DO statement WHILE ( expression ) PT_VIRGULA						;
 
-<for statement> : for ( <for init>? ; <expression>? ; <for update>? ) <statement>	;
+for_statement : FOR ( for_init? ; expression? ; for_update ) statement	;
 
-<for statement no short if> : for ( <for init>? ; <expression>? ; <for update>? ) <statement no short if>	;
+for_statement_no_short_if : FOR ( for_init? ; expression? ; for_update? ) statement_no_short_if	;
 
-<for init> : <statement expression list> 
-	| <local variable declaration>
-	;
+for_init : statement_expression_list 
+			| 	local_variable_declaration								;
 
-<for update> : <statement expression list>	;
+for_update : statement_expression_list									;
 
-<statement expression list> : <statement expression> <statement expression list@>	;
+statement_expression_list : statement_expression statement_expression_list@	;
 
-<statement expression list@> : , <statement expression> <statement expression list@> 
-	| E
-	;
+statement_expression_list@ : VIRGULA statement_expression statement_expression_list@ 	
+			| 					/** empty **/							;
 
-<break statement> : break <identifier>? ;	;
+break_statement : BREAK identifier? PT_VIRGULA									;
 
-<continue statement> : continue <identifier>? ;	;
+continue_statement : CONTINUE identifier? PT_VIRGULA	;
 
-<return statement> : return <expression>? ;	;
+return_statement : RETURN expression? PT_VIRGULA	;
 
 /*
 **	Expression	**
 */
 
-<constant expression> : <expression>	;
+constant_expression : expression	;
 
-<expression> : <assignment expression>	;
+expression : assignment_expression	;
 
-<assignment expression> : <conditional expression> 
-	| <left hand side> <assignment operator> <assignment expression>
-	;
+assignment_expression : conditional_expression 
+			| 	left_hand_side assignment_operator assignment_expression		;
 
-<assignment> : <left hand side> <assignment operator> <assignment expression>	;
+assignment : left_hand_side assignment_operator assignment_expression	;
 
-<left hand side> : <expression name> 
-	| <field access> 
-	| <array access>
-	;
+left_hand_side : expression_name 
+			| 	field_access 
+			| 	array_access											;
 
-<assignment operator> : = 
-	| *= 
-	| /= 
-	| %= 
-	| += 
-	| -= 
-	| <<= 
-	| >>= 
-	| >>>= 
-	| &= 
-	| ^= 
-	| |=
-	;
+assignment_operator PT_VIRGULA EQUAL 
+			| 	MULT EQUAL 
+			| 	DIV EQUAL  
+			|	MOD EQUAL 
+			| 	PLUS EQUAL 
+			| 	MINUS EQUAL 
+			| 	LEFT LEFT EQUAL 
+			| 	RIGHT RIGHT EQUAL
+			| 	RIGHT RIGHT RIGHT 
+			| 	AND EQUAL 
+			|	OR_EXC EQUAL 
+			| 	OR EQUAL													;
 
-<conditional expression> : <conditional or expression> 
-	| <conditional or expression> ? <expression> : <conditional expression>
-	;
+conditional_expression : conditional_or_expression 
+			| conditional_or_expression? expression TWO_POINTS conditional_expression	;
 
-<conditional or expression> : <conditional and expression> <conditional or expression@>	;
+conditional_or_expression : conditional_and_expression conditional_or_expression@	;
 
-<conditional or expression@> : || <conditional and expression> <conditional or expression@> 
-	| E
-	;
+conditional_or_expression@ : OR_LOGIC conditional_and_expression conditional_or_expression@ 
+			| /** empty **/																;
 
-<conditional and expression> : <inclusive or expression> <conditional and expression@>	;
+conditional_and_expression : inclusive_or_expression conditional_and_expression@	;
 
-<conditional and expression@> : && <inclusive or expression> <conditional and expression@> 
-	| E
-	;
+conditional_and_expression@ : AND_LOGIC inclusive_or_expression conditional_and_expression@ 
+			| /** empty **/													;
 
-<inclusive or expression> : <exclusive or expression> <inclusive or expression@>	;
+inclusive_or_expression : exclusive_or_expression  inclusive_or_expression@	;
 
-<inclusive or expression@> : | <exclusive or expression> <inclusive or expression@> 
-	| E
-	;
+inclusive_or_expression@ : OR exclusive_or_expression inclusive_or_expression@ 
+			| /** empty **/													;
 
-<exclusive or expression> : <and expression> <exclusive or expression@>	;
+exclusive_or_expression : and_expression exclusive_or_expression@>	;
 
-<exclusive or expression@> : ^ <and expression> <exclusive or expression@> 
-	| E
-	;
+exclusive_or_expression@ : OR_EXC and_expression exclusive_or_expression@ 
+			| /** empty **/													;
 
-<and expression> : <equality expression> <and expression@>	;
+and_expression : equality_expression and_expression@	;
 
-<and expression@> : & <equality expression> <and expression@> 
-	| E
-	;
+and_expression@ : AND_LOGIC equality_expression and_expression@ 
+			| /** empty **/													;
 
-<equality expression> : <relational expression> <equality expression@>	;
+equality_expression : relational_expression equality_expression@			;
 
-<equality expression@> : == <relational expression> <equality expression@>
-	| != <relational expression> <equality expression@> 
-	| E
-	;
+equality_expression@ : EQUAL_COMP relational_expression equality_expression@
+			| 	DIFF_EQUAL relational_expression equality_expression@ 
+			| 	/** empty **/												;
 
-<relational expression> : <shift expression> <relational expression@>	;
+relational_expression : shift_expression relational_expression@				;
 
-<relational expression@> : < <shift expression> <relational expression@> 
-	| > <shift expression> <relational expression@> 
-	| <= <shift expression> <relational expression@> 
-	| >= <shift expression> <relational expression@> 
-	| instanceof <reference type> <relational expression@> 
-	| E 
-	;
+relational_expression@ : < shift_expression relational_expression@ 
+			| > shift_expression relational_expression@ 
+			| <= shift_expression relational_expression@ 
+			| >= shift_expression relational_expression@ 
+			| instanceof shift_expression relational_expression@ 
+			| /** empty **/													;
 
-<shift expression> : <additive expression> <shift expression@>	;
+shift_expression : additive_expression shift_expression@					;
 
-<shift expression@> : << <additive expression> <shift expression@> 
-	| >> <additive expression> <shift expression@> 
-	|  >>> <additive expression> <shift expression@> 
-	| E 
-	;
+shift_expression@ : << additive_expression shift_expression@ 
+			| SHIFT_RIGHT additive_expression shift_expression@
+			| SHIFT_RIGHT_LOGIC additive_expression shift_expression@ 
+			| /** empty **/													;
 
-<additive expression> : <multiplicative expression> <additive expression@>	;
+additive_expression : multiplicative_expression additive_expression@		;
 
-<additive expression@> : + <multiplicative expression> <additive expression@> 
-	| - <multiplicative expression> <additive expression@>
-	;
+additive_expression@ : PLUS multiplicative_expression additive_expression@ 
+			| MINUS multiplicative_expression additive_expression@			;
 
-<multiplicative expression> : <unary expression> <multiplicative expression@>	;
+multiplicative_expression : unary_expression multiplicative_expression@		;
 
-<multiplicative expression@> : * <unary expression> <multiplicative expression@> 
-	| / <unary expression> <multiplicative expression@> 
-	| % <unary expression> <multiplicative expression@>
-	;
+multiplicative_expression@ : MULT unary_expression multiplicative_expression@ 
+			| DIV unary_expression multiplicative_expression@ 
+			| MOD unary_expression multiplicative_expression@				;
 
-<cast expression> : ( <primitive type> ) <unary expression> 
-	| ( <reference type> ) <unary expression not plus minus>
-	;
+cast_expression : OPEN_PAREN primitive_type OPEN_PAREN unary_expression 
+			| OPEN_PAREN reference_type CLOSE_PAREN unary_expression_not_plus_minus;
 
-<unary expression> : ++ <unary expression> 
-	| -- <unary expression> 
-	| + <unary expression> 
-	| - <unary expression> 
-	| <postfix expression> 
-	| ~ <unary expression> 
-	| ! <unary expression> 
-	| <cast expression>
-	;
+unary_expression : INCREMENT unary_expression 
+			| DECREMENT unary_expression 
+			| PLUS unary_expression 
+			| MINUS unary_expression 
+			| postfix_expression 
+			| NOT unary_expression 
+			| NOT_BIT unary_expression 
+			| cast_expression												;
 
-<predecrement expression> : -- <unary expression>	;
+predecrement_expression : DECREMENT unary_expression						;
 
-<preincrement expression> : ++ <unary expression>	;
+preincrement_expression : INCREMENT unary_expression						;
 
-<unary expression not plus minus> : <postfix expression> 
-	| ~ <unary expression> 
-	| ! <unary expression> 
-	| <cast expression>
-	;
+unary_expression_not_plus_minus : postfix_expression 
+			| NOT_BIT unary_expression 
+			| NOT unary_expression
+			| cast_expression												;
 
-<postdecrement expression> : <postfix expression> --	;
+postdecrement_expression : postfix_expression DECREMENT						;
 
-<postincrement expression> : <postfix expression> ++	;
+postincrement_expression : postfix_expression INCREMENT						;
 
-<postfix expression> : <primary> <postfix expression@> 
-	| <expression name> <postfix expression@> 
-	;
+postfix_expression : primary postfix_expression@ 
+			| expression_name postfix_expression@							;
 
-<postfix expression@> : ++ <postfix expression@> 
-	| -- <postfix expression@> 
-	| E
-	;
+postfix_expression@ : INCREMENT postfix_expression@		 
+			| DECREMENT postfix_expression@
+			| /** empty **/													;
 
-<method invocation> : <method name> ( <argument list>? ) 
-	| <primary> . <identifier> ( <argument list>? ) 
-	;
+method_invocation : method_name OPEN_PAREN argument_list? CLOSE_PAREN 
+			| primary POINT identifier OPEN_PAREN argument_list? CLOSE_PAREN;
 
-<field access> : <primary> . <identifier>	;
+field_access : primary POINT identifier										;
 
-<primary> : <primary no new array> 
-	| <array creation expression>
-	;
+primary : primary_no_new_array 
+			| array_creation_expression										;
 
-<primary no new array> : <literal> 
-	| ( <expression> ) 
-	| <field access> 
-	| <method invocation> 
-	| <array access>
-	;
+primary_no_new_array : literal 
+				| OPEN_PAREN expression CLOSE_PAREN 
+				| field_access 
+				| method_invocation 
+				| array_access												;
 
-<argument list> : <expression> <argument list@>	;
+argument_list : expression argument_list@									;
 
-<argument list@> : , <expression> <argument list@> 
-	| E
-	;
+argument_list@ : VIRGULA expression argument_list@ 
+			 	| /** empty **/												;
 
-<array creation expression> : new <primitive type> <dim exprs> <dims>?	;
+array_creation_expression : NEW primitive_type dim_exprs dims?				;
 
-<dim exprs> : <dim expr> <dim exprs@>	;
+dim_exprs : dim_expr dim_exprs@												;
 
-<dim exprs@> : <dim expr> <dim exprs@> 
-	| E
-	;
+dim_exprs@ : dim_expr dim_exprs@ 
+				| /** empty **/												;
 
-<dim expr> : [ <expression> ]	;
+dim_expr : OPEN_COLC expression CLOSE_COLC	;
 
-<dims> : [ ] <dims@>	;
+dims : OPEN_COLC CLOSE_COLC dims@	;
 
-<dims@> : [ ] <dims@> 
-	| E
-	;
+dims@ : OPEN_COLC CLOSE_COLC dims@ 
+				| /** empty **/												;
 
-<array access> : <expression name> [ <expression> ] 
-	| <primary no new array> [ <expression>]
-	;
+array_access : expression_name OPEN_COLC expression CLOSE_COLC 
+				| primary_no_new_array OPEN_COLC expression CLOSE_COLC		;
