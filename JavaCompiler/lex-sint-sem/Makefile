@@ -18,14 +18,14 @@ CC	= gcc
 IFLAGS	= -I .
 CFLAGS  = -std=gnu99
 LEX     = flex
-YACC    = bison -y
+YACC    = bison -y -v
 REPORT  = --report=all --report-file=../sint-report.txt 
 lexico 	= lexico
 sintatico = sintatico
 tk	= tk.h
 
 $(lexico).o: $(lexico).yy
-	$(LEX) -o $(lexico).c $^
+	$(LEX) -o $(lexico).c $^ -lfl
 	$(CC) $(CFLAGS) -o $@ -c $(lexico).c
 
 $(sintatico).o: $(sintatico).y
