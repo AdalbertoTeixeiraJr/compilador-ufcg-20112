@@ -27,7 +27,8 @@ char* yytext = ""; //declarado no lexico
 %token IF INT LONG NEW RETURN SHORT STATIC SWITCH TRANSIENT VOID VOLATILE WHILE PT_VIRGULA MULT DIV 
 %token PLUS MINUS LEFT RIGHT TWO_POINT OR_EXC AND OR AND_LOGIC OR_LOGIC EQUAL_COMP NOT NOT_BIT
 %token INCREMENT DECREMENT NEW OPEN_COLC CLOSE_COLC POINT
-%token <strval>  //Quais? Tambem nao soube fazer!
+%token <strval> RELOP
+%token <strval> ID
 
 %type <strval>  //Quais os tipos??? Nao to sabendo fazer
 
