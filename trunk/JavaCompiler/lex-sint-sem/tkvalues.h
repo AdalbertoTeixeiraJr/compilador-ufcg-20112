@@ -1,11 +1,22 @@
-//VALORES DE RETORNO DOS TOKENS
-#define EQ 1
-#define NE 2
-#define GT 3
-#define LT 4
-#define GE 5
-#define LE 6
-#define AND 7
-#define OR 8
-
-
+// Return Values
+#define EQUAL_COMP 1 // ==
+#define DIFF_COMP 2  // !=
+#define MENOR 3 // <
+#define MAIOR 4 // >
+#define MENOR_IGUAL 5 // <=
+#define MAIOR_IGUAL 6 // >= 
+#define INSTANCE 7 // instanceof
+#define DESL_ESQ 8 // <<
+#define DESL_DIR 9 // >>
+#define DESL_DIR_LOGIC 10 // >>>
+#define DESL_ESQ_ATRIB 11 // <<=
+#define DESL_DIR_ATRIB 12 // >>= 
+#define DESL_DIR_LOGIC_ATRIB 13 // >>>=
+#define MULT_ATRIB 14 // *=
+#define DIV_ATRIB 15 // /=
+#define SUM_ATRIB 16 // +=
+#define DIFF_ATRIB 17 // -= 
+#define MOD_ATRIB 18 // %=
+#define AND_ATRIB 19 // &=
+#define AND_LOGIC_ATRIB 20 // ^=
+#define OR_ATRIB 21 // |= 
