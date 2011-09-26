@@ -1,0 +1,14 @@
+PROBLEMAS:
+
+
+1. na declaracao de variaveis a , é optativa, logo "int a b c;" funciona!
+
+2. se colocar num int --+++1 ele fica como +1, aceita mais de 1 sinal
+
+3. se colocar int a = 0561GDC ele nao dá erro, reconhece 0561 como literal (octal) e GDC como ID
+
+4. a definicao de arrays nao ta valendo a VIRGULA
+
+5. se aparecerem 2 virgulas seguidas eh pra sair do array?? pra ele eh isso...
+
+6. Tá faltando precedência com parênteses??? 
