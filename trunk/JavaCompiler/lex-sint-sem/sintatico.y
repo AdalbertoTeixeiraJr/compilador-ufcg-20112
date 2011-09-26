@@ -16,7 +16,7 @@
 int yylex(void);
 int yyerror(char *msg); //funcao de erro (sobrescrita)
 int line = 1; //declarado no lexico
-int col  = 0; // declarado no lexico
+int column  = 0; // declarado no lexico
 char* yytext = ""; //declarado no lexico
 %}
 
@@ -30,6 +30,7 @@ char* yytext = ""; //declarado no lexico
 %token QUESTION_MARK TWO_POINTS OR_LOGIC AND_LOGIC OPEN_PAREN CLOSE_PAREN NEW
 %token OR OR_EXC AND PLUS MINUS MULT DIV MOD INCREMENT DECREMENT NOT NOT_BIT 
 %token FOR IF ELSE WHILE CASE SWITCH DEFAULT DO BREAK CONTINUE GOTO RETURN VOID
+%token MAIN ARGS PUBLIC
 %token FINAL TRANSIENT VOLATILE
 %token <strval> ID
 %token <strval> SHIFT_ASSIGN
@@ -44,73 +45,79 @@ char* yytext = ""; //declarado no lexico
 
 compilation_unit :	class_declaration;
 
-class_declaration :	CLASS identifier class_body;
+class_declaration :	CLASS {printf("CLASS\n");} identifier class_body;						
 
-identifier :	ID;
+identifier :	ID {printf("ID - %s\n", $1);};
 
-class_body :	BEG class_body_declaration END;
+class_body :	BEG {printf("{\n");} class_body_declaration END {printf("}\n");};
 
-class_body_declaration :	STATIC class_member_declaration
+class_body_declaration :	STATIC {printf("STATIC\n");} class_member_declaration					/* FALTA VERIFICAR class_member_declaration*/
                        |	static_initializer;
 
-static_initializer :	STATIC block;
+static_initializer :	PUBLIC {printf("public\n");} VOID {printf("void\n");} MAIN {printf("main\n");} OPEN_PAREN {printf("(\n");} TYPE_STRING {printf("String\n");} ARGS {printf("args\n");} OPEN_COLC 
+				{printf("[\n");} CLOSE_COLC {printf("]\n");} CLOSE_PAREN {printf(")\n");} block;
 
-block :		BEG block_statements END;
+block :		BEG {printf("{\n");} block_statements END {printf("}\n");};
 
 block_statements :	block_statement block_statements_
 		|       block_statements_;
 
-block_statements_:	block_statement block_statements_ 
+block_statements_:	block_statement block_statements_ 		/* FALTA VERIFICAR statement, ja dei uma verificada, mas ainda falta*/
                 |	/** empty **/;
         
 block_statement :	local_variable_declaration_statement 
-                |       statement;
+                |       statement;											
 
-local_variable_declaration_statement : local_variable_declaration PT_VIRGULA;
+local_variable_declaration_statement : local_variable_declaration PT_VIRGULA {printf(";\n");} local_variable_declaration_;
+
+local_variable_declaration_ : local_variable_declaration PT_VIRGULA {printf(";\n");}
+			|	/** empty **/;
 
 local_variable_declaration :    primitive_type variable_declarators;
+						
 
 primitive_type :	numeric_type 
-               |       TYPE_BOOL
-               |       TYPE_STRING;
+               |       TYPE_BOOL {printf("TYPE_BOOL\n");}
+               |       TYPE_STRING {printf("TYPE_STRING\n");} ;
 
 numeric_type :	integral_type 
              |       floating_point_type;
 
-integral_type :		TYPE_BYTE 
-                |       TYPE_SHORT 
-                |       TYPE_INT 
-                |       TYPE_LONG 
-                |       TYPE_CHAR;
+integral_type :		TYPE_BYTE {printf("TYPE_BYTE\n");} 
+                |       TYPE_SHORT {printf("TYPE_SHORT\n");}
+                |       TYPE_INT {printf("TYPE_INT\n");}
+                |       TYPE_LONG {printf("TYPE_LONG\n");}
+                |       TYPE_CHAR {printf("TYPE_CHAR\n");}; 
 
-floating_point_type :	TYPE_FLOAT
-                |       TYPE_DOUBLE;
+floating_point_type :	TYPE_FLOAT {printf("TYPE_FLOAT\n");}
+                |       TYPE_DOUBLE {printf("TYPE_DOUBLE\n");};
 
 variable_declarators :          variable_declarator variable_declarators_;
+
+variable_declarator :           variable_declarator_id variable_declarator_ virgula_opt;			/** Pode declarar variaveis de mesmo tipo antes do ; **/
 
 variable_declarators_ :         variable_declarator variable_declarators_
                         |       /** empty **/;
 
-variable_declarator :           variable_declarator_id variable_declarator_     ;
-
-variable_declarator_ :          EQUAL variable_initializer 
+variable_declarator_ :          EQUAL {printf("=\n");} variable_initializer 
                         |       /** empty **/;
 
 variable_declarator_id :        identifier;       
-                        |       variable_declarator_id OPEN_COLC CLOSE_COLC; 
+                        |       variable_declarator_id OPEN_COLC {printf("OPEN_COLC\n");} CLOSE_COLC {printf("CLOSE_COLC\n");}; 
  
-variable_initializer :          left_hand_side assignment_operator assignment_expression
-                        |       array_initializer;
+variable_initializer :          /*left_hand_side assignment_operator*/ assignment_expression			/** Acho que essa regra tá errada, não tem esse left_hand_side */
+                        |       array_initializer
+			|	left_hand_side;
 
-array_initializer :	BEG variable_initializers  virgula_opt END; 
+array_initializer :	BEG  {printf("{\n");} variable_initializers  virgula_opt END{printf("}\n");}; 
 
-virgula_opt :	VIRGULA
+virgula_opt :	VIRGULA {printf("VIRGULA\n");}
 	|       /** empty **/;
 
-variable_initializers :         variable_initializer variable_initializers_     
+variable_initializers :         variable_initializer virgula_opt variable_initializers_     
                         |       variable_initializers_;
 
-variable_initializers_ :        variable_initializer variable_initializers_ 
+variable_initializers_ :        variable_initializer virgula_opt variable_initializers_ 
                         |       /** empty **/; 
 
 expression : assignment_expression;
@@ -122,14 +129,14 @@ field_access : identifier POINT identifier;
 left_hand_side :	field_access 
                 |       array_access;
 
-assignment_operator : EQUAL 
-		|       ARITH_ASSIGN 
-		|       SHIFT_ASSIGN
-	        |	LOGIC_ASSIGN;
+assignment_operator : EQUALOP {printf("=\n");}
+		|       ARITH_ASSIGN {printf("ARITH_ASSIGN\n");}
+		|       SHIFT_ASSIGN {printf("SHIFT_ASSIGN\n");}
+	        |	LOGIC_ASSIGN {printf("LOGIC_ASSIGN\n");}; 
 
-array_access : primary_no_new_array OPEN_COLC expression CLOSE_COLC;
+array_access : primary_no_new_array OPEN_COLC {printf("[\n");} expression CLOSE_COLC {printf("]\n");};
 
-primary_no_new_array : 	LITERAL 
+primary_no_new_array : 	LITERAL {printf("LITERAL - %s\n", $1);}
 		| 	field_access 
 		|	method_invocation 
 	        | 	array_access;
@@ -137,15 +144,15 @@ primary_no_new_array : 	LITERAL
 argument_list : 	expression argument_list_
 		|	argument_list_;
 
-argument_list_ : 	VIRGULA expression argument_list_ 
+argument_list_ : 	VIRGULA {printf("VIRGULA\n");} expression argument_list_ 
                 | 	/** empty **/;
 
 primary : 	primary_no_new_array 
 	| 	array_creation_expression;
 
-array_creation_expression : NEW primitive_type dim_exprs dims;
+array_creation_expression : NEW {printf("NEW\n");} primitive_type dim_exprs dims;
 
-dim_exprs : OPEN_COLC dim_expr_or_empty CLOSE_COLC;
+dim_exprs : OPEN_COLC {printf("[\n");} dim_expr_or_empty CLOSE_COLC {printf("]\n");};
 
 dim_expr_or_empty : expression
 		|	/** empty **/;
@@ -156,80 +163,80 @@ dims: dim_exprs
 
 
 conditional_expression : conditional_or_expression 
-                        | conditional_or_expression QUESTION_MARK conditional_expression TWO_POINTS conditional_expression;
+                        | conditional_or_expression QUESTION_MARK {printf("?\n");} conditional_expression TWO_POINTS {printf(":\n");} conditional_expression;
 
 
 conditional_or_expression : conditional_and_expression conditional_or_expression_;
 
-conditional_or_expression_ : OR_LOGIC conditional_and_expression conditional_or_expression_ 
+conditional_or_expression_ : OR_LOGIC {printf("OR_LOGIC\n");} conditional_and_expression conditional_or_expression_ 
                         | /** empty **/;
 
 conditional_and_expression : inclusive_or_expression conditional_and_expression_;
 
-conditional_and_expression_ : AND_LOGIC inclusive_or_expression conditional_and_expression_ 
+conditional_and_expression_ : AND_LOGIC {printf("AND_LOGIC\n");} inclusive_or_expression conditional_and_expression_ 
 			| /** empty **/;
 
 inclusive_or_expression : exclusive_or_expression  inclusive_or_expression_     ;
 
-inclusive_or_expression_ : OR exclusive_or_expression inclusive_or_expression_ 
+inclusive_or_expression_ : OR {printf("OR\n");} exclusive_or_expression inclusive_or_expression_ 
                         | /** empty **/;
 
 exclusive_or_expression : and_expression exclusive_or_expression_      ;
 
-exclusive_or_expression_ : OR_EXC and_expression exclusive_or_expression_ 
+exclusive_or_expression_ : OR_EXC {printf("OR_EXC\n");}and_expression exclusive_or_expression_ 
                         | /** empty **/;
 
 and_expression : equality_expression and_expression_    ;
 
-and_expression_ : AND equality_expression and_expression_ 
+and_expression_ : AND {printf("AND\n");} equality_expression and_expression_ 
                         | /** empty **/;
 
 equality_expression : relational_expression equality_expression_;
 
-equality_expression_ : EQUALOP relational_expression equality_expression_
+equality_expression_ : EQUALOP {printf("EQUALOP\n");} relational_expression equality_expression_
                         |       /** empty **/;
 
 relational_expression : shift_expression relational_expression_;
 
-relational_expression_ : RELOP shift_expression relational_expression_ 
+relational_expression_ : RELOP {printf("RELOP\n");} shift_expression relational_expression_ 
                         | /** empty **/;
 
 shift_expression : additive_expression shift_expression_;
 
-shift_expression_ : SHIFTS additive_expression shift_expression_ 
+shift_expression_ : SHIFTS {printf("SHIFTS\n");} additive_expression shift_expression_ 
                         | /** empty **/;
 
 additive_expression : multiplicative_expression additive_expression_;
 
-additive_expression_ : PLUS multiplicative_expression additive_expression_
-                        | MINUS multiplicative_expression additive_expression_
+additive_expression_ : PLUS {printf("PLUS\n");} multiplicative_expression additive_expression_
+                        | MINUS {printf("MINUS\n");}multiplicative_expression additive_expression_
 			| /** empty **/;
 
 multiplicative_expression : unary_expression multiplicative_expression_         ;
 
-multiplicative_expression_ : MULT unary_expression multiplicative_expression_ 
-                        | DIV unary_expression multiplicative_expression_ 
-                        | MOD unary_expression multiplicative_expression_
+multiplicative_expression_ : MULT {printf("MULT\n");} unary_expression multiplicative_expression_ 
+                        | DIV {printf("DIV\n");} unary_expression multiplicative_expression_ 
+                        | MOD {printf("MOD\n");} unary_expression multiplicative_expression_
 			| /** empty **/;
 
-unary_expression : 	INCREMENT unary_expression
-		|	DECREMENT  unary_expression  
-		|	PLUS  unary_expression  
-		|	MINUS  unary_expression  
+unary_expression : 	INCREMENT {printf("INCREMENT\n");} unary_expression
+		|	DECREMENT {printf("DECREMENT\n");} unary_expression  
+		|	PLUS {printf("PLUS\n");} unary_expression  
+		|	MINUS {printf("MINUS\n");} unary_expression  
 		|	postfix_expression 
-		|	NOT unary_expression 
-		|	NOT_BIT unary_expression 
+		|	NOT {printf("NOT\n");} unary_expression 
+		|	NOT_BIT {printf("NOT_BIT\n");} unary_expression 
 		|	cast_expression;
 
-cast_expression : OPEN_PAREN primitive_type OPEN_PAREN unary_expression 
-		| OPEN_PAREN reference_type CLOSE_PAREN unary_expression_not_plus_minus;
+cast_expression : OPEN_PAREN {printf("(\n");} primitive_type OPEN_PAREN unary_expression 
+		| OPEN_PAREN {printf(")\n");} reference_type CLOSE_PAREN unary_expression_not_plus_minus;
 
 reference_type : 	class_type
 		|       array_type;
 
 class_type :	identifier;
 
-array_type :	primitive_type OPEN_COLC CLOSE_COLC;
+array_type :	primitive_type OPEN_COLC {printf("[\n");} CLOSE_COLC {printf("]\n");};
 
 
 unary_expression_not_plus_minus : postfix_expression 
@@ -239,16 +246,16 @@ unary_expression_not_plus_minus : postfix_expression
 
 postfix_expression : primary postfix_expression_;
 
-postfix_expression_ : INCREMENT postfix_expression_              
-                        | DECREMENT postfix_expression_
+postfix_expression_ : INCREMENT {printf("INCREMENT\n");} postfix_expression_              
+                        | DECREMENT {printf("DECREMENT\n");} postfix_expression_
                         | /** empty **/;
 
 statement :	statement_without_trailing_substatement
 	|       identifier TWO_POINTS statement
-	|       IF  OPEN_PAREN expression CLOSE_PAREN statement      
-	|       IF OPEN_PAREN expression CLOSE_PAREN statement_no_short_if ELSE statement 
-	|       WHILE OPEN_PAREN expression CLOSE_PAREN statement 
-	|       FOR OPEN_PAREN for_init PT_VIRGULA expression_opt PT_VIRGULA for_update_opt CLOSE_PAREN statement;
+	|       IF {printf("IF\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} statement      
+	|       IF {printf("IF\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} statement_no_short_if ELSE {printf("ELSE\n");} statement 
+	|       WHILE {printf("WHILE\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} statement 
+	|       FOR {printf("FOR\n");} OPEN_PAREN {printf("(\n");} for_init PT_VIRGULA {printf(";\n");} expression_opt PT_VIRGULA {printf(";\n");} for_update_opt CLOSE_PAREN  {printf(")\n");}statement;
 
 for_init : statement_expression_list 
 	|       local_variable_declaration 
@@ -266,17 +273,17 @@ statement_expression :          primary_no_new_array assignment_operator assignm
                         |       postdecrement_expression 
                         |       method_invocation ;
 
-preincrement_expression : INCREMENT unary_expression;
+preincrement_expression : INCREMENT {printf("INCREMENT\n");} unary_expression;
 
-postincrement_expression : postfix_expression postfix_expression_ INCREMENT;
+postincrement_expression : postfix_expression postfix_expression_ INCREMENT {printf("INCREMENT\n");};
 
-predecrement_expression : DECREMENT unary_expression;
+predecrement_expression : DECREMENT {printf("DECREMENT\n");} unary_expression;
 
-postdecrement_expression : postfix_expression DECREMENT;
+postdecrement_expression : postfix_expression DECREMENT {printf("DECREMENT\n");};
 
 
-method_invocation : 	identifier OPEN_PAREN argument_list CLOSE_PAREN 
-		|	field_access OPEN_PAREN argument_list CLOSE_PAREN;
+method_invocation : 	identifier OPEN_PAREN {printf("(\n");} argument_list CLOSE_PAREN {printf(")\n");}
+		|	field_access OPEN_PAREN {printf("(\n");} argument_list CLOSE_PAREN {printf(")\n");};
 
 expression_opt : expression
 		|	/** empty **/;
@@ -296,14 +303,14 @@ statement_without_trailing_substatement : block
                         |       goto_statement
                         |       return_statement;
 
-empty_statement : PT_VIRGULA;
+empty_statement : PT_VIRGULA {printf(";\n");};
 
-expression_statement :	statement_expression PT_VIRGULA;
+expression_statement :	statement_expression PT_VIRGULA {printf(";\n");};
 
 
-switch_statement : SWITCH OPEN_PAREN expression CLOSE_PAREN switch_block;
+switch_statement : SWITCH {printf("SWITCH\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} switch_block;
 
-switch_block : BEG switch_block_statement_groups switch_labels END;
+switch_block : BEG {printf("{\n");} switch_block_statement_groups switch_labels END {printf("}\n");};
 
 switch_block_statement_groups : switch_block_statement_group switch_block_statement_groups_
                         |      switch_block_statement_groups_;
@@ -319,28 +326,28 @@ switch_labels : switch_label switch_labels_
 switch_labels_ : switch_label switch_labels_ 
 	|	/** empty **/;
 
-switch_label : CASE expression TWO_POINTS
-	|       DEFAULT TWO_POINTS;
+switch_label : CASE {printf("CASE\n");} expression TWO_POINTS {printf(":\n");}
+	|       DEFAULT {printf("DEFAULT:\n");} TWO_POINTS{printf(":\n");};
 
 
-do_statement : DO statement WHILE OPEN_PAREN expression CLOSE_PAREN PT_VIRGULA;
+do_statement : DO {printf("DO\n");} statement WHILE {printf("WHILE\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} PT_VIRGULA{printf(";\n");};
 
-break_statement : BREAK identifier_opt PT_VIRGULA;
+break_statement : BREAK {printf("BREAK\n");} identifier_opt PT_VIRGULA {printf(";\n");};
 
-continue_statement : CONTINUE identifier_opt PT_VIRGULA;
+continue_statement : CONTINUE {printf("CONTINUE\n");} identifier_opt PT_VIRGULA {printf(";\n");};
 
-goto_statement : GOTO  identifier_opt PT_VIRGULA;
+goto_statement : GOTO {printf("GOTO\n");}  identifier_opt PT_VIRGULA {printf(";\n");};
 
-return_statement : RETURN expression_opt PT_VIRGULA;
+return_statement : RETURN {printf("RETURN\n");} expression_opt PT_VIRGULA {printf(";\n");};
 
 identifier_opt: identifier
 	|	/** empty **/;
 
 statement_no_short_if :         statement_without_trailing_substatement 
-                        |       identifier TWO_POINTS statement_no_short_if 
-                        |       IF OPEN_PAREN expression CLOSE_PAREN statement_no_short_if ELSE statement_no_short_if 
-                        |       WHILE OPEN_PAREN expression CLOSE_PAREN statement_no_short_if 
-                        |       FOR OPEN_PAREN for_init PT_VIRGULA expression_opt PT_VIRGULA for_update_opt CLOSE_PAREN statement_no_short_if;
+                        |       identifier TWO_POINTS {printf(":\n");} statement_no_short_if 
+                        |       IF {printf("IF\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} statement_no_short_if ELSE {printf("ELSE\n");} statement_no_short_if 
+                        |       WHILE {printf("WHILE\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} statement_no_short_if 
+                        |       FOR {printf("FOR\n");} OPEN_PAREN {printf("(\n");} for_init PT_VIRGULA {printf(";\n");} expression_opt PT_VIRGULA {printf(";\n");} for_update_opt CLOSE_PAREN {printf(")\n");} statement_no_short_if;
 
 class_member_declaration :      method_declaration
 			|	field_declaration;
@@ -350,13 +357,13 @@ method_declaration :	method_header method_body;
 method_header :	result_type method_declarator;
 
 result_type :	primitive_type 
-	|       VOID;
+	|       VOID {printf("VOID\n");};
 
-method_declarator :	identifier OPEN_PAREN formal_parameter_list CLOSE_PAREN           
+method_declarator :	identifier OPEN_PAREN {printf("(\n");} formal_parameter_list CLOSE_PAREN {printf(")\n");}           
 	|       /** empty **/;
 
 method_body :	block 
-	|	PT_VIRGULA              
+	|	PT_VIRGULA {printf(";\n");}              
 	|	/** empty **/;
 
 formal_parameter_list :	formal_parameter formal_parameter_list_         
@@ -375,9 +382,9 @@ field_modifiers :	field_modifier field_modifiers_
 field_modifiers_ :	field_modifier field_modifiers_
 		|       /** empty **/;
 
-field_modifier :	FINAL
-                |       TRANSIENT
-                |       VOLATILE;
+field_modifier :	FINAL {printf("FINAL\n");}
+                |       TRANSIENT {printf("TRANSIENT\n");}
+                |       VOLATILE {printf("VOLTATILE\n");};
 
 
 
@@ -386,7 +393,8 @@ field_modifier :	FINAL
 %%
 
 int main(void) {
-        return yyparse();
+	yydebug=0;
+	return yyparse();
 }
 
 //funcao de erro - imprime linha e coluna do erro sintatico
@@ -394,6 +402,6 @@ int yyerror(char *msg){
         int tk = YYTRANSLATE(yychar);
         fprintf(stderr,"%s:\n",msg);
 	fprintf(stderr,"\tLast Token: %s - %s\n",yytname[tk],yytext);
-        fprintf(stderr,"\tLine %d, Column %d\n", line, col);
+        fprintf(stderr,"\tLine %d, Column %d\n", line, column);
         return 1;
 }

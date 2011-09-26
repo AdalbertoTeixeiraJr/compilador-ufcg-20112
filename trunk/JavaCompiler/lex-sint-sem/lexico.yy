@@ -13,63 +13,52 @@
 #include "tk.h"
 #include "tkvalues.h"
 #include <string.h>
-extern int col; // carrega do sintatico
+extern int column; // carrega do sintatico
 extern int line; // carrega do sintatico
-char* yytext;
+extern char* yytext;
 void updateCol();
 void updateLine();
 %}
 
 col_delimit	[ \r\t]
 line_delimit	[\n]
-underline	_
-id		{underline}?{string_chars}
-shifts_assig	"<<=" | ">>=" | ">>>="
-arith_assig	"*=" | "/=" | "+=" | "-=' | "%="
-logic_assig	"&=" | "^=" | "|="
-literal 	{int_literal} | {float_literal} | {boolean_literal} | {string_literal} | {null_literal}
-int_literal	{hex_int_literal} | {dec_int_literal} | {oct_int_literal} 
-dec_int_literal	{dec_num} {int_type_suf}?
-hex_int_literal	{hex_num} {int_type_suf}?
-oct_int_literal	{oct_num} {int_type_suf}?
-int_type_suf	l|L
-dec_num 	{zero_digit} | {non_zero_digit} {digits}?
-digits		{digit} | {digits}{digit}
-digit		{zero_digit}|non_zero_digit
-zero_digit	[0]
-non_zero_digit	[1-9]	
-hex_num		{zero_digit}x{hex_digit} | {zero_digit}X{hex_digit} | {hex_num}{hex_digit}
+id              {letter_no_digit}+({letter})*
+letter          [A-Za-z_0-9]
+letter_no_digit [A-Za-z_]
+digit		[0-9]
+int_literal	{signal}?{digit}*{int_type_suf}?
+int_type_suf	[lL]
+signal 		[+-]
+float_literal	{digit}+.{digit}+{exp_indicator}?{float_sufix}?{digit}+{exp_indicator}?{float_sufix}? 
+exp_indicator	[eE]
+float_sufix	[fFdD]
+hex_literal	0{hex_id}{hex_digit}*
+hex_id		[xX]
 hex_digit	[0-9A-F]
-oct_num		{zero_digit} {oct_digit} | {oct_num} {oct_digit}
+oct_literal	0{oct_digit}*
 oct_digit	[0-7]
-float_literal	{digits}.{digits}?{exp_part}?{float_sufix}?{digits}?{exp_part}?{float_sufix}? 
-exp_part	{exp_indicator} | {signed_int}
-exp_indicator	e|E
-signed_int	{signal}? {digits}
-signal 		+|-
-float_sufix	f|F|d|D
-letter          [A-Za-z]
-boolean_literal true | false
-string_char	{letter} | {digit}	// melhoria: mapear unicode
-string_literal	"{string_chars}?"
-string_chars	{string_char} | {string_chars}{string_char}
-null_literal	"null"
-equal_oper	"==" | "!="
-rel_oper	"<" | ">" | "<=" | ">=" | "instanceof"
-shifts		"<<" | ">>" | ">>>"
+equal_oper	"=="|"!="
+arith_assig	"*="|"/="|"+="|"-="|"%="
+shift_assig	"<<="|">>="|">>>="
+rel_oper	"<"|">"|"<="|">="|"instanceof"
+shifts		"<<"|">>"|">>>"
+logic_assig	"&="|"^="|"|="
+/*string_literal	"".*""**/
+
+
  
 
 %%
 
 {col_delimit}+	{updateCol();}
 {line_delimit}  {updateLine();}
+";"		{updateCol();return PT_VIRGULA;}
 "{"		{updateCol();return BEG;}
 "}"		{updateCol();return END;}
 "["		{updateCol();return OPEN_COLC;}
 "]"		{updateCol();return CLOSE_COLC;}
 "("		{updateCol();return OPEN_PAREN;}
 ")"		{updateCol();return CLOSE_PAREN;}
-";"		{updateCol();return PT_VIRGULA;}
 ","		{updateCol();return VIRGULA;}
 "."		{updateCol();return POINT;}
 ":"		{updateCol();return TWO_POINTS;}
@@ -89,9 +78,9 @@ shifts		"<<" | ">>" | ">>>"
 "|"		{updateCol();return OR;}
 "^"		{updateCol();return OR_EXC;}
 "&"		{updateCol();return AND;}
-if	       {updateCol();return IF;}
-else	       {updateCol();return ELSE;}
-while          {updateCol();return WHILE;}
+"if"	        {updateCol();return IF;}
+"else"	        {updateCol();return ELSE;}
+"while"         {updateCol();return WHILE;}
 "new"		{updateCol();return NEW;}
 "do"		{updateCol();return DO;}
 "for"           {updateCol();return FOR;}
@@ -101,13 +90,16 @@ while          {updateCol();return WHILE;}
 "return"        {updateCol();return RETURN;}
 "case"          {updateCol();return CASE;}
 "switch"        {updateCol();return SWITCH;}
-"class"         {updateCol();return CLASS;}
-"void"          {updateCol();return VOID;}
 "default"       {updateCol();return DEFAULT;}
-"static"        {updateCol();return STATIC;}
 "transient"     {updateCol();return TRANSIENT;}
 "volatile"	{updateCol();return VOLATILE;}
 "final"		{updateCol();return FINAL;}
+"class"		{updateCol();return CLASS;}
+"static"        {updateCol();return STATIC;}
+"void"		{updateCol();return VOID;}
+"public"	{updateCol();return PUBLIC;}
+"main"		{updateCol();return MAIN;}
+"args"		{updateCol();return ARGS;}
 "int"		{updateCol();return TYPE_INT;}
 "short"		{updateCol();return TYPE_SHORT;}
 "long"		{updateCol();return TYPE_LONG;}
@@ -117,31 +109,40 @@ while          {updateCol();return WHILE;}
 "double"	{updateCol();return TYPE_DOUBLE;}
 "char"		{updateCol();return TYPE_CHAR;}
 "String"	{updateCol();return TYPE_STRING;}
+"true"		{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
+"false"		{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
+"null"		{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
+{equal_oper}	{updateCol();yylval.strval = strdup(yytext);return EQUALOP;}
+{rel_oper}	{updateCol();yylval.strval = strdup(yytext);return RELOP;}
+{shifts}	{updateCol();yylval.strval = strdup(yytext);return SHIFTS;}
+{int_literal} 	{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
+{hex_literal} 	{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
+{oct_literal}	{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
+{float_literal} {updateCol();yylval.strval = strdup(yytext);return LITERAL;}
+{id}		{updateCol();yylval.strval = strdup(yytext);return ID;}
 
-equal_oper	{updateCol();yylval.strval = strdup(yytext);return EQUALOP;}
-rel_oper	{updateCol();yylval.strval = strdup(yytext);return RELOP;}
-shift_assig	{updateCol();yylval.strval = strdup(yytext);return SHIFT_ASSIGN;}
-arith_assig	{updateCol();yylval.strval = strdup(yytext);return ARITH_ASSIGN;}
-logic_assig	{updateCol();yylval.strval = strdup(yytext);return LOGIC_ASSIGN;}
-id		{updateCol();yylval.strval = strdup(yytext);return ID;}
-literal		{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
-shifts		{updateCol();yylval.strval = strdup(yytext);return SHIFTS;}
+
 
 %%
 
+/*shift_assig	{updateCol();yylval.strval = strdup(yytext);return SHIFT_ASSIG;}
+arith_assig	{updateCol();yylval.strval = strdup(yytext);return ARIT_ASSIG;}
+logic_assig	{updateCol();yylval.strval = strdup(yytext);return LOGIC_ASSIG;}
+string_literal 	{updateCol();yylval.strval = strdup(yytext);return STRING_LITERAL;}*/
+
 
 void updateLine(){
-   //segue para proxima linha e reseta a coluna
+   /**segue para proxima linha e reinicia a coluna**/
    line++;
-   col = 1;
+   column = 1;
 }
 
 void updateCol(){
-   //segue para proxima coluna
-   col += yyleng;
+   /**segue para proxima coluna**/
+   column += yyleng;
 }
-
+/**
 int yywrap() {
   return 1;
-}
+}**/
 

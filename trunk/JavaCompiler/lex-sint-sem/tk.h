@@ -1,23 +1,24 @@
-
-/* A Bison parser, made by GNU Bison 2.4.1.  */
+/* A Bison parser, made by GNU Bison 2.3.  */
 
 /* Skeleton interface for Bison's Yacc-like parsers in C
-   
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+
+   Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
    Free Software Foundation, Inc.
-   
-   This program is free software: you can redistribute it and/or modify
+
+   This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-   
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor,
+   Boston, MA 02110-1301, USA.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -28,10 +29,9 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-   
+
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
-
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -90,17 +90,20 @@
      GOTO = 306,
      RETURN = 307,
      VOID = 308,
-     FINAL = 309,
-     TRANSIENT = 310,
-     VOLATILE = 311,
-     ID = 312,
-     SHIFT_ASSIGN = 313,
-     ARITH_ASSIGN = 314,
-     LOGIC_ASSIGN = 315,
-     LITERAL = 316,
-     EQUALOP = 317,
-     RELOP = 318,
-     SHIFTS = 319
+     MAIN = 309,
+     ARGS = 310,
+     PUBLIC = 311,
+     FINAL = 312,
+     TRANSIENT = 313,
+     VOLATILE = 314,
+     ID = 315,
+     SHIFT_ASSIGN = 316,
+     ARITH_ASSIGN = 317,
+     LOGIC_ASSIGN = 318,
+     LITERAL = 319,
+     EQUALOP = 320,
+     RELOP = 321,
+     SHIFTS = 322
    };
 #endif
 /* Tokens.  */
@@ -155,40 +158,37 @@
 #define GOTO 306
 #define RETURN 307
 #define VOID 308
-#define FINAL 309
-#define TRANSIENT 310
-#define VOLATILE 311
-#define ID 312
-#define SHIFT_ASSIGN 313
-#define ARITH_ASSIGN 314
-#define LOGIC_ASSIGN 315
-#define LITERAL 316
-#define EQUALOP 317
-#define RELOP 318
-#define SHIFTS 319
+#define MAIN 309
+#define ARGS 310
+#define PUBLIC 311
+#define FINAL 312
+#define TRANSIENT 313
+#define VOLATILE 314
+#define ID 315
+#define SHIFT_ASSIGN 316
+#define ARITH_ASSIGN 317
+#define LOGIC_ASSIGN 318
+#define LITERAL 319
+#define EQUALOP 320
+#define RELOP 321
+#define SHIFTS 322
 
 
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
-{
-
-/* Line 1676 of yacc.c  */
 #line 23 "sintatico.y"
-
+{
         char* strval;
-
-
-
-/* Line 1676 of yacc.c  */
-#line 186 "tk.h"
-} YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
+}
+/* Line 1529 of yacc.c.  */
+#line 187 "tk.h"
+	YYSTYPE;
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
+# define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYSTYPE yylval;
-
 
