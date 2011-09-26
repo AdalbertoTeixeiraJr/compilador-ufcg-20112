@@ -16,24 +16,23 @@
 
 CC      = gcc
 IFLAGS  = -I .
-CFLAGS  = -std=gnu99
 LEX     = flex
 YACC    = bison -y -v
-REPORT  = --report=all --report-file=report.txt 
+REPORT  = --report=all 
 lexico  = lexico
 sintatico = sintatico
 tk      = tk.h
 
-java_compiler: $(sintatico) $(lexico)
-	$(CC) $(CFLAGS) $(IFLAGS) -o $@ $^ -ll -ly
+java_compiler: $(lexico) $(sintatico)
+	$(CC) $(IFLAGS) -o$@ $^ -ll 
 
 $(lexico): $(lexico).yy
-	$(LEX) -o $(lexico).c $^
-	$(CC) $(CFLAGS) -o $@ -c $(lexico).c
+	$(LEX) -o$(lexico).c $^
+	$(CC) -o $@ -c $(lexico).c
 
 $(sintatico): $(sintatico).y
 	$(YACC) -t --define=$(tk) $(REPORT) -o$(sintatico).c $^
-	$(CC) $(CFLAGS) -o $@ -c $(sintatico).c
+	$(CC) -o $@ -c $(sintatico).c
 
 clean:
-	rm -rf $(lexico) $(lexico).c $(sintatico) $(sintatico).c java_compiler report.txt
+	rm -rf $(lexico) $(lexico).c $(sintatico) $(sintatico).c java_compiler report.txt sintatico.output *~
