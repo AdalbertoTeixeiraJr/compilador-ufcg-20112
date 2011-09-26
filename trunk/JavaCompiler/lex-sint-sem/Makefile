@@ -19,21 +19,21 @@ IFLAGS  = -I .
 CFLAGS  = -std=gnu99
 LEX     = flex
 YACC    = bison -y -v
-REPORT  = --report=all --report-file=sint-report.txt 
+REPORT  = --report=all --report-file=report.txt 
 lexico  = lexico
 sintatico = sintatico
 tk      = tk.h
 
-compiler: $(sintatico).o $(lexico).o
+java_compiler: $(sintatico) $(lexico)
 	$(CC) $(CFLAGS) $(IFLAGS) -o $@ $^ -ll -ly
 
-$(lexico).o: $(lexico).yy
+$(lexico): $(lexico).yy
 	$(LEX) -o $(lexico).c $^
 	$(CC) $(CFLAGS) -o $@ -c $(lexico).c
 
-$(sintatico).o: $(sintatico).y
+$(sintatico): $(sintatico).y
 	$(YACC) -t --define=$(tk) $(REPORT) -o$(sintatico).c $^
 	$(CC) $(CFLAGS) -o $@ -c $(sintatico).c
 
 clean:
-	rm -rf $(lexico).o $(lexico).c $(sintatico).o $(sintatico).c
+	rm -rf $(lexico) $(lexico).c $(sintatico) $(sintatico).c java_compiler report.txt
