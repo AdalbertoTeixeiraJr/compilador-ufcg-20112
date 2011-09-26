@@ -39,133 +39,133 @@
    /* Put the tokens into the symbol table, so that GDB and other debuggers
       know about them.  */
    enum yytokentype {
-     IF = 258,
-     ELSE = 259,
-     WHILE = 260,
-     OPEN_PAREN = 261,
-     CLOSE_PAREN = 262,
-     TYPE_INT = 263,
-     TYPE_SHORT = 264,
-     TYPE_LONG = 265,
-     TYPE_BYTE = 266,
-     TYPE_BOOL = 267,
-     TYPE_FLOAT = 268,
-     TYPE_DOUBLE = 269,
-     TYPE_CHAR = 270,
-     TYPE_STRING = 271,
-     PT_VIRGULA = 272,
-     VIRGULA = 273,
-     EQUAL = 274,
-     MULT = 275,
-     DIV = 276,
-     MOD = 277,
-     PLUS = 278,
-     MINUS = 279,
-     TWO_POINTS = 280,
-     OR_EXC = 281,
-     AND = 282,
-     OR = 283,
-     OR_LOGIC = 284,
-     AND_LOGIC = 285,
-     INCREMENT = 286,
-     DECREMENT = 287,
-     NOT = 288,
-     NOT_BIT = 289,
-     POINT = 290,
-     NEW = 291,
-     OPEN_COLC = 292,
-     CLOSE_COLC = 293,
-     BEG = 294,
-     END = 295,
-     GOTO = 296,
-     QUESTION_MARK = 297,
-     BREAK = 298,
-     CASE = 299,
-     CLASS = 300,
-     CONTINUE = 301,
+     CLASS = 258,
+     BEG = 259,
+     END = 260,
+     STATIC = 261,
+     PT_VIRGULA = 262,
+     OPEN_COLC = 263,
+     CLOSE_COLC = 264,
+     EQUAL = 265,
+     VIRGULA = 266,
+     POINT = 267,
+     TYPE_INT = 268,
+     TYPE_SHORT = 269,
+     TYPE_LONG = 270,
+     TYPE_BYTE = 271,
+     TYPE_BOOL = 272,
+     TYPE_FLOAT = 273,
+     TYPE_DOUBLE = 274,
+     TYPE_CHAR = 275,
+     TYPE_STRING = 276,
+     QUESTION_MARK = 277,
+     TWO_POINTS = 278,
+     OR_LOGIC = 279,
+     AND_LOGIC = 280,
+     OPEN_PAREN = 281,
+     CLOSE_PAREN = 282,
+     NEW = 283,
+     OR = 284,
+     OR_EXC = 285,
+     AND = 286,
+     PLUS = 287,
+     MINUS = 288,
+     MULT = 289,
+     DIV = 290,
+     MOD = 291,
+     INCREMENT = 292,
+     DECREMENT = 293,
+     NOT = 294,
+     NOT_BIT = 295,
+     FOR = 296,
+     IF = 297,
+     ELSE = 298,
+     WHILE = 299,
+     CASE = 300,
+     SWITCH = 301,
      DEFAULT = 302,
      DO = 303,
-     FINAL = 304,
-     FOR = 305,
-     RETURN = 306,
-     STATIC = 307,
-     TRANSIENT = 308,
-     VOLATILE = 309,
-     SWITCH = 310,
-     VOID = 311,
-     LITERAL = 312,
-     EQUALOP = 313,
-     RELOP = 314,
-     ID = 315,
-     SHIFTS = 316,
-     SHIFT_ASSIGN = 317,
-     ARITH_ASSIGN = 318,
-     LOGIC_ASSIGN = 319
+     BREAK = 304,
+     CONTINUE = 305,
+     GOTO = 306,
+     RETURN = 307,
+     VOID = 308,
+     FINAL = 309,
+     TRANSIENT = 310,
+     VOLATILE = 311,
+     ID = 312,
+     SHIFT_ASSIGN = 313,
+     ARITH_ASSIGN = 314,
+     LOGIC_ASSIGN = 315,
+     LITERAL = 316,
+     EQUALOP = 317,
+     RELOP = 318,
+     SHIFTS = 319
    };
 #endif
 /* Tokens.  */
-#define IF 258
-#define ELSE 259
-#define WHILE 260
-#define OPEN_PAREN 261
-#define CLOSE_PAREN 262
-#define TYPE_INT 263
-#define TYPE_SHORT 264
-#define TYPE_LONG 265
-#define TYPE_BYTE 266
-#define TYPE_BOOL 267
-#define TYPE_FLOAT 268
-#define TYPE_DOUBLE 269
-#define TYPE_CHAR 270
-#define TYPE_STRING 271
-#define PT_VIRGULA 272
-#define VIRGULA 273
-#define EQUAL 274
-#define MULT 275
-#define DIV 276
-#define MOD 277
-#define PLUS 278
-#define MINUS 279
-#define TWO_POINTS 280
-#define OR_EXC 281
-#define AND 282
-#define OR 283
-#define OR_LOGIC 284
-#define AND_LOGIC 285
-#define INCREMENT 286
-#define DECREMENT 287
-#define NOT 288
-#define NOT_BIT 289
-#define POINT 290
-#define NEW 291
-#define OPEN_COLC 292
-#define CLOSE_COLC 293
-#define BEG 294
-#define END 295
-#define GOTO 296
-#define QUESTION_MARK 297
-#define BREAK 298
-#define CASE 299
-#define CLASS 300
-#define CONTINUE 301
+#define CLASS 258
+#define BEG 259
+#define END 260
+#define STATIC 261
+#define PT_VIRGULA 262
+#define OPEN_COLC 263
+#define CLOSE_COLC 264
+#define EQUAL 265
+#define VIRGULA 266
+#define POINT 267
+#define TYPE_INT 268
+#define TYPE_SHORT 269
+#define TYPE_LONG 270
+#define TYPE_BYTE 271
+#define TYPE_BOOL 272
+#define TYPE_FLOAT 273
+#define TYPE_DOUBLE 274
+#define TYPE_CHAR 275
+#define TYPE_STRING 276
+#define QUESTION_MARK 277
+#define TWO_POINTS 278
+#define OR_LOGIC 279
+#define AND_LOGIC 280
+#define OPEN_PAREN 281
+#define CLOSE_PAREN 282
+#define NEW 283
+#define OR 284
+#define OR_EXC 285
+#define AND 286
+#define PLUS 287
+#define MINUS 288
+#define MULT 289
+#define DIV 290
+#define MOD 291
+#define INCREMENT 292
+#define DECREMENT 293
+#define NOT 294
+#define NOT_BIT 295
+#define FOR 296
+#define IF 297
+#define ELSE 298
+#define WHILE 299
+#define CASE 300
+#define SWITCH 301
 #define DEFAULT 302
 #define DO 303
-#define FINAL 304
-#define FOR 305
-#define RETURN 306
-#define STATIC 307
-#define TRANSIENT 308
-#define VOLATILE 309
-#define SWITCH 310
-#define VOID 311
-#define LITERAL 312
-#define EQUALOP 313
-#define RELOP 314
-#define ID 315
-#define SHIFTS 316
-#define SHIFT_ASSIGN 317
-#define ARITH_ASSIGN 318
-#define LOGIC_ASSIGN 319
+#define BREAK 304
+#define CONTINUE 305
+#define GOTO 306
+#define RETURN 307
+#define VOID 308
+#define FINAL 309
+#define TRANSIENT 310
+#define VOLATILE 311
+#define ID 312
+#define SHIFT_ASSIGN 313
+#define ARITH_ASSIGN 314
+#define LOGIC_ASSIGN 315
+#define LITERAL 316
+#define EQUALOP 317
+#define RELOP 318
+#define SHIFTS 319
 
 
 
