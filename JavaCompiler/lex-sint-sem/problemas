@@ -4,10 +4,10 @@ PROBLEMAS:
 1. na declaracao de variaveis a ,(virgula) é optativa, logo "int a b c;" funciona!
 RESOLVIDO
 
-2. se colocar num int --+++1 ele fica como +1, aceita mais de 1 sinal
+
 
 3. se colocar int a = 0561GDC ele nao dá erro, reconhece 0561 como literal (octal) e GDC como ID
-depende de como testar...
+depende de como testar...(acho que ta resolvido)
 
 4. a definicao de arrays nao ta valendo a VIRGULA
 RESOLVIDO
@@ -26,6 +26,7 @@ RESOLVIDO
 
 10. Ele nao reconhece expressoes assim: 1+1, tem que ser 1 + 1, 1-1 tem que ser 1 - 1
 acho que eh por conta da regra do pode ter o sinal ou nao, ai se tiver -1 ele reconhece como um literal
+2. se colocar num int --+++1 ele fica como +1, aceita mais de 1 sinal
 
 11.nao consigo fazer essa operacao direto no main "i = i<1;"
 
@@ -34,3 +35,5 @@ acho que eh por conta da regra do pode ter o sinal ou nao, ai se tiver -1 ele re
 13. falta mapear ARITH_ASSIG, LOGIC_ASSIG e SHIFT_ASSIG
 
 14. falta mapear CHAR
+
+15. falta mapear double
