@@ -12,7 +12,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
-#include "tkvalues.h"
+/*#include "tkvalues.h"*/
 int yylex(void);
 int yyerror(char *msg); //funcao de erro (sobrescrita)
 int line = 1; //declarado no lexico

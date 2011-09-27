@@ -22,7 +22,7 @@ RESOLVIDO
 
 9. Comentarios no codigo nao tao mapeados...
 // RESOLVIDO
-falta /* */
+/*RESOLVIDO */
 
 10. Ele nao reconhece expressoes assim: 1+1, tem que ser 1 + 1, 1-1 tem que ser 1 - 1
 acho que eh por conta da regra do pode ter o sinal ou nao, ai se tiver -1 ele reconhece como um literal
@@ -34,6 +34,8 @@ acho que eh por conta da regra do pode ter o sinal ou nao, ai se tiver -1 ele re
 RESOLVIDO
 
 13. falta mapear ARITH_ASSIG, LOGIC_ASSIG e SHIFT_ASSIG
+RESOLVIDO
+
 
 14. falta mapear CHAR
 RESOLVIDO
