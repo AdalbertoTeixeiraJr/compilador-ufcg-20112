@@ -43,9 +43,11 @@ arith_assig	"*="|"/="|"+="|"-="|"%="				/* FALTA */
 shift_assig	"<<="|">>="|">>>="					/* FALTA */
 rel_oper	"<"|">"|"<="|">="|"instanceof"
 shifts		"<<"|">>"|">>>"
-logic_assig	"&="|"^="|"|="						/* FALTA */
-/*string_literal	"".*""**/					
-
+logic_assig	"&="|"^="|"|="						/* FALTA *
+/*string_literal	"".*""**					
+/*char	       "'.{1}'"*
+coment		{"/*"}.*{"*"}
+coment_line	"//"*/
 
  
 
@@ -125,11 +127,14 @@ logic_assig	"&="|"^="|"|="						/* FALTA */
 
 
 %%
-
-/*shift_assig	{updateCol();yylval.strval = strdup(yytext);return SHIFT_ASSIG;}
+/* TA FALTANDO
+shift_assig	{updateCol();yylval.strval = strdup(yytext);return SHIFT_ASSIG;}
 arith_assig	{updateCol();yylval.strval = strdup(yytext);return ARIT_ASSIG;}
 logic_assig	{updateCol();yylval.strval = strdup(yytext);return LOGIC_ASSIG;}
-string_literal 	{updateCol();yylval.strval = strdup(yytext);return STRING_LITERAL;}*/
+string_literal 	{updateCol();yylval.strval = strdup(yytext);return STRING_LITERAL;}
+{char}		{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
+{coment_line}	{updateLine();}
+*/
 
 int yywrap(){
    return 1;
@@ -146,8 +151,4 @@ void updateCol(){
    /**segue para proxima coluna**/
    column += yyleng;
 }
-/**
-int yywrap() {
-  return 1;
-}**/
 
