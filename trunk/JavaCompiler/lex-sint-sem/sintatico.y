@@ -53,8 +53,8 @@ class_body :	BEG {printf("{\n");} class_body_declaration END {printf("}\n");};
 
 class_body_declaration :	 class_member_declaration_opt static_initializer;					/* FALTA VERIFICAR class_member_declaration*/	
 
-static_initializer :	PUBLIC {printf("public\n");} VOID {printf("void\n");} MAIN {printf("main\n");} OPEN_PAREN {printf("(\n");} TYPE_STRING {printf("String\n");} ARGS {printf("args\n");} OPEN_COLC 
-				{printf("[\n");} CLOSE_COLC {printf("]\n");} CLOSE_PAREN {printf(")\n");} block;
+static_initializer :	PUBLIC {printf("public\n");} STATIC {printf("STATIC\n");} VOID {printf("void\n");} MAIN {printf("main\n");} OPEN_PAREN {printf("(\n");} TYPE_STRING {printf("String\n");} OPEN_COLC {printf("[\n");} CLOSE_COLC {printf("]\n");} 
+			ARGS {printf("args\n");}  CLOSE_PAREN {printf(")\n");} block;
 
 block :		BEG {printf("{\n");} block_statements END {printf("}\n");};
 
@@ -72,7 +72,8 @@ local_variable_declaration_statement : local_variable_declaration PT_VIRGULA {pr
 local_variable_declaration_ : local_variable_declaration PT_VIRGULA {printf(";\n");}
 			|	/** empty **/;
 
-local_variable_declaration :    primitive_type variable_declarators;
+local_variable_declaration :    primitive_type variable_declarators
+			|	primitive_type OPEN_COLC {printf("[\n");} CLOSE_COLC {printf(";\n");} variable_declarators;
 						
 
 primitive_type :	numeric_type 
@@ -101,14 +102,14 @@ variable_declarators_ :         VIRGULA {printf("VIRGULA\n");} variable_declarat
 variable_declarator_ :          EQUAL {printf("=\n");} variable_initializer 
                         |       /** empty **/;
 
-variable_declarator_id :        identifier;       
-                        |       variable_declarator_id OPEN_COLC {printf("OPEN_COLC\n");} CLOSE_COLC {printf("CLOSE_COLC\n");}; 
+variable_declarator_id :        identifier; 
  
 variable_initializer :          /*left_hand_side assignment_operator*/ assignment_expression			/** Acho que essa regra tá errada, não tem esse left_hand_side */
                         |       array_initializer
 			|	left_hand_side;
 
-array_initializer :	BEG  {printf("{\n");} variable_initializers  virgula_opt END{printf("}\n");}; 
+array_initializer :	BEG  {printf("{\n");} variable_initializers  virgula_opt END{printf("}\n");}
+			|	array_creation_expression; 
 
 virgula_opt :	VIRGULA {printf("VIRGULA\n");}
 	|       /** empty **/;
@@ -146,8 +147,8 @@ argument_list : 	expression argument_list_
 argument_list_ : 	VIRGULA {printf("VIRGULA\n");} expression argument_list_ 
                 | 	/** empty **/;
 
-primary : 	primary_no_new_array 
-	| 	array_creation_expression;
+/*primary : 	primary_no_new_array 
+	| 	array_creation_expression;*/
 
 array_creation_expression : NEW {printf("NEW\n");} primitive_type dim_exprs dims;
 
@@ -243,7 +244,7 @@ unary_expression_not_plus_minus : postfix_expression
                         | NOT unary_expression
                         | cast_expression;
 
-postfix_expression : primary postfix_expression_;
+postfix_expression : primary_no_new_array postfix_expression_;		/** Regra alterada, nao pode ser um novoo array **/
 
 postfix_expression_ : INCREMENT {printf("INCREMENT\n");} postfix_expression_              
                         | DECREMENT {printf("DECREMENT\n");} postfix_expression_
@@ -378,7 +379,8 @@ formal_parameter_list_ : VIRGULA {printf("VIRGULA\n");} formal_parameter formal_
 
 formal_parameter :	primitive_type variable_declarator_id;
 
-field_declaration :	field_modifiers primitive_type variable_declarators PT_VIRGULA {printf(";\n");};
+field_declaration :	field_modifiers primitive_type variable_declarators PT_VIRGULA {printf(";\n");}
+		|	field_modifiers primitive_type OPEN_COLC {printf("[\n");} CLOSE_COLC {printf("]\n");} variable_declarators PT_VIRGULA {printf(";\n");};
 
 field_modifiers :	field_modifier field_modifiers_                 
                 |       field_modifiers_;

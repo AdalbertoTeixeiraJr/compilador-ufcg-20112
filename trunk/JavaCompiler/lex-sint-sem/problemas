@@ -4,8 +4,6 @@ PROBLEMAS:
 1. na declaracao de variaveis a ,(virgula) é optativa, logo "int a b c;" funciona!
 RESOLVIDO
 
-
-
 3. se colocar int a = 0561GDC ele nao dá erro, reconhece 0561 como literal (octal) e GDC como ID
 depende de como testar...(acho que ta resolvido)
 
@@ -37,3 +35,5 @@ acho que eh por conta da regra do pode ter o sinal ou nao, ai se tiver -1 ele re
 14. falta mapear CHAR
 
 15. falta mapear double
+
+16. definição de arrays do tipo int[] a = new 
