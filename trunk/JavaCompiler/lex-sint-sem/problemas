@@ -21,6 +21,8 @@ RESOLVIDO
 8. na declaração de variaveis de classes tem que ser FINAL, TRANSIENT ou VOLATILE, se nao ele da erro.
 
 9. Comentarios no codigo nao tao mapeados...
+// RESOLVIDO
+falta /* */
 
 10. Ele nao reconhece expressoes assim: 1+1, tem que ser 1 + 1, 1-1 tem que ser 1 - 1
 acho que eh por conta da regra do pode ter o sinal ou nao, ai se tiver -1 ele reconhece como um literal
@@ -29,6 +31,7 @@ acho que eh por conta da regra do pode ter o sinal ou nao, ai se tiver -1 ele re
 11.nao consigo fazer essa operacao direto no main "i = i<1;"
 
 12.falta mapear string
+RESOLVIDO
 
 13. falta mapear ARITH_ASSIG, LOGIC_ASSIG e SHIFT_ASSIG
 
@@ -38,3 +41,7 @@ acho que eh por conta da regra do pode ter o sinal ou nao, ai se tiver -1 ele re
 
 16. definição de arrays do tipo int[] a = new 
 RESOLVIDO
+
+17. Ananlisar chamada de metodos
+
+18
