@@ -48,9 +48,6 @@ shifts		"<<"|">>"|">>>"
 logic_assig	"&="|"^="|"|="		
 char_literal	['][^']{1}[']
 string_literal	["][^"]*["]			
-/* FALTA *
-coment		{"/*"}.*{"*"}
-coment_line	"//"*/
 
  
 
@@ -59,6 +56,7 @@ coment_line	"//"*/
 {col_delimit}+		{moveCol();}
 {line_delimit} 		{moveLine();}
 "//".*{line_delimit} 	{moveLine();}
+"/*"([^*]|[*]+[^/])*[*]+[/]	{moveCol();}
 ";"			{moveCol();return PT_VIRGULA;}
 "{"			{moveCol();return BEG;}
 "}"			{moveCol();return END;}
@@ -138,7 +136,6 @@ coment_line	"//"*/
 shift_assig	{moveCol();yylval.strval = strdup(yytext);return SHIFT_ASSIG;}
 arith_assig	{moveCol();yylval.strval = strdup(yytext);return ARIT_ASSIG;}
 logic_assig	{moveCol();yylval.strval = strdup(yytext);return LOGIC_ASSIG;}
-{coment_line}	{moveLine();}
 */
 
 int yywrap(){
