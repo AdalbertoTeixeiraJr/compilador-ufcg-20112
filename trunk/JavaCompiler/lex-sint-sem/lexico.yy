@@ -30,9 +30,11 @@ non_zero_digit	[1-9]
 int_literal	{signal}?{non_zero_digit}+{digit}*{int_type_suf}?
 int_type_suf	[lL]
 signal 		[+-]
-float_literal	{signal}?{digit}+.{digit}+{exp_indicator}?{float_sufix}?{digit}+{exp_indicator}?{float_sufix}? 
+float_literal	{signal}?{digit}+.{digit}+{exp_indicator}?{float_sufix}?{digit}+{exp_indicator}?{float_sufix}?
+double_literal	{signal}?{digit}+.{digit}+{exp_indicator}?{double_sufix}?{digit}+{exp_indicator}?{double_sufix}? 
 exp_indicator	[eE]
-float_sufix	[fFdD]
+float_sufix	[fF]
+double_sufix	[dDfF]
 hex_literal	0{hex_id}{hex_digit}*
 hex_id		[xX]
 hex_digit	[0-9A-F]
@@ -47,8 +49,6 @@ logic_assig	"&="|"^="|"|="
 char_literal	['][^']{1}[']
 string_literal	["][^"]*["]			
 /* FALTA *
-/*string_literal	"".*""**					
-string_literal	["][^"]*["]
 coment		{"/*"}.*{"*"}
 coment_line	"//"*/
 
@@ -128,6 +128,7 @@ coment_line	"//"*/
 {hex_literal} 		{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
 {oct_literal}		{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
 {float_literal} 	{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
+{double_literal} 	{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
 {id}			{moveCol();yylval.strval = strdup(yytext);return ID;}
 
 
@@ -137,8 +138,6 @@ coment_line	"//"*/
 shift_assig	{moveCol();yylval.strval = strdup(yytext);return SHIFT_ASSIG;}
 arith_assig	{moveCol();yylval.strval = strdup(yytext);return ARIT_ASSIG;}
 logic_assig	{moveCol();yylval.strval = strdup(yytext);return LOGIC_ASSIG;}
-string_literal 	{moveCol();yylval.strval = strdup(yytext);return STRING_LITERAL;}
-{char}		{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
 {coment_line}	{moveLine();}
 */
 
