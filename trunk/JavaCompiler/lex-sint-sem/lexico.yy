@@ -43,9 +43,11 @@ arith_assig	"*="|"/="|"+="|"-="|"%="				/* FALTA */
 shift_assig	"<<="|">>="|">>>="					/* FALTA */
 rel_oper	"<"|">"|"<="|">="|"instanceof"
 shifts		"<<"|">>"|">>>"
-logic_assig	"&="|"^="|"|="						/* FALTA *
+logic_assig	"&="|"^="|"|="		
+char_literal	['][^']{1}[']			
+/* FALTA *
 /*string_literal	"".*""**					
-/*char	       "'.{1}'"*
+string_literal	["][^"]*["]
 coment		{"/*"}.*{"*"}
 coment_line	"//"*/
 
@@ -115,6 +117,7 @@ coment_line	"//"*/
 "true"		{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
 "false"		{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
 "null"		{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
+{char_literal}	{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
 {equal_oper}	{updateCol();yylval.strval = strdup(yytext);return EQUALOP;}
 {rel_oper}	{updateCol();yylval.strval = strdup(yytext);return RELOP;}
 {shifts}	{updateCol();yylval.strval = strdup(yytext);return SHIFTS;}
