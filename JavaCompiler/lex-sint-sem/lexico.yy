@@ -16,8 +16,8 @@
 extern int column; // carrega do sintatico
 extern int line; // carrega do sintatico
 extern char* yytext;
-void updateCol();
-void updateLine();
+void moveCol();
+void moveLine();
 %}
 
 col_delimit	[ \r\t]
@@ -44,7 +44,8 @@ shift_assig	"<<="|">>="|">>>="					/* FALTA */
 rel_oper	"<"|">"|"<="|">="|"instanceof"
 shifts		"<<"|">>"|">>>"
 logic_assig	"&="|"^="|"|="		
-char_literal	['][^']{1}[']			
+char_literal	['][^']{1}[']
+string_literal	["][^"]*["]			
 /* FALTA *
 /*string_literal	"".*""**					
 string_literal	["][^"]*["]
@@ -55,88 +56,90 @@ coment_line	"//"*/
 
 %%
 
-{col_delimit}+	{updateCol();}
-{line_delimit}  {updateLine();}
-";"		{updateCol();return PT_VIRGULA;}
-"{"		{updateCol();return BEG;}
-"}"		{updateCol();return END;}
-"["		{updateCol();return OPEN_COLC;}
-"]"		{updateCol();return CLOSE_COLC;}
-"("		{updateCol();return OPEN_PAREN;}
-")"		{updateCol();return CLOSE_PAREN;}
-","		{updateCol();return VIRGULA;}
-"."		{updateCol();return POINT;}
-":"		{updateCol();return TWO_POINTS;}
-"+"		{updateCol();return PLUS;}
-"-"		{updateCol();return MINUS;}
-"*"		{updateCol();return MULT;}
-"/"		{updateCol();return DIV;}
-"%"		{updateCol();return MOD;}
-"=" 		{updateCol();return EQUAL;}
-"?"          	{updateCol();return QUESTION_MARK;}
-"||"		{updateCol();return OR_LOGIC;}
-"&&"		{updateCol();return AND_LOGIC;}
-"++"		{updateCol();return INCREMENT;}
-"--"		{updateCol();return DECREMENT;}
-"!"		{updateCol();return NOT;}
-"~"		{updateCol();return NOT_BIT;}
-"|"		{updateCol();return OR;}
-"^"		{updateCol();return OR_EXC;}
-"&"		{updateCol();return AND;}
-"if"	        {updateCol();return IF;}
-"else"	        {updateCol();return ELSE;}
-"while"         {updateCol();return WHILE;}
-"new"		{updateCol();return NEW;}
-"do"		{updateCol();return DO;}
-"for"           {updateCol();return FOR;}
-"break"         {updateCol();return BREAK;}
-"continue"      {updateCol();return CONTINUE;}
-"goto"          {updateCol();return GOTO;}
-"return"        {updateCol();return RETURN;}
-"case"          {updateCol();return CASE;}
-"switch"        {updateCol();return SWITCH;}
-"default"       {updateCol();return DEFAULT;}
-"transient"     {updateCol();return TRANSIENT;}
-"volatile"	{updateCol();return VOLATILE;}
-"final"		{updateCol();return FINAL;}
-"class"		{updateCol();return CLASS;}
-"static"        {updateCol();return STATIC;}
-"void"		{updateCol();return VOID;}
-"public"	{updateCol();return PUBLIC;}
-"main"		{updateCol();return MAIN;}
-"args"		{updateCol();return ARGS;}
-"int"		{updateCol();return TYPE_INT;}
-"short"		{updateCol();return TYPE_SHORT;}
-"long"		{updateCol();return TYPE_LONG;}
-"byte"		{updateCol();return TYPE_BYTE;}
-"boolean"	{updateCol();return TYPE_BOOL;}
-"float"		{updateCol();return TYPE_FLOAT;}
-"double"	{updateCol();return TYPE_DOUBLE;}
-"char"		{updateCol();return TYPE_CHAR;}
-"String"	{updateCol();return TYPE_STRING;}
-"true"		{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
-"false"		{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
-"null"		{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
-{char_literal}	{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
-{equal_oper}	{updateCol();yylval.strval = strdup(yytext);return EQUALOP;}
-{rel_oper}	{updateCol();yylval.strval = strdup(yytext);return RELOP;}
-{shifts}	{updateCol();yylval.strval = strdup(yytext);return SHIFTS;}
-{int_literal} 	{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
-{hex_literal} 	{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
-{oct_literal}	{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
-{float_literal} {updateCol();yylval.strval = strdup(yytext);return LITERAL;}
-{id}		{updateCol();yylval.strval = strdup(yytext);return ID;}
+{col_delimit}+		{moveCol();}
+{line_delimit} 		{moveLine();}
+"//".*{line_delimit} 	{moveLine();}
+";"			{moveCol();return PT_VIRGULA;}
+"{"			{moveCol();return BEG;}
+"}"			{moveCol();return END;}
+"["			{moveCol();return OPEN_COLC;}
+"]"			{moveCol();return CLOSE_COLC;}
+"("			{moveCol();return OPEN_PAREN;}
+")"			{moveCol();return CLOSE_PAREN;}
+","			{moveCol();return VIRGULA;}
+"."			{moveCol();return POINT;}
+":"			{moveCol();return TWO_POINTS;}
+"+"			{moveCol();return PLUS;}
+"-"			{moveCol();return MINUS;}
+"*"			{moveCol();return MULT;}
+"/"			{moveCol();return DIV;}
+"%"			{moveCol();return MOD;}
+"=" 			{moveCol();return EQUAL;}
+"?"          		{moveCol();return QUESTION_MARK;}
+"||"			{moveCol();return OR_LOGIC;}
+"&&"			{moveCol();return AND_LOGIC;}
+"++"			{moveCol();return INCREMENT;}
+"--"			{moveCol();return DECREMENT;}
+"!"			{moveCol();return NOT;}
+"~"			{moveCol();return NOT_BIT;}
+"|"			{moveCol();return OR;}
+"^"			{moveCol();return OR_EXC;}
+"&"			{moveCol();return AND;}
+"if"	        	{moveCol();return IF;}
+"else"	        	{moveCol();return ELSE;}
+"while"         	{moveCol();return WHILE;}
+"new"			{moveCol();return NEW;}
+"do"			{moveCol();return DO;}
+"for"           	{moveCol();return FOR;}
+"break"         	{moveCol();return BREAK;}
+"continue"      	{moveCol();return CONTINUE;}
+"goto"          	{moveCol();return GOTO;}
+"return"        	{moveCol();return RETURN;}
+"case"          	{moveCol();return CASE;}
+"switch"        	{moveCol();return SWITCH;}
+"default"       	{moveCol();return DEFAULT;}
+"transient"     	{moveCol();return TRANSIENT;}
+"volatile"		{moveCol();return VOLATILE;}
+"final"			{moveCol();return FINAL;}
+"class"			{moveCol();return CLASS;}
+"static"        	{moveCol();return STATIC;}
+"void"			{moveCol();return VOID;}
+"public"		{moveCol();return PUBLIC;}
+"main"			{moveCol();return MAIN;}
+"args"			{moveCol();return ARGS;}
+"int"			{moveCol();return TYPE_INT;}
+"short"			{moveCol();return TYPE_SHORT;}
+"long"			{moveCol();return TYPE_LONG;}
+"byte"			{moveCol();return TYPE_BYTE;}
+"boolean"		{moveCol();return TYPE_BOOL;}
+"float"			{moveCol();return TYPE_FLOAT;}
+"double"		{moveCol();return TYPE_DOUBLE;}
+"char"			{moveCol();return TYPE_CHAR;}
+"String"		{moveCol();return TYPE_STRING;}
+"true"			{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
+"false"			{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
+"null"			{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
+{char_literal}		{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
+{string_literal}	{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
+{equal_oper}		{moveCol();yylval.strval = strdup(yytext);return EQUALOP;}
+{rel_oper}		{moveCol();yylval.strval = strdup(yytext);return RELOP;}
+{shifts}		{moveCol();yylval.strval = strdup(yytext);return SHIFTS;}
+{int_literal} 		{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
+{hex_literal} 		{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
+{oct_literal}		{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
+{float_literal} 	{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
+{id}			{moveCol();yylval.strval = strdup(yytext);return ID;}
 
 
 
 %%
 /* TA FALTANDO
-shift_assig	{updateCol();yylval.strval = strdup(yytext);return SHIFT_ASSIG;}
-arith_assig	{updateCol();yylval.strval = strdup(yytext);return ARIT_ASSIG;}
-logic_assig	{updateCol();yylval.strval = strdup(yytext);return LOGIC_ASSIG;}
-string_literal 	{updateCol();yylval.strval = strdup(yytext);return STRING_LITERAL;}
-{char}		{updateCol();yylval.strval = strdup(yytext);return LITERAL;}
-{coment_line}	{updateLine();}
+shift_assig	{moveCol();yylval.strval = strdup(yytext);return SHIFT_ASSIG;}
+arith_assig	{moveCol();yylval.strval = strdup(yytext);return ARIT_ASSIG;}
+logic_assig	{moveCol();yylval.strval = strdup(yytext);return LOGIC_ASSIG;}
+string_literal 	{moveCol();yylval.strval = strdup(yytext);return STRING_LITERAL;}
+{char}		{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
+{coment_line}	{moveLine();}
 */
 
 int yywrap(){
@@ -144,13 +147,13 @@ int yywrap(){
 }
 
 
-void updateLine(){
+void moveLine(){
    /**segue para proxima linha e reinicia a coluna**/
    line++;
    column = 1;
 }
 
-void updateCol(){
+void moveCol(){
    /**segue para proxima coluna**/
    column += yyleng;
 }
