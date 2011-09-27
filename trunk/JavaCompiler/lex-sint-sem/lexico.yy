@@ -26,7 +26,8 @@ id              {letter_no_digit}+({letter})*
 letter          [A-Za-z_0-9]
 letter_no_digit [A-Za-z_]
 digit		[0-9]
-int_literal	{signal}?{digit}*{int_type_suf}?
+non_zero_digit	[1-9]
+int_literal	{signal}?{non_zero_digit}+{digit}*{int_type_suf}?
 int_type_suf	[lL]
 signal 		[+-]
 float_literal	{digit}+.{digit}+{exp_indicator}?{float_sufix}?{digit}+{exp_indicator}?{float_sufix}? 
@@ -38,12 +39,12 @@ hex_digit	[0-9A-F]
 oct_literal	0{oct_digit}*
 oct_digit	[0-7]
 equal_oper	"=="|"!="
-arith_assig	"*="|"/="|"+="|"-="|"%="
-shift_assig	"<<="|">>="|">>>="
+arith_assig	"*="|"/="|"+="|"-="|"%="				/* FALTA */
+shift_assig	"<<="|">>="|">>>="					/* FALTA */
 rel_oper	"<"|">"|"<="|">="|"instanceof"
 shifts		"<<"|">>"|">>>"
-logic_assig	"&="|"^="|"|="
-/*string_literal	"".*""**/
+logic_assig	"&="|"^="|"|="						/* FALTA */
+/*string_literal	"".*""**/					
 
 
  
@@ -129,6 +130,10 @@ logic_assig	"&="|"^="|"|="
 arith_assig	{updateCol();yylval.strval = strdup(yytext);return ARIT_ASSIG;}
 logic_assig	{updateCol();yylval.strval = strdup(yytext);return LOGIC_ASSIG;}
 string_literal 	{updateCol();yylval.strval = strdup(yytext);return STRING_LITERAL;}*/
+
+int yywrap(){
+   return 1;
+}
 
 
 void updateLine(){

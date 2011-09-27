@@ -15,7 +15,6 @@
 ###################################
 
 CC      = gcc
-IFLAGS  = -I .
 LEX     = flex
 YACC    = bison -y -v
 REPORT  = --report=all 
@@ -24,7 +23,7 @@ sintatico = sintatico
 tk      = tk.h
 
 java_compiler: $(lexico) $(sintatico)
-	$(CC) $(IFLAGS) -o$@ $^ -ll 
+	$(CC) -o$@ $^  
 
 $(lexico): $(lexico).yy
 	$(LEX) -o$(lexico).c $^

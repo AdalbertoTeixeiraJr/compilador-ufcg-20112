@@ -1,14 +1,36 @@
 PROBLEMAS:
 
 
-1. na declaracao de variaveis a , é optativa, logo "int a b c;" funciona!
+1. na declaracao de variaveis a ,(virgula) é optativa, logo "int a b c;" funciona!
+RESOLVIDO
 
 2. se colocar num int --+++1 ele fica como +1, aceita mais de 1 sinal
 
 3. se colocar int a = 0561GDC ele nao dá erro, reconhece 0561 como literal (octal) e GDC como ID
+depende de como testar...
 
 4. a definicao de arrays nao ta valendo a VIRGULA
+RESOLVIDO
 
-5. se aparecerem 2 virgulas seguidas eh pra sair do array?? pra ele eh isso...
+5.ele aceita 2 virgulas no final do array {1,2,3,,} não tá valendo
+RESOLVIDO ... nao vale array assim...
 
 6. Tá faltando precedência com parênteses??? 
+
+7. Falta vírgula nos parametros de um metodo.
+RESOLVIDO
+
+8. na declaração de variaveis de classes tem que ser FINAL, TRANSIENT ou VOLATILE, se nao ele da erro.
+
+9. Comentarios no codigo nao tao mapeados...
+
+10. Ele nao reconhece expressoes assim: 1+1, tem que ser 1 + 1, 1-1 tem que ser 1 - 1
+acho que eh por conta da regra do pode ter o sinal ou nao, ai se tiver -1 ele reconhece como um literal
+
+11.nao consigo fazer essa operacao direto no main "i = i<1;"
+
+12.falta mapear string
+
+13. falta mapear ARITH_ASSIG, LOGIC_ASSIG e SHIFT_ASSIG
+
+14. falta mapear CHAR

@@ -51,8 +51,7 @@ identifier :	ID {printf("ID - %s\n", $1);};
 
 class_body :	BEG {printf("{\n");} class_body_declaration END {printf("}\n");};
 
-class_body_declaration :	STATIC {printf("STATIC\n");} class_member_declaration					/* FALTA VERIFICAR class_member_declaration*/
-                       |	static_initializer;
+class_body_declaration :	 class_member_declaration_opt static_initializer;					/* FALTA VERIFICAR class_member_declaration*/	
 
 static_initializer :	PUBLIC {printf("public\n");} VOID {printf("void\n");} MAIN {printf("main\n");} OPEN_PAREN {printf("(\n");} TYPE_STRING {printf("String\n");} ARGS {printf("args\n");} OPEN_COLC 
 				{printf("[\n");} CLOSE_COLC {printf("]\n");} CLOSE_PAREN {printf(")\n");} block;
@@ -66,7 +65,7 @@ block_statements_:	block_statement block_statements_ 		/* FALTA VERIFICAR statem
                 |	/** empty **/;
         
 block_statement :	local_variable_declaration_statement 
-                |       statement;											
+	|       statement;									
 
 local_variable_declaration_statement : local_variable_declaration PT_VIRGULA {printf(";\n");} local_variable_declaration_;
 
@@ -94,9 +93,9 @@ floating_point_type :	TYPE_FLOAT {printf("TYPE_FLOAT\n");}
 
 variable_declarators :          variable_declarator variable_declarators_;
 
-variable_declarator :           variable_declarator_id variable_declarator_ virgula_opt;			/** Pode declarar variaveis de mesmo tipo antes do ; **/
+variable_declarator :           variable_declarator_id variable_declarator_ ;			/** Pode declarar variaveis de mesmo tipo antes do ; **/
 
-variable_declarators_ :         variable_declarator variable_declarators_
+variable_declarators_ :         VIRGULA {printf("VIRGULA\n");} variable_declarator variable_declarators_
                         |       /** empty **/;
 
 variable_declarator_ :          EQUAL {printf("=\n");} variable_initializer 
@@ -114,10 +113,10 @@ array_initializer :	BEG  {printf("{\n");} variable_initializers  virgula_opt END
 virgula_opt :	VIRGULA {printf("VIRGULA\n");}
 	|       /** empty **/;
 
-variable_initializers :         variable_initializer virgula_opt variable_initializers_     
+variable_initializers :         variable_initializer variable_initializers_     
                         |       variable_initializers_;
 
-variable_initializers_ :        variable_initializer virgula_opt variable_initializers_ 
+variable_initializers_ :        VIRGULA {printf("VIRGULA\n");}variable_initializer variable_initializers_ 
                         |       /** empty **/; 
 
 expression : assignment_expression;
@@ -251,7 +250,7 @@ postfix_expression_ : INCREMENT {printf("INCREMENT\n");} postfix_expression_
                         | /** empty **/;
 
 statement :	statement_without_trailing_substatement
-	|       identifier TWO_POINTS statement
+	|       identifier TWO_POINTS {printf(":\n");} statement
 	|       IF {printf("IF\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} statement      
 	|       IF {printf("IF\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} statement_no_short_if ELSE {printf("ELSE\n");} statement 
 	|       WHILE {printf("WHILE\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} statement 
@@ -349,8 +348,14 @@ statement_no_short_if :         statement_without_trailing_substatement
                         |       WHILE {printf("WHILE\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} statement_no_short_if 
                         |       FOR {printf("FOR\n");} OPEN_PAREN {printf("(\n");} for_init PT_VIRGULA {printf(";\n");} expression_opt PT_VIRGULA {printf(";\n");} for_update_opt CLOSE_PAREN {printf(")\n");} statement_no_short_if;
 
-class_member_declaration :      method_declaration
-			|	field_declaration;
+class_member_declaration_opt : class_member_declaration class_member_declaration_
+			| /** empty **/;
+
+class_member_declaration_ : class_member_declaration class_member_declaration_
+			| /** empty **/;
+
+class_member_declaration :      STATIC {printf("STATIC\n");} method_declaration
+			|	STATIC {printf("STATIC\n");} field_declaration;
 
 method_declaration :	method_header method_body;
 
@@ -359,8 +364,7 @@ method_header :	result_type method_declarator;
 result_type :	primitive_type 
 	|       VOID {printf("VOID\n");};
 
-method_declarator :	identifier OPEN_PAREN {printf("(\n");} formal_parameter_list CLOSE_PAREN {printf(")\n");}           
-	|       /** empty **/;
+method_declarator :	identifier OPEN_PAREN {printf("(\n");} formal_parameter_list CLOSE_PAREN {printf(")\n");};
 
 method_body :	block 
 	|	PT_VIRGULA {printf(";\n");}              
@@ -369,12 +373,12 @@ method_body :	block
 formal_parameter_list :	formal_parameter formal_parameter_list_         
 		|       formal_parameter_list_;
 
-formal_parameter_list_ :formal_parameter formal_parameter_list_
+formal_parameter_list_ : VIRGULA {printf("VIRGULA\n");} formal_parameter formal_parameter_list_
 		|	/** empty **/;
 
 formal_parameter :	primitive_type variable_declarator_id;
 
-field_declaration :	field_modifiers primitive_type variable_declarators;
+field_declaration :	field_modifiers primitive_type variable_declarators PT_VIRGULA {printf(";\n");};
 
 field_modifiers :	field_modifier field_modifiers_                 
                 |       field_modifiers_;
