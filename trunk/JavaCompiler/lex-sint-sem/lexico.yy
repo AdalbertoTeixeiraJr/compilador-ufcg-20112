@@ -40,12 +40,12 @@ hex_id		[xX]
 hex_digit	[0-9A-F]
 oct_literal	0{oct_digit}*
 oct_digit	[0-7]
-equal_oper	"=="|"!="
-arith_assig	"*="|"/="|"+="|"-="|"%="				/* FALTA */
-shift_assig	"<<="|">>="|">>>="					/* FALTA */
+equal_oper	"=="|"!="			
 rel_oper	"<"|">"|"<="|">="|"instanceof"
 shifts		"<<"|">>"|">>>"
-logic_assig	"&="|"^="|"|="		
+logic_assig	"&="|"^="|"|="
+arith_assig	"*="|"/="|"+="|"-="|"%="				
+shift_assig	"<<="|">>="|">>>="		
 char_literal	['][^']{1}[']
 string_literal	["][^"]*["]			
 
@@ -119,6 +119,9 @@ string_literal	["][^"]*["]
 "null"			{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
 {char_literal}		{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
 {string_literal}	{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
+{logic_assig}		{moveCol();yylval.strval = strdup(yytext);return LOGIC_ASSIGN;}
+{shift_assig}		{moveCol();yylval.strval = strdup(yytext);return SHIFT_ASSIGN;}
+{arith_assig}		{moveCol();yylval.strval = strdup(yytext);return ARITH_ASSIGN;}
 {equal_oper}		{moveCol();yylval.strval = strdup(yytext);return EQUALOP;}
 {rel_oper}		{moveCol();yylval.strval = strdup(yytext);return RELOP;}
 {shifts}		{moveCol();yylval.strval = strdup(yytext);return SHIFTS;}
@@ -133,9 +136,8 @@ string_literal	["][^"]*["]
 
 %%
 /* TA FALTANDO
-shift_assig	{moveCol();yylval.strval = strdup(yytext);return SHIFT_ASSIG;}
-arith_assig	{moveCol();yylval.strval = strdup(yytext);return ARIT_ASSIG;}
-logic_assig	{moveCol();yylval.strval = strdup(yytext);return LOGIC_ASSIG;}
+
+
 */
 
 int yywrap(){
