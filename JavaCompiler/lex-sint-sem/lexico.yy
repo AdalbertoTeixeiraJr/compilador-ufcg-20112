@@ -30,7 +30,7 @@ non_zero_digit	[1-9]
 int_literal	{signal}?{non_zero_digit}+{digit}*{int_type_suf}?
 int_type_suf	[lL]
 signal 		[+-]
-float_literal	{digit}+.{digit}+{exp_indicator}?{float_sufix}?{digit}+{exp_indicator}?{float_sufix}? 
+float_literal	{signal}?{digit}+.{digit}+{exp_indicator}?{float_sufix}?{digit}+{exp_indicator}?{float_sufix}? 
 exp_indicator	[eE]
 float_sufix	[fFdD]
 hex_literal	0{hex_id}{hex_digit}*
