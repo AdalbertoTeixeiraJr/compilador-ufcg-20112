@@ -13,7 +13,7 @@
 #include "tokens.h"
 #include <string.h>
 extern int column; // importa variavel do sintatico
-extern int line; // importa do sintatico
+extern int line; // importa variavel do sintatico
 extern char* yytext;
 void moveCol();
 void moveLine();

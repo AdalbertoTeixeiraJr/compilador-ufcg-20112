@@ -49,50 +49,50 @@
      EQUAL = 265,
      VIRGULA = 266,
      POINT = 267,
-     TYPE_INT = 268,
-     TYPE_SHORT = 269,
-     TYPE_LONG = 270,
-     TYPE_BYTE = 271,
-     TYPE_BOOL = 272,
-     TYPE_FLOAT = 273,
-     TYPE_DOUBLE = 274,
-     TYPE_CHAR = 275,
-     TYPE_STRING = 276,
-     QUESTION_MARK = 277,
-     TWO_POINTS = 278,
-     OR_LOGIC = 279,
-     AND_LOGIC = 280,
-     OPEN_PAREN = 281,
-     CLOSE_PAREN = 282,
-     NEW = 283,
-     OR = 284,
-     OR_EXC = 285,
-     AND = 286,
-     PLUS = 287,
-     MINUS = 288,
-     MULT = 289,
-     DIV = 290,
-     MOD = 291,
-     INCREMENT = 292,
-     DECREMENT = 293,
-     NOT = 294,
-     NOT_BIT = 295,
-     FOR = 296,
-     IF = 297,
-     ELSE = 298,
-     WHILE = 299,
-     CASE = 300,
-     SWITCH = 301,
-     DEFAULT = 302,
-     DO = 303,
-     BREAK = 304,
-     CONTINUE = 305,
-     GOTO = 306,
-     RETURN = 307,
-     VOID = 308,
-     MAIN = 309,
-     ARGS = 310,
-     PUBLIC = 311,
+     QUESTION_MARK = 268,
+     TWO_POINTS = 269,
+     OR_LOGIC = 270,
+     AND_LOGIC = 271,
+     OPEN_PAREN = 272,
+     CLOSE_PAREN = 273,
+     NEW = 274,
+     OR = 275,
+     OR_EXC = 276,
+     AND = 277,
+     PLUS = 278,
+     MINUS = 279,
+     MULT = 280,
+     DIV = 281,
+     MOD = 282,
+     INCREMENT = 283,
+     DECREMENT = 284,
+     NOT = 285,
+     NOT_BIT = 286,
+     FOR = 287,
+     IF = 288,
+     ELSE = 289,
+     WHILE = 290,
+     CASE = 291,
+     SWITCH = 292,
+     DEFAULT = 293,
+     DO = 294,
+     BREAK = 295,
+     CONTINUE = 296,
+     GOTO = 297,
+     RETURN = 298,
+     VOID = 299,
+     MAIN = 300,
+     ARGS = 301,
+     PUBLIC = 302,
+     TYPE_INT = 303,
+     TYPE_SHORT = 304,
+     TYPE_LONG = 305,
+     TYPE_BYTE = 306,
+     TYPE_BOOL = 307,
+     TYPE_FLOAT = 308,
+     TYPE_DOUBLE = 309,
+     TYPE_CHAR = 310,
+     TYPE_STRING = 311,
      FINAL = 312,
      TRANSIENT = 313,
      VOLATILE = 314,
@@ -117,50 +117,50 @@
 #define EQUAL 265
 #define VIRGULA 266
 #define POINT 267
-#define TYPE_INT 268
-#define TYPE_SHORT 269
-#define TYPE_LONG 270
-#define TYPE_BYTE 271
-#define TYPE_BOOL 272
-#define TYPE_FLOAT 273
-#define TYPE_DOUBLE 274
-#define TYPE_CHAR 275
-#define TYPE_STRING 276
-#define QUESTION_MARK 277
-#define TWO_POINTS 278
-#define OR_LOGIC 279
-#define AND_LOGIC 280
-#define OPEN_PAREN 281
-#define CLOSE_PAREN 282
-#define NEW 283
-#define OR 284
-#define OR_EXC 285
-#define AND 286
-#define PLUS 287
-#define MINUS 288
-#define MULT 289
-#define DIV 290
-#define MOD 291
-#define INCREMENT 292
-#define DECREMENT 293
-#define NOT 294
-#define NOT_BIT 295
-#define FOR 296
-#define IF 297
-#define ELSE 298
-#define WHILE 299
-#define CASE 300
-#define SWITCH 301
-#define DEFAULT 302
-#define DO 303
-#define BREAK 304
-#define CONTINUE 305
-#define GOTO 306
-#define RETURN 307
-#define VOID 308
-#define MAIN 309
-#define ARGS 310
-#define PUBLIC 311
+#define QUESTION_MARK 268
+#define TWO_POINTS 269
+#define OR_LOGIC 270
+#define AND_LOGIC 271
+#define OPEN_PAREN 272
+#define CLOSE_PAREN 273
+#define NEW 274
+#define OR 275
+#define OR_EXC 276
+#define AND 277
+#define PLUS 278
+#define MINUS 279
+#define MULT 280
+#define DIV 281
+#define MOD 282
+#define INCREMENT 283
+#define DECREMENT 284
+#define NOT 285
+#define NOT_BIT 286
+#define FOR 287
+#define IF 288
+#define ELSE 289
+#define WHILE 290
+#define CASE 291
+#define SWITCH 292
+#define DEFAULT 293
+#define DO 294
+#define BREAK 295
+#define CONTINUE 296
+#define GOTO 297
+#define RETURN 298
+#define VOID 299
+#define MAIN 300
+#define ARGS 301
+#define PUBLIC 302
+#define TYPE_INT 303
+#define TYPE_SHORT 304
+#define TYPE_LONG 305
+#define TYPE_BYTE 306
+#define TYPE_BOOL 307
+#define TYPE_FLOAT 308
+#define TYPE_DOUBLE 309
+#define TYPE_CHAR 310
+#define TYPE_STRING 311
 #define FINAL 312
 #define TRANSIENT 313
 #define VOLATILE 314
