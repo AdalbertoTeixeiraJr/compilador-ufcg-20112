@@ -404,7 +404,8 @@ formal_parameter_list :	formal_parameter formal_parameter_list_
 formal_parameter_list_ : VIRGULA {printf("VIRGULA\n");} formal_parameter formal_parameter_list_
 		|	/** empty **/;
 
-formal_parameter :	primitive_type variable_declarator_id;
+formal_parameter :	primitive_type variable_declarator_id
+	|	array_type variable_declarator_id;
 
 field_declaration :	field_modifiers_ primitive_type variable_declarators PT_VIRGULA {printf(";\n");}
 		|	field_modifiers_ primitive_type OPEN_COLC {printf("[\n");} CLOSE_COLC {printf("]\n");} variable_declarators PT_VIRGULA {printf(";\n");};
