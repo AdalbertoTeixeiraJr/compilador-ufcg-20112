@@ -13,7 +13,8 @@ RESOLVIDO
 5.ele aceita 2 virgulas no final do array {1,2,3,,} não tá valendo
 RESOLVIDO ... nao vale array assim...
 
-6. Tá faltando precedência com parênteses??? 
+6. Tá faltando precedência com parênteses???
+RESOLVIDO 
 
 7. Falta vírgula nos parametros de um metodo.
 RESOLVIDO
