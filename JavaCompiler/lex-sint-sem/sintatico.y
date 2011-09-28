@@ -163,8 +163,20 @@ dims: dim_exprs
 
 
 conditional_expression : conditional_or_expression 
-                        | OPEN_PAREN conditional_or_expression CLOSE_PAREN
+                        | OPEN_PAREN conditional_or_expression CLOSE_PAREN conditional_opt
 			| conditional_or_expression QUESTION_MARK {printf("?\n");} conditional_expression TWO_POINTS {printf(":\n");} conditional_expression;
+
+conditional_opt: conditional_or_expression_ 
+	|	conditional_and_expression_
+	|	inclusive_or_expression_
+	|	exclusive_or_expression_
+	|	and_expression_	
+	|	equality_expression_
+	|	relational_expression_
+	|	shift_expression_
+	|	additive_expression_
+	|	multiplicative_expression_
+	|	/* empty */;
 
 
 conditional_or_expression : conditional_and_expression conditional_or_expression_
