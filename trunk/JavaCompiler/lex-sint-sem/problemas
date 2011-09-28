@@ -28,6 +28,7 @@ RESOLVIDO
 acho que eh por conta da regra do pode ter o sinal ou nao, ai se tiver -1 ele reconhece como um literal
 2. se colocar num int --+++1 ele fica como +1, aceita mais de 1 sinal
 
+
 11.nao consigo fazer essa operacao direto no main "i = i<1;"
 
 12.falta mapear string
@@ -35,7 +36,6 @@ RESOLVIDO
 
 13. falta mapear ARITH_ASSIG, LOGIC_ASSIG e SHIFT_ASSIG
 RESOLVIDO
-
 
 14. falta mapear CHAR
 RESOLVIDO
@@ -48,4 +48,6 @@ RESOLVIDO
 
 17. Ananlisar chamada de metodos
 
-18
+18. IF else resolvidos... sem nenhuma regra... dava regra useless...
+
+
