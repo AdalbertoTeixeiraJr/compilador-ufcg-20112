@@ -164,56 +164,67 @@ dims: dim_exprs
 
 
 conditional_expression : conditional_or_expression 
-                        | conditional_or_expression QUESTION_MARK {printf("?\n");} conditional_expression TWO_POINTS {printf(":\n");} conditional_expression;
+                        | OPEN_PAREN conditional_or_expression CLOSE_PAREN
+			| conditional_or_expression QUESTION_MARK {printf("?\n");} conditional_expression TWO_POINTS {printf(":\n");} conditional_expression;
 
 
-conditional_or_expression : conditional_and_expression conditional_or_expression_;
+conditional_or_expression : conditional_and_expression conditional_or_expression_
+		|	conditional_and_expression OPEN_PAREN conditional_expression CLOSE_PAREN;
 
 conditional_or_expression_ : OR_LOGIC {printf("OR_LOGIC\n");} conditional_and_expression conditional_or_expression_ 
                         | /** empty **/;
 
-conditional_and_expression : inclusive_or_expression conditional_and_expression_;
+conditional_and_expression : inclusive_or_expression conditional_and_expression_
+		|	inclusive_or_expression OPEN_PAREN conditional_expression CLOSE_PAREN;
 
 conditional_and_expression_ : AND_LOGIC {printf("AND_LOGIC\n");} inclusive_or_expression conditional_and_expression_ 
 			| /** empty **/;
 
-inclusive_or_expression : exclusive_or_expression  inclusive_or_expression_     ;
+inclusive_or_expression : exclusive_or_expression  inclusive_or_expression_ 
+		|	exclusive_or_expression  OPEN_PAREN conditional_expression CLOSE_PAREN    ;
 
 inclusive_or_expression_ : OR {printf("OR\n");} exclusive_or_expression inclusive_or_expression_ 
                         | /** empty **/;
 
-exclusive_or_expression : and_expression exclusive_or_expression_      ;
+exclusive_or_expression : and_expression exclusive_or_expression_
+		|	and_expression OPEN_PAREN conditional_expression CLOSE_PAREN;
 
 exclusive_or_expression_ : OR_EXC {printf("OR_EXC\n");}and_expression exclusive_or_expression_ 
                         | /** empty **/;
 
-and_expression : equality_expression and_expression_    ;
+and_expression : equality_expression and_expression_
+		|	equality_expression OPEN_PAREN conditional_expression CLOSE_PAREN   ;
 
 and_expression_ : AND {printf("AND\n");} equality_expression and_expression_ 
                         | /** empty **/;
 
-equality_expression : relational_expression equality_expression_;
+equality_expression : relational_expression equality_expression_
+		|	relational_expression OPEN_PAREN conditional_expression CLOSE_PAREN;
 
 equality_expression_ : EQUALOP {printf("EQUALOP\n");} relational_expression equality_expression_
                         |       /** empty **/;
 
-relational_expression : shift_expression relational_expression_;
+relational_expression : shift_expression relational_expression_
+		|	shift_expression OPEN_PAREN conditional_expression CLOSE_PAREN;
 
 relational_expression_ : RELOP {printf("RELOP\n");} shift_expression relational_expression_ 
                         | /** empty **/;
 
-shift_expression : additive_expression shift_expression_;
+shift_expression : additive_expression shift_expression_
+		|	additive_expression OPEN_PAREN conditional_expression CLOSE_PAREN;
 
 shift_expression_ : SHIFTS {printf("SHIFTS\n");} additive_expression shift_expression_ 
                         | /** empty **/;
 
-additive_expression : multiplicative_expression additive_expression_;
+additive_expression : multiplicative_expression additive_expression_
+		|	multiplicative_expression OPEN_PAREN conditional_expression CLOSE_PAREN;
 
 additive_expression_ : PLUS {printf("PLUS\n");} multiplicative_expression additive_expression_
                         | MINUS {printf("MINUS\n");}multiplicative_expression additive_expression_
 			| /** empty **/;
 
-multiplicative_expression : unary_expression multiplicative_expression_         ;
+multiplicative_expression : unary_expression multiplicative_expression_  
+			|    unary_expression OPEN_PAREN conditional_expression  CLOSE_PAREN  ;
 
 multiplicative_expression_ : MULT {printf("MULT\n");} unary_expression multiplicative_expression_ 
                         | DIV {printf("DIV\n");} unary_expression multiplicative_expression_ 
@@ -227,7 +238,8 @@ unary_expression : 	INCREMENT {printf("INCREMENT\n");} unary_expression
 		|	postfix_expression 
 		|	NOT {printf("NOT\n");} unary_expression 
 		|	NOT_BIT {printf("NOT_BIT\n");} unary_expression 
-		|	cast_expression;
+		|	cast_expression
+		|	OPEN_PAREN conditional_expression CLOSE_PAREN;
 
 cast_expression : OPEN_PAREN {printf("(\n");} primitive_type CLOSE_PAREN {printf(")\n");}unary_expression 
 		| OPEN_PAREN {printf("(\n");} reference_type CLOSE_PAREN {printf(")\n");} unary_expression_not_plus_minus;
