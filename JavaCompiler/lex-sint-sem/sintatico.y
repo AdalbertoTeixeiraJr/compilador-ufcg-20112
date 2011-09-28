@@ -271,18 +271,14 @@ statement_expression_list_ : VIRGULA statement_expression statement_expression_l
 
 statement_expression :          primary_no_new_array assignment_operator assignment_expression /** modifiquei pq tirei a regra assignment **/
                         |       preincrement_expression 
-                        |       postincrement_expression 
-                        |       predecrement_expression 
-                        |       postdecrement_expression 
-                        |       method_invocation ;
+                        |       post_incr_decrement_expression 
+                        |       predecrement_expression;
 
 preincrement_expression : INCREMENT {printf("INCREMENT\n");} unary_expression;
 
-postincrement_expression : postfix_expression INCREMENT {printf("INCREMENT\n");};
+post_incr_decrement_expression : postfix_expression;
 
 predecrement_expression : DECREMENT {printf("DECREMENT\n");} unary_expression;
-
-postdecrement_expression : postfix_expression DECREMENT {printf("DECREMENT\n");};
 
 
 method_invocation : 	identifier OPEN_PAREN {printf("(\n");} argument_list CLOSE_PAREN {printf(")\n");}
