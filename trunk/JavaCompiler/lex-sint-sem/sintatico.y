@@ -252,10 +252,12 @@ postfix_expression_ : INCREMENT {printf("INCREMENT\n");} postfix_expression_
 
 statement :	statement_without_trailing_substatement
 	|       identifier TWO_POINTS {printf(":\n");} statement
-	|       IF {printf("IF\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} statement      
-	|       IF {printf("IF\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} statement_no_short_if ELSE {printf("ELSE\n");} statement 
+	|       IF {printf("IF\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} optional_else
 	|       WHILE {printf("WHILE\n");} OPEN_PAREN {printf("(\n");} expression CLOSE_PAREN {printf(")\n");} statement 
 	|       FOR {printf("FOR\n");} OPEN_PAREN {printf("(\n");} for_init PT_VIRGULA {printf(";\n");} expression_opt PT_VIRGULA {printf(";\n");} for_update_opt CLOSE_PAREN  {printf(")\n");}statement;
+
+optional_else : statement
+	|	statement_no_short_if ELSE {printf("ELSE\n");} statement;
 
 for_init : statement_expression_list 
 	|       local_variable_declaration 
