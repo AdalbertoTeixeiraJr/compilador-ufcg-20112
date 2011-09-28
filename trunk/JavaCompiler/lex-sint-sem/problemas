@@ -30,6 +30,7 @@ acho que eh por conta da regra do pode ter o sinal ou nao, ai se tiver -1 ele re
 
 
 11.nao consigo fazer essa operacao direto no main "i = i<1;"
+RESOLVIDO
 
 12.falta mapear string
 RESOLVIDO
@@ -47,7 +48,12 @@ RESOLVIDO
 RESOLVIDO
 
 17. Ananlisar chamada de metodos
+RESOLVIDO
 
-18. IF else resolvidos... sem nenhuma regra... dava regra useless...
+18. IF else sem nenhuma regra... dava regra useless...
+RESOLVIDO
+
+19. Cast deu erro.
+RESOLVIDO
 
 
