@@ -394,7 +394,7 @@ result_type :	primitive_type
 
 method_declarator :	identifier OPEN_PAREN {printf("(\n");} formal_parameter_list CLOSE_PAREN {printf(")\n");};
 
-method_body :	block PT_VIRGULA
+method_body :	block
 	|	PT_VIRGULA {printf(";\n");}              
 	|	/** empty **/;
 
