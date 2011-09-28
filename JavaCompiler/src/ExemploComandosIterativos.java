@@ -16,7 +16,7 @@ class ExemploComandosIterativos {
 	 */
 	static int sumArray(int[] values) {
 		int totalSum = 0;
-		for (int value : values) {
+		for (int value=values.length(); value >= 0; value--) {
 			totalSum += value;
 		}
 		return totalSum;
@@ -51,10 +51,10 @@ class ExemploComandosIterativos {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(ExemploComandosIterativos.sum(4, 6));
+		ExemploComandosIterativos.sum(4, 6);
 		int[] array = { 6, 4, 5 };
-		System.out.println(ExemploComandosIterativos.sumArray(array));
-		System.out.println(ExemploComandosIterativos.sumLastTwo(1, 7, 40));
-		System.out.println(ExemploComandosIterativos.exponential(2, 3));
+		ExemploComandosIterativos.sumArray(array);
+		ExemploComandosIterativos.sumLastTwo(1, 7, 40);
+		ExemploComandosIterativos.exponential(2, 3);
 	}
 }

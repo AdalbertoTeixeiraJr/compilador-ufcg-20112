@@ -9,8 +9,8 @@ class ExemploSequenciadoresEscape {
 			if (mult > 10)
 				break;
 			else {
-				System.out.println(value + " * " + mult + " = "
-						+ (value * mult));
+				String test = value + " * " + mult + " = "
+						+ (value * mult);
 				mult++;
 			}
 		}
@@ -31,8 +31,8 @@ class ExemploSequenciadoresEscape {
 					if (mult > 10) {
 						break validation2;
 					} else {
-						System.out.println(value + " * " + mult + " = "
-								+ (value * mult));
+						String pk = value + " * " + mult + " = "
+								+ (value * mult);
 						mult++;
 					}
 				}
@@ -54,8 +54,9 @@ class ExemploSequenciadoresEscape {
 		for (int i = initialValue; i <= finalValue; i++) {
 			if (i == 0)
 				continue;
-			else
-				System.out.println("Square (" + i + ") : " + (i * i));
+			else {
+				String method = "Square (" + i + ") : " + (i * i);
+			}
 		}
 	}
 
@@ -63,7 +64,7 @@ class ExemploSequenciadoresEscape {
 
 		ExemploSequenciadoresEscape.calculateTable(4);
 		ExemploSequenciadoresEscape.increaseGrade(-1);
-		System.out.println(ExemploSequenciadoresEscape.calculateSquare(7));
+		ExemploSequenciadoresEscape.calculateSquare(7);
 		ExemploSequenciadoresEscape.calculateSquares(-4, 7);
 	}
 }

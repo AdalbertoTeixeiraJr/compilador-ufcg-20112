@@ -1,6 +1,6 @@
 class ExemploExpressoesRelacionais {
 
-	static int[] notas = { 8, 7, 7, 6, 10, 3 };
+	static final int[] notas = { 8, 7, 7, 6, 10, 3 };
 
 	/**
 	 * >=, <=

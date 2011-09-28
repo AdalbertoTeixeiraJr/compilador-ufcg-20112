@@ -165,6 +165,8 @@ dims: dim_exprs
 conditional_expression : conditional_or_expression 
                         | OPEN_PAREN conditional_or_expression CLOSE_PAREN conditional_opt
 			| conditional_or_expression QUESTION_MARK {printf("?\n");} conditional_expression TWO_POINTS {printf(":\n");} conditional_expression;
+			| OPEN_PAREN conditional_or_expression CLOSE_PAREN QUESTION_MARK {printf("?\n");} conditional_expression TWO_POINTS {printf(":\n");} conditional_expression;
+
 
 conditional_opt: conditional_or_expression_ 
 	|	conditional_and_expression_
@@ -307,7 +309,8 @@ predecrement_expression : DECREMENT {printf("DECREMENT\n");} unary_expression;
 
 
 method_invocation : 	identifier OPEN_PAREN {printf("(\n");} argument_list CLOSE_PAREN {printf(")\n");}
-		|	field_access OPEN_PAREN {printf("(\n");} argument_list CLOSE_PAREN {printf(")\n");};
+		|	field_access OPEN_PAREN {printf("(\n");} argument_list CLOSE_PAREN {printf(")\n");}
+		|	LITERAL POINT identifier OPEN_PAREN {printf("(\n");} argument_list CLOSE_PAREN {printf(")\n");};
 
 expression_opt : expression
 		|	/** empty **/;
@@ -389,7 +392,8 @@ method_declaration :	method_header method_body;
 
 method_header :	result_type method_declarator;
 
-result_type :	primitive_type 
+result_type :	primitive_type
+	|	array_type 
 	|       VOID {printf("VOID\n");};
 
 method_declarator :	identifier OPEN_PAREN {printf("(\n");} formal_parameter_list CLOSE_PAREN {printf(")\n");};

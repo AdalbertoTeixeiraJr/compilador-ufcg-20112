@@ -1,7 +1,7 @@
 class ExemploFuncoesProcedimentos {
 
-	static int x = 0;
-	static int[] y = { 1, 2, 3 };
+	static volatile int x = 0;
+	static transient int[] y = { 1, 2, 3 };
 
 	static int funcao1() {
 		return 10;
