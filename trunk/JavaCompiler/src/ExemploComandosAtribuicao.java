@@ -53,7 +53,6 @@ class ExemploComandosAtribuicao {
 		int finalValue = value;
 		for (int i = 0; i < times; i++) {
 			finalValue /= div;
-			System.out.println(finalValue);
 		}
 		return finalValue;
 	}
@@ -67,11 +66,11 @@ class ExemploComandosAtribuicao {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(ExemploComandosAtribuicao.sumCresc(2, 6));
-		System.out.println(ExemploComandosAtribuicao.sumDecresc(8, 4));
-		System.out.println(ExemploComandosAtribuicao.decrement(10, 2, 3));
-		System.out.println(ExemploComandosAtribuicao.exp(2, 5));
-		System.out.println(ExemploComandosAtribuicao.div(16, 2, 3));
-		System.out.println(ExemploComandosAtribuicao.mod(10, 4));
+		ExemploComandosAtribuicao.sumCresc(2, 6);
+		ExemploComandosAtribuicao.sumDecresc(8, 4);
+		ExemploComandosAtribuicao.decrement(10, 2, 3);
+		ExemploComandosAtribuicao.exp(2, 5);
+		ExemploComandosAtribuicao.div(16, 2, 3);
+		ExemploComandosAtribuicao.mod(10, 4);
 	}
 }

@@ -31,7 +31,7 @@ int_type_suf	[lL]
 signal 		[+-]
 float_literal	{signal}?{digit}+.{digit}+{exp_indicator}?{float_sufix}?
 double_literal	{signal}?{digit}+.{digit}+{exp_indicator}?{double_sufix}?
-exp_indicator	[eE]
+exp_indicator	[eE]{signal}?{digit}+
 float_sufix	[fF]
 double_sufix	[dDfF]
 hex_literal	0{hex_id}{hex_digit}*

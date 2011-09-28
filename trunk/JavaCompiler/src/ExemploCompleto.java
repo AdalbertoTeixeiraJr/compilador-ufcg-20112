@@ -32,13 +32,13 @@ class ExemploCompleto {
 	static final int CLASS_A = 1;
 	static final int CLASS_B = 2;
 
-	static String[] studentNamesClassA = new String[MAX_STUDENTS];
-	static double[] studentGradesClassA = new double[MAX_STUDENTS];
-	static int classASize = 0;
+	static final String[] studentNamesClassA = new String[MAX_STUDENTS];
+	static transient double[] studentGradesClassA = new double[MAX_STUDENTS];
+	static volatile int classASize = 0;
 
-	static String[] studentNamesClassB = new String[MAX_STUDENTS];
-	static double[] studentGradesClassB = new double[MAX_STUDENTS];
-	static int classBSize = 0;
+	static final String[] studentNamesClassB = new String[MAX_STUDENTS];
+	static transient double[] studentGradesClassB = new double[MAX_STUDENTS];
+	static  volatile int classBSize = 0;
 
 	static int getStudentIndexClassA(String name) {
 		int index = 0;
@@ -127,7 +127,7 @@ class ExemploCompleto {
 			meanGrade = tmp / studentGradesClassA.length;
 			break;
 		case (CLASS_B):
-			for (double grade : studentGradesClassB) {
+			for (double grade = 0; grade <= studentGradesClassB; grade++) {
 				tmp = tmp + grade;
 			}
 			meanGrade = tmp / studentGradesClassB.length;
@@ -144,10 +144,10 @@ class ExemploCompleto {
 
 	static double getHighestGrade() {
 		double high = 0.0;
-		for (double grade : studentGradesClassA) {
+		for (double grade = 0; grade <= studentGradesClassA; garde++) {
 			high = (grade > high) ? grade : high;
 		}
-		for (double grade : studentGradesClassB) {
+		for (double grade = 0; grade <= studentGradesClassB; garde++) {
 			high = (grade > high) ? grade : high;
 		}
 		return high;
@@ -155,10 +155,10 @@ class ExemploCompleto {
 
 	static double getLowestGrade() {
 		double low = 10;
-		for (double grade : studentGradesClassA) {
+		for (double grade = 0; grade <= studentGradesClassA; garde++) {
 			low = (grade < low) ? grade : low;
 		}
-		for (double grade : studentGradesClassB) {
+		for (double grade = 0; grade <= studentGradesClassB; garde++) {
 			low = (grade > low) ? grade : low;
 		}
 		return low;
@@ -170,16 +170,16 @@ class ExemploCompleto {
 		double mean = calculateMeanGradeByClass(myClass);
 		switch (myClass) {
 		case (CLASS_A):
-			for (double grade : studentGradesClassA) {
+			for (double grade = 0; grade <= studentGradesClassA; garde++) {
 				result += (grade - mean) * (grade - mean);
 			}
 			result = result / studentGradesClassA.length;
 			break;
 		case (CLASS_B):
-			for (double grade : studentGradesClassB) {
+			for (double grade = 0; grade <= studentGradesClassB; garde++) {
 				result += (grade - mean) * (grade - mean);
 			}
-			result /= studentGradesClassA.length;
+			result /= studentGradesClassA.length();
 			break;
 		default:
 		}
@@ -187,23 +187,21 @@ class ExemploCompleto {
 	}
 
 	static void printNamesClassA() {
-		System.out.println("Class A Students:");
 		int i = 0;
 		while (true) {
 			if (i >= classASize) {
 				break;
 			}
-			System.out.println("\t" + studentNamesClassA[i]);
+			String teste = "\t" + studentNamesClassA[i];
 			i++;
 		}
 	}
 
 	static void printNamesClassB() {
-		System.out.println("Class B Students:");
 		int i = 0;
 		do {
 			if (studentNamesClassB[i] != null) {
-				System.out.println("\t" + studentNamesClassB[i]);
+				String teste = "\t" + studentNamesClassB[i];
 			}
 			i++;
 		} while (i < classBSize);
@@ -218,7 +216,6 @@ class ExemploCompleto {
 		ExemploCompleto.addStudentName("Zeze di Camargo", ExemploCompleto.CLASS_B);
 
 		ExemploCompleto.printNamesClassA();
-		System.out.println();
 		ExemploCompleto.printNamesClassB();
 	}
 }

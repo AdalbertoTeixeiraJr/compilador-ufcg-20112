@@ -7,10 +7,10 @@ class ExemploLiterais {
 
 		char c1 = 'a', c2 = 'z';
 		char c3 = '1', c4 = '0';
-		char c5 = '\n', c6 = '\t', c7 = '\b';
-		char c8 = '\r', c9 = '\f', c10 = '\\', c11 = '\'';
+		char c5 = 'n', c6 = 't', c7 = 'b';
+		char c8 = 'r', c9 = 'f', c10 = '\';
 		String s1 = "Compiladores", s2 = "X";
-		String s3 = "\"Compiladores\"", s4 = "Compil\\a\\dores";
+		String s3 = " Compiladores Java ";
 		boolean b1 = true, b2 = false;
 		int i1 = 190, i2 = 1800000;
 		long l1 = -9019090910909190L, l2 = 18000009019019019L;
@@ -23,9 +23,9 @@ class ExemploLiterais {
 			if (!false) {
 				if ("Professores".length() > 10 && 'd' > 'a'
 						&& "Compilar".charAt(0) == 'C') {
-					System.out.println("JavaCompiler \\o/ Java Compiler");
+					String compiler = "JavaCompiler \\o/ Java Compiler";
 					if (d1 > d2 || c2 > c3) {
-						System.out.println(s1 + " " + s2 + " " + s3);
+						String concat = s1 + " " + s2 + " " + s3;
 					}
 				}
 			}
