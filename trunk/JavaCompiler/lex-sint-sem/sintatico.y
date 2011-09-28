@@ -24,12 +24,12 @@ char* yytext = ""; //declarado no lexico
 }
 
 %token CLASS BEG END STATIC PT_VIRGULA OPEN_COLC CLOSE_COLC EQUAL VIRGULA POINT
-%token TYPE_INT TYPE_SHORT TYPE_LONG TYPE_BYTE TYPE_BOOL 
-%token TYPE_FLOAT TYPE_DOUBLE TYPE_CHAR TYPE_STRING
 %token QUESTION_MARK TWO_POINTS OR_LOGIC AND_LOGIC OPEN_PAREN CLOSE_PAREN NEW
 %token OR OR_EXC AND PLUS MINUS MULT DIV MOD INCREMENT DECREMENT NOT NOT_BIT 
 %token FOR IF ELSE WHILE CASE SWITCH DEFAULT DO BREAK CONTINUE GOTO RETURN VOID
-%token MAIN ARGS PUBLIC 
+%token MAIN ARGS PUBLIC
+%token TYPE_INT TYPE_SHORT TYPE_LONG TYPE_BYTE TYPE_BOOL 
+%token TYPE_FLOAT TYPE_DOUBLE TYPE_CHAR TYPE_STRING
 %token FINAL TRANSIENT VOLATILE
 %token <strval> ID
 %token <strval> SHIFT_ASSIGN
@@ -50,9 +50,9 @@ identifier :	ID {printf("ID - %s\n", $1);};
 
 class_body :	BEG {printf("{\n");} class_body_declaration END {printf("}\n");};
 
-class_body_declaration :	 class_member_declaration_opt static_initializer;					/* FALTA VERIFICAR class_member_declaration*/	
+class_body_declaration :	 class_member_declaration_opt static_initializer class_member_declaration_opt;					/* FALTA VERIFICAR class_member_declaration*/	
 
-static_initializer :	PUBLIC {printf("public\n");} STATIC {printf("STATIC\n");} VOID {printf("void\n");} MAIN {printf("main\n");} OPEN_PAREN {printf("(\n");} TYPE_STRING {printf("String\n");} OPEN_COLC {printf("[\n");} CLOSE_COLC {printf("]\n");} 
+static_initializer :	PUBLIC STATIC {printf("STATIC\n");} VOID {printf("void\n");} MAIN {printf("main\n");} OPEN_PAREN {printf("(\n");} TYPE_STRING {printf("String\n");} OPEN_COLC {printf("[\n");} CLOSE_COLC {printf("]\n");} 
 			ARGS {printf("args\n");}  CLOSE_PAREN {printf(")\n");} block;
 
 block :		BEG {printf("{\n");} block_statements END {printf("}\n");};
@@ -379,8 +379,11 @@ class_member_declaration_opt : class_member_declaration class_member_declaration
 class_member_declaration_ : class_member_declaration class_member_declaration_
 			| /** empty **/;
 
-class_member_declaration :      STATIC {printf("STATIC\n");} field_declaration
-			|	STATIC {printf("STATIC\n");} method_declaration;
+class_member_declaration :     STATIC {printf("STATIC\n");} field_or_method_declaration
+			/*|	STATIC {printf("STATIC\n");} field_declaration*/;
+
+field_or_method_declaration : field_declaration
+			| 	method_declaration;
 
 method_declaration :	method_header method_body;
 
