@@ -129,7 +129,7 @@ field_access : identifier POINT identifier;
 left_hand_side :	field_access 
                 |       array_access;
 
-assignment_operator : EQUALOP {printf("=\n");}
+assignment_operator : EQUAL {printf("EQUAL\n");}
 		|       ARITH_ASSIGN {printf("ARITH_ASSIGN\n");}
 		|       SHIFT_ASSIGN {printf("SHIFT_ASSIGN\n");}
 	        |	LOGIC_ASSIGN {printf("LOGIC_ASSIGN\n");}; 
@@ -139,7 +139,8 @@ array_access : primary_no_new_array OPEN_COLC {printf("[\n");} expression CLOSE_
 primary_no_new_array : 	LITERAL {printf("LITERAL - %s\n", $1);}
 		| 	field_access 
 		|	method_invocation 
-	        | 	array_access;
+	        | 	array_access
+		|	identifier;
 
 argument_list : 	expression argument_list_
 		|	argument_list_;
@@ -228,8 +229,8 @@ unary_expression : 	INCREMENT {printf("INCREMENT\n");} unary_expression
 		|	NOT_BIT {printf("NOT_BIT\n");} unary_expression 
 		|	cast_expression;
 
-cast_expression : OPEN_PAREN {printf("(\n");} primitive_type OPEN_PAREN unary_expression 
-		| OPEN_PAREN {printf(")\n");} reference_type CLOSE_PAREN unary_expression_not_plus_minus;
+cast_expression : OPEN_PAREN {printf("(\n");} primitive_type CLOSE_PAREN {printf(")\n");}unary_expression 
+		| OPEN_PAREN {printf("(\n");} reference_type CLOSE_PAREN {printf(")\n");} unary_expression_not_plus_minus;
 
 reference_type : 	class_type
 		|       array_type;
@@ -277,7 +278,7 @@ statement_expression :          primary_no_new_array assignment_operator assignm
 
 preincrement_expression : INCREMENT {printf("INCREMENT\n");} unary_expression;
 
-postincrement_expression : postfix_expression postfix_expression_ INCREMENT {printf("INCREMENT\n");};
+postincrement_expression : postfix_expression INCREMENT {printf("INCREMENT\n");};
 
 predecrement_expression : DECREMENT {printf("DECREMENT\n");} unary_expression;
 
