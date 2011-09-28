@@ -1,8 +1,6 @@
 class ExemploSequenciadoresEscape {
 
-	/**
-	 * BREAK
-	 */
+	/* BREAK */
 	static void calculateTable(int value) {
 		int mult = 1;
 		while (true) {
@@ -16,9 +14,7 @@ class ExemploSequenciadoresEscape {
 		}
 	}
 
-	/**
-	 * GOTO
-	 */
+	/* GOTO */
 	static void increaseGrade(int value) {
 
 		validation: {
@@ -40,16 +36,12 @@ class ExemploSequenciadoresEscape {
 		}
 	}
 
-	/**
-	 * RETURN
-	 */
+	/* RETURN */
 	static int calculateSquare(int x) {
 		return x * x;
 	}
 
-	/**
-	 * CONTINUE
-	 */
+	/* CONTINUE */
 	static void calculateSquares(int initialValue, int finalValue) {
 		for (int i = initialValue; i <= finalValue; i++) {
 			if (i == 0)

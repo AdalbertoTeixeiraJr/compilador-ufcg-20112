@@ -1,8 +1,6 @@
 class ExemploComandosAtribuicao {
 
-	/**
-	 * = += ++
-	 */
+	/* = += ++ */
 	static int sumCresc(int initialValue, int finalValue) {
 		int sum = 0;
 		int i = initialValue;
@@ -13,9 +11,7 @@ class ExemploComandosAtribuicao {
 		return sum;
 	}
 
-	/**
-	 * --
-	 */
+	/* -- */
 	static int sumDecresc(int initialValue, int finalValue) {
 		int sum = 0;
 		int i = initialValue;
@@ -26,9 +22,7 @@ class ExemploComandosAtribuicao {
 		return sum;
 	}
 
-	/**
-	 * -=
-	 */
+	/* -= */
 	static int decrement(int initialValue, int dec, int times) {
 		int total = initialValue;
 		for (int i = 0; i < times; i++)
@@ -36,9 +30,7 @@ class ExemploComandosAtribuicao {
 		return total;
 	}
 
-	/**
-	 * *=
-	 */
+	/* *= */
 	static int exp(int value, int exp) {
 		int total = 1;
 		for (int i = 0; i < exp; i++)
@@ -46,9 +38,7 @@ class ExemploComandosAtribuicao {
 		return total;
 	}
 
-	/**
-	 * /=
-	 */
+	/* /= */
 	static int div(int value, int div, int times) {
 		int finalValue = value;
 		for (int i = 0; i < times; i++) {
@@ -57,9 +47,7 @@ class ExemploComandosAtribuicao {
 		return finalValue;
 	}
 
-	/**
-	 * %=
-	 */
+	/* %= */
 	static int mod(int value, int div) {
 		value %= div;
 		return value;

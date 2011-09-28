@@ -2,9 +2,7 @@ class ExemploComandosCondicionais {
 
 	static final int[] notas = { 8, 7, 7, 6, 10, 3 };
 
-	/**
-	 * If-Else
-	 */
+	/* If-Else */
 	static int mediaAprovados() {
 		int media = 0;
 		for (int y = 0; y < notas.length; y++) {
@@ -17,9 +15,7 @@ class ExemploComandosCondicionais {
 		return media;
 	}
 	
-	/**
-	 * If-Elseif-Else
-	 */
+	/* If-Elseif-Else */
 	static String aprovado(int aluno) {
 		if (notas[aluno] >= 7) {
 			return "Aprovado";
@@ -30,9 +26,7 @@ class ExemploComandosCondicionais {
 		}
 	}
 
-	/**
-	 * Switch
-	 */
+	/* Switch */
 	static String diaSemana(int diaSemana) {
 		switch (diaSemana) {
 		case 1:

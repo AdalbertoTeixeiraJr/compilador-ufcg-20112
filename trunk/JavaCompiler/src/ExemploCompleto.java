@@ -1,30 +1,28 @@
-/** ESSE EXEMPLO CONTEM:
- * 
- * 	FUNCOES
- * 	PROCEDURES
- * 	COMANDOS:
- * 		- CONDICIONAIS (if/else; if/else-if/else e switch)
- *  	- ITERATIVOS (for, foreach, while e do-while)
- *  	- ATRIBUICAO (=, +=, /=, ++)
- * 	EXPRESSOES:
- *  	- ARITMETICAS (+, -, * e /)
- *  	- BOOLEANAS (||, !)
- *  	- RELACIONAIS (<, ==, >=, <=, >, !=)
- * 	LITERAIS
- * 	ARRANJOS (String e int)
- * 	CHAMADA DE FUNCOES
- * 	CHAMADA DE PROCEDURES
- * 	SEQUENCIADORES DE ESCAPE (break e return)
- */
+ /** ESSE EXEMPLO CONTEM:	*/
+ 
+ /* 	FUNCOES		*/
+ /* 	PROCEDURES 	*/
+ /* 	COMANDOS: 	*/
+ /* 		- CONDICIONAIS (if/else; if/else-if/else e switch) 	*/
+ /*  	- ITERATIVOS (for, foreach, while e do-while) 			*/
+ /*  	- ATRIBUICAO (=, +=, /=, ++) 					*/
+ /* 	EXPRESSOES: 							*/
+ /*  	- ARITMETICAS (+, -, * e /)					*/
+ /*  	- BOOLEANAS (||, !)						*/
+ /*  	- RELACIONAIS (<, ==, >=, <=, >, !=)				*/
+ /* 	LITERAIS							*/
+ /* 	ARRANJOS (String e int)						*/
+ /* 	CHAMADA DE FUNCOES	*/
+ /* 	CHAMADA DE PROCEDURES	*/
+ /* 	SEQUENCIADORES DE ESCAPE (break e return)			*/
 
-/* AINDA FALTARAM ALGUNS NESSE EXEMPLO:
- * 	COMANDOS:
- * 		- ATRIBUICAO (-=, %=, --)
- * 	EXPRESSOES:
- * 		- ARITMETICAS (%, >>, <<, ~)
- * 		- BOOLEANAS (&, &&, |)
- *  SEQUENCIADORES DE ESCAPE (continue e goto)
- */
+ /* AINDA FALTARAM ALGUNS NESSE EXEMPLO:	*/
+ /* 	COMANDOS:				*/	
+ /* 		- ATRIBUICAO (-=, %=, --)	*/
+ /* 	EXPRESSOES:				*/
+ /* 		- ARITMETICAS (%, >>, <<, ~)	*/
+ /* 		- BOOLEANAS (&, &&, |)		*/
+ /*  SEQUENCIADORES DE ESCAPE (continue e goto)	*/
 
 class ExemploCompleto {
 

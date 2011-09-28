@@ -1,8 +1,6 @@
 class ExemploExpressoesAritmeticasBooleanas {
 
-	/**
-	 * +, -, /, *, uso de parenteses.
-	 */
+	/* +, -, /, *, uso de parenteses */
 	static void expAritmeticas() {
 		int a = 1 + 3;
 		int b = a - 4;
@@ -16,9 +14,7 @@ class ExemploExpressoesAritmeticasBooleanas {
 		f = ((a + b) / 2);
 	}
 
-	/**
-	 * |, &, !, &&, ||.
-	 */
+	/* |, &, !, &&, || */
 	static void expBooleanas() {
 		boolean a = true;
 		boolean b = false;
@@ -28,9 +24,7 @@ class ExemploExpressoesAritmeticasBooleanas {
 		boolean e = d || (b & c);
 	}
 
-	/**
-	 * &, |, ^, ~.
-	 */
+	/* &, |, ^, ~ */
 	static void expBooleanasBitWise() {
 		int a = 10;
 		int b = 2;

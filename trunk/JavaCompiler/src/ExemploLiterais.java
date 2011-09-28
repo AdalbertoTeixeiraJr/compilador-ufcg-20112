@@ -1,8 +1,6 @@
 class ExemploLiterais {
 
-	/**
-	 * char, string, boolean, int, long, float e double
-	 */
+	/* char, string, boolean, int, long, float e double */
 	public static void main(String[] args) {
 
 		char c1 = 'a', c2 = 'z';
