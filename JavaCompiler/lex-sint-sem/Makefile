@@ -20,7 +20,7 @@ YACC    = bison -y -v
 REPORT  = --report=all 
 lexico  = lexico
 sintatico = sintatico
-tk      = tk.h
+tk      = tokens.h
 
 java_compiler: $(lexico) $(sintatico)
 	$(CC) -o$@ $^  

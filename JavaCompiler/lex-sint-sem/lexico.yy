@@ -10,7 +10,7 @@
 */
 
 %{
-#include "tk.h"
+#include "tokens.h"
 #include "tkvalues.h"
 #include <string.h>
 extern int column; // carrega do sintatico
