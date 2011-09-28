@@ -12,7 +12,6 @@
 %{
 #include <stdio.h>
 #include <string.h>
-/*#include "tkvalues.h"*/
 int yylex(void);
 int yyerror(char *msg); //funcao de erro (sobrescrita)
 int line = 1; //declarado no lexico
@@ -259,8 +258,10 @@ unary_expression_not_plus_minus : postfix_expression
 
 postfix_expression : primary_no_new_array postfix_expression_;		/** Regra alterada, nao pode ser um novoo array **/
 
-postfix_expression_ : INCREMENT {printf("INCREMENT\n");} postfix_expression_              
-                        | DECREMENT {printf("DECREMENT\n");} postfix_expression_
+postfix_expression_ : INCREMENT {printf("INCREMENT\n");} postfix_expression_
+			/*| INCREMENT {printf("INCREMENT\n");} OPEN_PAREN postfix_expression_ CLOSE_PAREN              */
+			| DECREMENT {printf("DECREMENT\n");} postfix_expression_
+                        /*| DECREMENT {printf("DECREMENT\n");} OPEN_PAREN postfix_expression_ CLOSE_PAREN*/
                         | /** empty **/;
 
 statement :	statement_without_trailing_substatement
@@ -366,8 +367,8 @@ class_member_declaration_opt : class_member_declaration class_member_declaration
 class_member_declaration_ : class_member_declaration class_member_declaration_
 			| /** empty **/;
 
-class_member_declaration :      STATIC {printf("STATIC\n");} method_declaration
-			|	STATIC {printf("STATIC\n");} field_declaration;
+class_member_declaration :      STATIC {printf("STATIC\n");} field_declaration
+			|	STATIC {printf("STATIC\n");} method_declaration;
 
 method_declaration :	method_header method_body;
 
@@ -378,7 +379,7 @@ result_type :	primitive_type
 
 method_declarator :	identifier OPEN_PAREN {printf("(\n");} formal_parameter_list CLOSE_PAREN {printf(")\n");};
 
-method_body :	block 
+method_body :	block PT_VIRGULA
 	|	PT_VIRGULA {printf(";\n");}              
 	|	/** empty **/;
 
@@ -390,14 +391,12 @@ formal_parameter_list_ : VIRGULA {printf("VIRGULA\n");} formal_parameter formal_
 
 formal_parameter :	primitive_type variable_declarator_id;
 
-field_declaration :	field_modifiers primitive_type variable_declarators PT_VIRGULA {printf(";\n");}
-		|	field_modifiers primitive_type OPEN_COLC {printf("[\n");} CLOSE_COLC {printf("]\n");} variable_declarators PT_VIRGULA {printf(";\n");};
+field_declaration :	field_modifiers_ primitive_type variable_declarators PT_VIRGULA {printf(";\n");}
+		|	field_modifiers_ primitive_type OPEN_COLC {printf("[\n");} CLOSE_COLC {printf("]\n");} variable_declarators PT_VIRGULA {printf(";\n");};
 
-field_modifiers :	field_modifier field_modifiers_                 
-                |       field_modifiers_;
 
 field_modifiers_ :	field_modifier field_modifiers_
-		|       /** empty **/;
+		|	/** empty **/;
 
 field_modifier :	FINAL {printf("FINAL\n");}
                 |       TRANSIENT {printf("TRANSIENT\n");}
