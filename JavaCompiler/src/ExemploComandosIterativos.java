@@ -1,8 +1,6 @@
 class ExemploComandosIterativos {
 
-	/**
-	 * FOR
-	 */
+	/* FOR */
 	static int sum(int initialValue, int finalValue) {
 		int totalSum = 0;
 		for (int i = initialValue; i <= finalValue; i++) {
@@ -11,9 +9,7 @@ class ExemploComandosIterativos {
 		return totalSum;
 	}
 
-	/**
-	 * FOREACH
-	 */
+	/* FOREACH */
 	static int sumArray(int[] values) {
 		int totalSum = 0;
 		for (int value=values.length(); value >= 0; value--) {
@@ -22,9 +18,7 @@ class ExemploComandosIterativos {
 		return totalSum;
 	}
 
-	/**
-	 * WHILE
-	 */
+	/* WHILE */
 	static int sumLastTwo(int v1, int v2, int valueMax) {
 		int sum = 0;
 		int last1 = v1;
@@ -37,9 +31,7 @@ class ExemploComandosIterativos {
 		return last1;
 	}
 
-	/**
-	 * DO-WHILE
-	 */
+	/* DO-WHILE */
 	static int exponential(int value, int exp) {
 		int i = 1;
 		int valueExp = 1;

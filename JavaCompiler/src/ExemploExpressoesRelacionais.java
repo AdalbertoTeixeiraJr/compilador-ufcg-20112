@@ -2,9 +2,7 @@ class ExemploExpressoesRelacionais {
 
 	static final int[] notas = { 8, 7, 7, 6, 10, 3 };
 
-	/**
-	 * >=, <=
-	 */
+	/* >=, <= */
 	static int mediaAprovados() {
 		int media = 0;
 		for (int y = 0; y < notas.length; y++) {
@@ -17,9 +15,7 @@ class ExemploExpressoesRelacionais {
 		return media;
 	}
 
-	/**
-	 * !=, ==, >, <
-	 */
+	/* !=, ==, >, < */
 	static void atualizarNota(int aluno, int nota) {
 		int k = notas[aluno];
 		if (k != nota) {
