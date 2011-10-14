@@ -48,8 +48,8 @@ char* yytext = ""; //declarado no lexico
 
 
 %type <typeval> numeric_type  primitive_type integral_type floating_point_type
-%type <typeval> variable_declarator variable_declarators variable_declarator_id
-%type <typeval> variable_declarators_ variable_declarator_
+%type <typeval> variable_declarators /*variable_declarator variable_declarator_id
+%type <typeval> variable_declarators_ variable_declarator_*/
 
 
 %%	
@@ -103,17 +103,17 @@ integral_type :		TYPE_BYTE
 floating_point_type :	TYPE_FLOAT 
                 |       TYPE_DOUBLE;
 
-variable_declarators :          variable_declarator variable_declarators_ {$1 = $0; $2 = $0;};
+variable_declarators :          variable_declarator variable_declarators_ /*{$1 = $0;} $2 = $0;}*/;
 
-variable_declarator :           variable_declarator_id variable_declarator_ {$1 = $0; $2 = $0;};
+variable_declarator :           variable_declarator_id variable_declarator_ /*{$1 = $0; $2 = $0;}*/;
 
-variable_declarators_ :         VIRGULA  variable_declarator variable_declarators_ {$2 = $0, $3 = $0;}
+variable_declarators_ :         VIRGULA  variable_declarator variable_declarators_ /*{$2 = $0, $3 = $0;}*/
                         |       /** empty **/;
 
-variable_declarator_ :          EQUAL variable_initializer {}
+variable_declarator_ :          EQUAL variable_initializer 
                         |       /** empty **/;
 
-variable_declarator_id :        identifier {$1 = $0;}; 
+variable_declarator_id :        identifier /*{$1 = $0;}*/; 
  
 variable_initializer :         assignment_expression
                         |       array_initializer
