@@ -21,6 +21,7 @@ char* yytext = ""; //declarado no lexico
 
 %union {
         char* strval;
+	char* typeval;
 }
 
 %token CLASS BEG END STATIC PT_VIRGULA OPEN_COLC CLOSE_COLC EQUAL VIRGULA POINT
@@ -28,19 +29,30 @@ char* yytext = ""; //declarado no lexico
 %token OR OR_EXC AND PLUS MINUS MULT DIV MOD INCREMENT DECREMENT NOT NOT_BIT 
 %token FOR IF ELSE WHILE CASE SWITCH DEFAULT DO BREAK CONTINUE GOTO RETURN VOID
 %token MAIN ARGS PUBLIC
-%token TYPE_INT TYPE_SHORT TYPE_LONG TYPE_BYTE TYPE_BOOL 
-%token TYPE_FLOAT TYPE_DOUBLE TYPE_CHAR TYPE_STRING
+
 %token FINAL TRANSIENT VOLATILE
-%token <strval> ID
-%token <strval> SHIFT_ASSIGN
-%token <strval> ARITH_ASSIGN
-%token <strval> LOGIC_ASSIGN
-%token <strval> LITERAL
+
 %token <strval> EQUALOP
 %token <strval> RELOP
 %token <strval> SHIFTS
+%token <strval> SHIFT_ASSIGN
+%token <strval> ARITH_ASSIGN
+%token <strval> LOGIC_ASSIGN
+%token <strval> ID
 
-%%
+%token <typeval> TYPE_INT TYPE_SHORT TYPE_LONG TYPE_BYTE TYPE_BOOL 
+%token <typeval> TYPE_FLOAT TYPE_DOUBLE TYPE_CHAR TYPE_STRING
+
+
+%token <strval, typeval> LITERAL
+
+
+%type <typeval> numeric_type  primitive_type integral_type floating_point_type
+%type <typeval> variable_declarator variable_declarators variable_declarator_id
+%type <typeval> variable_declarators_ variable_declarator_
+
+
+%%	
 
 compilation_unit :	class_declaration;
 
@@ -76,32 +88,32 @@ local_variable_declaration :    primitive_type variable_declarators
 						
 
 primitive_type :	numeric_type 
-               |       TYPE_BOOL
+               |       TYPE_BOOL 
                |       TYPE_STRING;
 
 numeric_type :	integral_type 
              |       floating_point_type;
 
-integral_type :		TYPE_BYTE 
+integral_type :		TYPE_BYTE
                 |       TYPE_SHORT
-                |       TYPE_INT
+                |       TYPE_INT 
                 |       TYPE_LONG
                 |       TYPE_CHAR; 
 
-floating_point_type :	TYPE_FLOAT
+floating_point_type :	TYPE_FLOAT 
                 |       TYPE_DOUBLE;
 
-variable_declarators :          variable_declarator variable_declarators_;
+variable_declarators :          variable_declarator variable_declarators_ {$1 = $0; $2 = $0;};
 
-variable_declarator :           variable_declarator_id variable_declarator_ ;			
+variable_declarator :           variable_declarator_id variable_declarator_ {$1 = $0; $2 = $0;};
 
-variable_declarators_ :         VIRGULA  variable_declarator variable_declarators_
+variable_declarators_ :         VIRGULA  variable_declarator variable_declarators_ {$2 = $0, $3 = $0;}
                         |       /** empty **/;
 
-variable_declarator_ :          EQUAL variable_initializer 
+variable_declarator_ :          EQUAL variable_initializer {}
                         |       /** empty **/;
 
-variable_declarator_id :        identifier; 
+variable_declarator_id :        identifier {$1 = $0;}; 
  
 variable_initializer :         assignment_expression
                         |       array_initializer
@@ -135,7 +147,7 @@ assignment_operator : EQUAL
 
 array_access : primary_no_new_array OPEN_COLC expression CLOSE_COLC;
 
-primary_no_new_array : 	LITERAL
+primary_no_new_array : 	LITERAL 
 		| 	field_access 
 		|	method_invocation 
 	        | 	array_access
@@ -402,11 +414,12 @@ formal_parameter_list :	formal_parameter formal_parameter_list_
 formal_parameter_list_ : VIRGULA formal_parameter formal_parameter_list_
 		|	/** empty **/;
 
-formal_parameter :	primitive_type variable_declarator_id
-	|	array_type variable_declarator_id;
+formal_parameter :	primitive_type variable_declarator_id 
+	|	array_type variable_declarator_id ;
 
-field_declaration :	field_modifiers_ primitive_type variable_declarators PT_VIRGULA
-		|	field_modifiers_ primitive_type OPEN_COLC CLOSE_COLC variable_declarators PT_VIRGULA;
+field_declaration :	field_modifiers_ primitive_type variable_declarators PT_VIRGULA 
+						{$3 = $2;}
+		|	field_modifiers_ primitive_type OPEN_COLC CLOSE_COLC variable_declarators PT_VIRGULA {$5 = $2;};
 
 
 field_modifiers_ :	field_modifier field_modifiers_

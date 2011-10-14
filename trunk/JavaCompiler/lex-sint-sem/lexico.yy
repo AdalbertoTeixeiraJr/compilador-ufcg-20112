@@ -104,32 +104,51 @@ string_literal	["][^"]*["]
 "public"			{moveCol();return PUBLIC;}
 "main"				{moveCol();return MAIN;}
 "args"				{moveCol();return ARGS;}
-"int"				{moveCol();return TYPE_INT;}
-"short"				{moveCol();return TYPE_SHORT;}
-"long"				{moveCol();return TYPE_LONG;}
-"byte"				{moveCol();return TYPE_BYTE;}
-"boolean"			{moveCol();return TYPE_BOOL;}
-"float"				{moveCol();return TYPE_FLOAT;}
-"double"			{moveCol();return TYPE_DOUBLE;}
-"char"				{moveCol();return TYPE_CHAR;}
-"String"			{moveCol();return TYPE_STRING;}
-"true"				{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
-"false"				{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
-"null"				{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
-{char_literal}			{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
-{string_literal}		{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
+"int"				{moveCol();yylval.typeval ="t_int";
+						return TYPE_INT;}
+"short"				{moveCol();yylval.typeval =strdup("t_short");
+						return TYPE_SHORT;}
+"long"				{moveCol();yylval.typeval =strdup("t_long");
+						return TYPE_LONG;}
+"byte"				{moveCol();yylval.typeval =strdup("t_byte");
+						return TYPE_BYTE;}
+"boolean"			{moveCol();yylval.typeval =strdup("t_boolean");
+						return TYPE_BOOL;}
+"float"				{moveCol();yylval.typeval =strdup("t_float");
+						return TYPE_FLOAT;}
+"double"			{moveCol();yylval.typeval =strdup("t_double");
+						return TYPE_DOUBLE;}
+"char"				{moveCol();yylval.typeval =strdup("t_char");
+						return TYPE_CHAR;}
+"String"			{moveCol();yylval.typeval =strdup("t_string");
+						return TYPE_STRING;}
+"true"				{moveCol();yylval.strval = strdup(yytext); 
+					yylval.typeval =strdup("t_boolean");return LITERAL;}
+"false"				{moveCol();yylval.strval = strdup(yytext);
+					yylval.typeval =strdup("t_boolean");return LITERAL;}
+"null"				{moveCol();yylval.strval = strdup(yytext);
+					yylval.typeval =strdup("t_null");return LITERAL;}
+{char_literal}			{moveCol();yylval.strval = strdup(yytext);
+					yylval.typeval =strdup("t_char");return LITERAL;}
+{string_literal}		{moveCol();yylval.strval = strdup(yytext);
+					yylval.typeval =strdup("t_string");return LITERAL;}
+{int_literal} 			{moveCol();yylval.strval = strdup(yytext);
+					yylval.typeval =strdup("t_int");return LITERAL;}
+{hex_literal} 			{moveCol();yylval.strval = strdup(yytext);
+					yylval.typeval =strdup("t_hex");return LITERAL;}
+{oct_literal}			{moveCol();yylval.strval = strdup(yytext);
+					yylval.typeval =strdup("t_oct");return LITERAL;}
+{float_literal} 		{moveCol();yylval.strval = strdup(yytext);
+					yylval.typeval =strdup("t_float");return LITERAL;}
+{double_literal} 		{moveCol();yylval.strval = strdup(yytext);
+					yylval.typeval =strdup("t_double");return LITERAL;}
+{id}				{moveCol();yylval.strval = strdup(yytext);return ID;}
 {logic_assig}			{moveCol();yylval.strval = strdup(yytext);return LOGIC_ASSIGN;}
 {shift_assig}			{moveCol();yylval.strval = strdup(yytext);return SHIFT_ASSIGN;}
 {arith_assig}			{moveCol();yylval.strval = strdup(yytext);return ARITH_ASSIGN;}
 {equal_oper}			{moveCol();yylval.strval = strdup(yytext);return EQUALOP;}
 {rel_oper}			{moveCol();yylval.strval = strdup(yytext);return RELOP;}
 {shifts}			{moveCol();yylval.strval = strdup(yytext);return SHIFTS;}
-{int_literal} 			{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
-{hex_literal} 			{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
-{oct_literal}			{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
-{float_literal} 		{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
-{double_literal} 		{moveCol();yylval.strval = strdup(yytext);return LITERAL;}
-{id}				{moveCol();yylval.strval = strdup(yytext);return ID;}
 
 
 

@@ -84,26 +84,26 @@
      MAIN = 300,
      ARGS = 301,
      PUBLIC = 302,
-     TYPE_INT = 303,
-     TYPE_SHORT = 304,
-     TYPE_LONG = 305,
-     TYPE_BYTE = 306,
-     TYPE_BOOL = 307,
-     TYPE_FLOAT = 308,
-     TYPE_DOUBLE = 309,
-     TYPE_CHAR = 310,
-     TYPE_STRING = 311,
-     FINAL = 312,
-     TRANSIENT = 313,
-     VOLATILE = 314,
-     ID = 315,
-     SHIFT_ASSIGN = 316,
-     ARITH_ASSIGN = 317,
-     LOGIC_ASSIGN = 318,
-     LITERAL = 319,
-     EQUALOP = 320,
-     RELOP = 321,
-     SHIFTS = 322
+     FINAL = 303,
+     TRANSIENT = 304,
+     VOLATILE = 305,
+     EQUALOP = 306,
+     RELOP = 307,
+     SHIFTS = 308,
+     SHIFT_ASSIGN = 309,
+     ARITH_ASSIGN = 310,
+     LOGIC_ASSIGN = 311,
+     ID = 312,
+     TYPE_INT = 313,
+     TYPE_SHORT = 314,
+     TYPE_LONG = 315,
+     TYPE_BYTE = 316,
+     TYPE_BOOL = 317,
+     TYPE_FLOAT = 318,
+     TYPE_DOUBLE = 319,
+     TYPE_CHAR = 320,
+     TYPE_STRING = 321,
+     LITERAL = 322
    };
 #endif
 /* Tokens.  */
@@ -152,26 +152,26 @@
 #define MAIN 300
 #define ARGS 301
 #define PUBLIC 302
-#define TYPE_INT 303
-#define TYPE_SHORT 304
-#define TYPE_LONG 305
-#define TYPE_BYTE 306
-#define TYPE_BOOL 307
-#define TYPE_FLOAT 308
-#define TYPE_DOUBLE 309
-#define TYPE_CHAR 310
-#define TYPE_STRING 311
-#define FINAL 312
-#define TRANSIENT 313
-#define VOLATILE 314
-#define ID 315
-#define SHIFT_ASSIGN 316
-#define ARITH_ASSIGN 317
-#define LOGIC_ASSIGN 318
-#define LITERAL 319
-#define EQUALOP 320
-#define RELOP 321
-#define SHIFTS 322
+#define FINAL 303
+#define TRANSIENT 304
+#define VOLATILE 305
+#define EQUALOP 306
+#define RELOP 307
+#define SHIFTS 308
+#define SHIFT_ASSIGN 309
+#define ARITH_ASSIGN 310
+#define LOGIC_ASSIGN 311
+#define ID 312
+#define TYPE_INT 313
+#define TYPE_SHORT 314
+#define TYPE_LONG 315
+#define TYPE_BYTE 316
+#define TYPE_BOOL 317
+#define TYPE_FLOAT 318
+#define TYPE_DOUBLE 319
+#define TYPE_CHAR 320
+#define TYPE_STRING 321
+#define LITERAL 322
 
 
 
@@ -184,11 +184,12 @@ typedef union YYSTYPE
 #line 22 "sintatico.y"
 
         char* strval;
+	char* typeval;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 192 "tokens.h"
+#line 193 "tokens.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
