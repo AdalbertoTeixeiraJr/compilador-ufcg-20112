@@ -12,7 +12,7 @@ class ExemploComandosIterativos {
 	/* FOREACH */
 	static int sumArray(int[] values) {
 		int totalSum = 0;
-		for (int value=values.length(); value >= 0; value--) {
+		for (int value=values.length; value >= 0; value--) {
 			totalSum += value;
 		}
 		return totalSum;

@@ -6,7 +6,7 @@ class ExemploLiterais {
 		char c1 = 'a', c2 = 'z';
 		char c3 = '1', c4 = '0';
 		char c5 = 'n', c6 = 't', c7 = 'b';
-		char c8 = 'r', c9 = 'f', c10 = '\';
+		char c8 = 'r', c9 = 'f', c10 = '\\';
 		String s1 = "Compiladores", s2 = "X";
 		String s3 = " Compiladores Java ";
 		boolean b1 = true, b2 = false;
