@@ -13,18 +13,30 @@ int main(){
 	char * typeval1 = "STRING";
 
 	if (createClassContext(className) != OK){
-		puts("Error!");
+		puts("Error Class Creation!");
 	}
 
-	StrNode * strList = createStrNode(getClassContext(), id1);
-	addStringToNode(getClassContext(), strList, id2);
-	addStringToNode(getClassContext(), strList, id3);
-	addStringToNode(getClassContext(), strList, id4);
-	addStringToNode(getClassContext(), strList, id5);
-
-	if (addVarListInContext(getClassContext(), strList, typeval1, NO) != OK){
-		puts("Error!");
+	if (addStringToNode(getClassContext(), id1) != OK){
+		puts("Error Id1!");
 	}
+	if (addStringToNode(getClassContext(), id2) != OK){
+		puts("Error Id2!");
+	}
+	if (addStringToNode(getClassContext(), id3) != OK){
+		puts("Error Id3!");
+	}
+	if (addStringToNode(getClassContext(), id4) != OK){
+		puts("Error Id4!");
+	}
+	if (addStringToNode(getClassContext(), id5) != OK){
+		puts("Error Id5!");
+	}
+
+
+	if (addVarListInContext(getClassContext(), typeval1, NO) != OK){
+		puts("Error Context Addition!");
+	}
+
 
 	displayAllVarsOfContext(getClassContext());
 

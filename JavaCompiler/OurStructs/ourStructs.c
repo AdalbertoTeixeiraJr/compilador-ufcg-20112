@@ -15,28 +15,16 @@
 #include "ourStructs.h"
 
 VarsContext * classContext = NULL;
+StrNode * strList = NULL;
 
 static VarsContext * createContext(char * name);
 static int addVarInContext(VarsContext * context, char * id, char * typeval, int isFinal);
+static varNode * getVarNodeInContextList (VarsContext * context, char * id);
+static StrNode * createStrNode(VarsContext * context, char * id);
 
 /*
  * =============== VARSCONTEXT FUNCTION DEFINITIONS
  */
-
-int createClassContext(char * className){
-	classContext = createContext(className);
-	return (classContext != NULL)?
-			OK :
-			VARS_CONTEXT_CREATION_ERROR_INSUFFICIENT_MEMORY;
-}
-
-VarsContext * getClassContext(){
-	return classContext;
-}
-
-VarsContext * createBlockContext(char * name){
-	return createContext(name);
-}
 
 /*
  * STATIC FUNCTIONS
@@ -108,23 +96,64 @@ static int addVarInContext(VarsContext * context, char * id, char * typeval, int
 	return result;
 }
 
+static varNode * getVarNodeInContextList (VarsContext * context, char * id){
+	int i;
+	varNode * node = context->varListStart; // This is the list AND the initial node
+
+	for (i = 0; i < context->listLength; i++){
+		if (strcmp(node->id, id) == 0){
+			break;
+		}
+		node = node->nextNode;
+	}
+	return node;
+}
+
+void freeStrList(){
+	StrNode * tmp;
+	while(strList != NULL){
+		tmp = strList;
+		strList = strList->next;
+		free(tmp->str);
+		free(tmp);
+	}
+}
+
 /*
  * PUBLIC FUNCTIONS
  */
 
-int addVarListInContext(VarsContext * context, StrNode * node, char * typeval, int isFinal){
-	int result = OK;
-	while(node != NULL){
-		result = addVarInContext(context, node->str, typeval, isFinal);
+//// CREATING
 
+int createClassContext(char * className){
+	classContext = createContext(className);
+	return (classContext != NULL)?
+			OK :
+			VARS_CONTEXT_CREATION_ERROR_INSUFFICIENT_MEMORY;
+}
+
+VarsContext * createBlockContext(char * name){
+	return createContext(name);
+}
+
+//// INSERTING
+
+int addVarListInContext(VarsContext * context, char * typeval, int isFinal){
+	int result = OK;
+	StrNode * strNode = strList;
+	while(strNode != NULL){
+		result = addVarInContext(context, strNode->str, typeval, isFinal);
 		if (result != OK){
 			break;
 		}else{
-			node = node->next;
+			strNode = strNode->next;
 		}
 	}
+	freeStrList();
 	return result;
 }
+
+//// CHECKING
 
 int hasIdInContextList(VarsContext * context, char * id){
 	int i;
@@ -142,19 +171,6 @@ int hasIdInContextList(VarsContext * context, char * id){
 	return result;
 }
 
-varNode * getVarNodeInContextList (VarsContext * context, char * id){
-	int i;
-	varNode * node = context->varListStart; // This is the list AND the initial node
-
-	for (i = 0; i < context->listLength; i++){
-		if (strcmp(node->id, id) == 0){
-			break;
-		}
-		node = node->nextNode;
-	}
-	return node;
-}
-
 int isVarFinal(VarsContext * context, char * id){
 	int result = INEXISTANT_ID_IN_CONTEXT;
 	varNode * node = getVarNodeInContextList(context, id);
@@ -163,6 +179,17 @@ int isVarFinal(VarsContext * context, char * id){
 		result = node->isFinal;
 	}
 	return result;
+}
+
+
+//// GETTING
+
+VarsContext * getClassContext(){
+	return classContext;
+}
+
+StrNode * getStrList(){
+	return strList;
 }
 
 char * getTypevalInContextList (VarsContext * context, char * id){
@@ -175,14 +202,14 @@ char * getTypevalInContextList (VarsContext * context, char * id){
 	return result;
 }
 
+//// FREEING
+
 void freeContext(VarsContext * context){
 	free(context->name);
 	free(context);
 }
 
-void displayVar(VarsContext * context, char * id){
-	printf("ID: %s; Typeval: %s\n", id, getTypevalInContextList(context, id));
-}
+//// DISPLAYING
 
 void displayAllVarsOfContext(VarsContext * context){
 
@@ -200,10 +227,13 @@ void displayAllVarsOfContext(VarsContext * context){
  * =============== STRING NODE FUNCTION DEFINITIONS
  */
 
-StrNode * createStrNode(VarsContext * context, char * id){
+/*
+ * STATIC FUNCTIONS
+ */
 
-	StrNode * node = NULL;
+static StrNode * createStrNode(VarsContext * context, char * id){
 
+	StrNode * node;
 	if (hasIdInContextList(context, id) == NO){
 
 		node = (StrNode*) malloc(sizeof(StrNode));
@@ -215,8 +245,8 @@ StrNode * createStrNode(VarsContext * context, char * id){
 			}else{
 				node = NULL;
 			}
-
 			node->next = NULL;
+
 		}else{
 			node = NULL;
 		}
@@ -226,19 +256,28 @@ StrNode * createStrNode(VarsContext * context, char * id){
 	return node;
 }
 
-int addStringToNode(VarsContext * context, StrNode * firstNode, char * id){
+
+/*
+ * PUBLIC FUNCTIONS
+ */
+
+int addStringToNode(VarsContext * context, char * id){
 	int result = OK;
-	StrNode * node = firstNode;
+	StrNode * node = strList;
+
 	if (node != NULL){
 		while(node->next != NULL){
 			node = node->next;
 		}
 		node->next = createStrNode(context, id);
 		if (node->next == NULL){
-			result = CLASS_CONTEXT_ID_ALREADY_EXISTS;
+			result = CONTEXT_ID_ALREADY_EXISTS;
 		}
 	}else{
-		result = MALLOC_ERROR_INSUFFICIENT_MEMORY;
+		strList = createStrNode(context, id);
+		if (strList == NULL){
+			result = MALLOC_ERROR_INSUFFICIENT_MEMORY;
+		}
 	}
 	return result;
 }
