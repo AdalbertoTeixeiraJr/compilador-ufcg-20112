@@ -18,6 +18,7 @@
 #define VARS_CONTEXT_CREATION_ERROR_INSUFFICIENT_MEMORY	-1
 #define CLASS_CONTEXT_ID_ALREADY_EXISTS					-2
 #define MALLOC_ERROR_INSUFFICIENT_MEMORY				-3
+#define INEXISTANT_ID_IN_CONTEXT						-4
 
 
 /*****************************************************/
@@ -26,8 +27,9 @@
 
 typedef struct VAR_NODE varNode;
 struct VAR_NODE{
-	char* id;
-	char* typeval;
+	char * id;
+	char * typeval;
+	int isFinal;
 	varNode *nextNode;
 };
 
@@ -54,9 +56,10 @@ struct STR_NODE{
 int createClassContext(char * className);
 VarsContext * createBlockContext(char * name);
 //// INSERTION
-int addVarListInContext(VarsContext * context, StrNode * node, char * typeval);
+int addVarListInContext(VarsContext * context, StrNode * node, char * typeval, int isFinal);
 //// CHECKING
 int hasIdInContextList(VarsContext * context, char * id);
+int isVarFinal(VarsContext * context, char * id);
 //// GETTING
 VarsContext * getClassContext();
 char * getTypevalInContextList (VarsContext * context, char * id);
@@ -69,7 +72,5 @@ void displayAllVarsOfContext(VarsContext * context);
 /*************** STRING NODE FUNCTIONS ***************/
 StrNode * createStrNode();
 int addStringToNode(VarsContext * context, StrNode * firstNode, char * id);
-
-
 
 #endif /* OURSTRUCTS_H_ */

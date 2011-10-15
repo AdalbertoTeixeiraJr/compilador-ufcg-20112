@@ -22,7 +22,7 @@ int main(){
 	addStringToNode(getClassContext(), strList, id4);
 	addStringToNode(getClassContext(), strList, id5);
 
-	if (addVarListInContext(getClassContext(), strList, typeval1) != OK){
+	if (addVarListInContext(getClassContext(), strList, typeval1, NO) != OK){
 		puts("Error!");
 	}
 
