@@ -17,7 +17,7 @@
 VarsContext * classContext = NULL;
 
 static VarsContext * createContext(char * name);
-static int addVarInContext(VarsContext * context, char * id, char * typeval);
+static int addVarInContext(VarsContext * context, char * id, char * typeval, int isFinal);
 
 /*
  * =============== VARSCONTEXT FUNCTION DEFINITIONS
@@ -62,7 +62,7 @@ static VarsContext * createContext(char * name){
 	return context;
 }
 
-static int addVarInContext(VarsContext * context, char * id, char * typeval){
+static int addVarInContext(VarsContext * context, char * id, char * typeval, int isFinal){
 	int result = OK;
 
 	varNode * node = (varNode*) malloc(sizeof(varNode));
@@ -86,6 +86,9 @@ static int addVarInContext(VarsContext * context, char * id, char * typeval){
 			result = MALLOC_ERROR_INSUFFICIENT_MEMORY;
 		}
 
+		// Set the isFinal field
+		node->isFinal = isFinal;
+
 		// Insert the node into the class context struct
 		if (context->listLength <= 0){
 			context->varListStart = node;
@@ -96,6 +99,7 @@ static int addVarInContext(VarsContext * context, char * id, char * typeval){
 		}
 		// Update the list length
 		context->listLength++;
+
 
 	}else{
 		result = MALLOC_ERROR_INSUFFICIENT_MEMORY;
@@ -108,10 +112,10 @@ static int addVarInContext(VarsContext * context, char * id, char * typeval){
  * PUBLIC FUNCTIONS
  */
 
-int addVarListInContext(VarsContext * context, StrNode * node, char * typeval){
+int addVarListInContext(VarsContext * context, StrNode * node, char * typeval, int isFinal){
 	int result = OK;
 	while(node != NULL){
-		result = addVarInContext(context, node->str, typeval);
+		result = addVarInContext(context, node->str, typeval, isFinal);
 
 		if (result != OK){
 			break;
@@ -138,18 +142,35 @@ int hasIdInContextList(VarsContext * context, char * id){
 	return result;
 }
 
-char * getTypevalInContextList (VarsContext * context, char * id){
+varNode * getVarNodeInContextList (VarsContext * context, char * id){
 	int i;
-	char * result = NULL;
-
 	varNode * node = context->varListStart; // This is the list AND the initial node
 
 	for (i = 0; i < context->listLength; i++){
 		if (strcmp(node->id, id) == 0){
-			result = node->typeval;
 			break;
 		}
 		node = node->nextNode;
+	}
+	return node;
+}
+
+int isVarFinal(VarsContext * context, char * id){
+	int result = INEXISTANT_ID_IN_CONTEXT;
+	varNode * node = getVarNodeInContextList(context, id);
+
+	if (node != NULL){
+		result = node->isFinal;
+	}
+	return result;
+}
+
+char * getTypevalInContextList (VarsContext * context, char * id){
+	char * result = NULL;
+	varNode * node = getVarNodeInContextList(context, id);
+
+	if (node != NULL){
+		result = node->typeval;
 	}
 	return result;
 }
