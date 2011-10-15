@@ -1,9 +1,11 @@
 #ifndef OURSTRUCTS_H_
 #define OURSTRUCTS_H_
 
-/*
- * CONSTANT DEFINITIONS
- */
+
+/*****************************************************/
+/**************** CONSTANT DEFINITIONS ***************/
+/*****************************************************/
+
 #define MAX_ID_SIZE 128
 #define MAX_TYPEVAL_SIZE 20
 
@@ -17,9 +19,10 @@
 #define CLASS_CONTEXT_ID_ALREADY_EXISTS					-2
 #define MALLOC_ERROR_INSUFFICIENT_MEMORY				-3
 
-/*
- * STRUCT DECLARATIONS
- */
+
+/*****************************************************/
+/***************** STRUCT DECLARATIONS ***************/
+/*****************************************************/
 
 typedef struct VAR_NODE varNode;
 struct VAR_NODE{
@@ -27,7 +30,6 @@ struct VAR_NODE{
 	char* typeval;
 	varNode *nextNode;
 };
-
 
 typedef struct VARS_CONTEXT VarsContext;
 struct VARS_CONTEXT{
@@ -37,25 +39,37 @@ struct VARS_CONTEXT{
 	varNode * varListEnd;
 };
 
-/*
- * FUNCTION DECLARATIONS
- */
-// CLASS CONTEXT SPECIFIC FUNCTIONS
+typedef struct STR_NODE StrNode;
+struct STR_NODE{
+	char* str;
+	StrNode * next;
+};
+
+/*****************************************************/
+/*************** FUNCTION DECLARATIONS ***************/
+/*****************************************************/
+
+/*************** VARSCONTEXT FUNCTIONS ***************/
+//// CREATION
 int createClassContext(char * className);
-VarsContext * getClassContext();
-
-// BLOCK CONTEXT FUNCTIONS
 VarsContext * createBlockContext(char * name);
-
-/*
- * CONTEXT VAR LIST FUNCTIONS
- */
-
-VarsContext * createContext(char * name);
-int addVarInContext(VarsContext * context, char * id, char * typeval);
+//// INSERTION
+int addVarListInContext(VarsContext * context, StrNode * node, char * typeval);
+//// CHECKING
 int hasIdInContextList(VarsContext * context, char * id);
+//// GETTING
+VarsContext * getClassContext();
 char * getTypevalInContextList (VarsContext * context, char * id);
+//// FREEING
 void freeContext(VarsContext * context);
-void displayValuesByNode(VarsContext * context, char * id);
+//// DISPLAYING
+void displayVar(VarsContext * context, char * id);
+void displayAllVarsOfContext(VarsContext * context);
+
+/*************** STRING NODE FUNCTIONS ***************/
+StrNode * createStrNode();
+int addStringToNode(VarsContext * context, StrNode * firstNode, char * id);
+
+
 
 #endif /* OURSTRUCTS_H_ */

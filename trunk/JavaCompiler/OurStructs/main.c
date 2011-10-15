@@ -4,18 +4,29 @@
 int main(){
 
 	char * className = "Classe A";
-	char * id1 = "1";
+	char * id1 = "a";
+	char * id2 = "b";
+	char * id3 = "c";
+	char * id4 = "d";
+	char * id5 = "e";
+
 	char * typeval1 = "STRING";
 
 	if (createClassContext(className) != OK){
 		puts("Error!");
 	}
 
-	if (addVarInContext(getClassContext(), id1, typeval1) != OK){
+	StrNode * strList = createStrNode(getClassContext(), id1);
+	addStringToNode(getClassContext(), strList, id2);
+	addStringToNode(getClassContext(), strList, id3);
+	addStringToNode(getClassContext(), strList, id4);
+	addStringToNode(getClassContext(), strList, id5);
+
+	if (addVarListInContext(getClassContext(), strList, typeval1) != OK){
 		puts("Error!");
 	}
 
-	displayValuesByNode(getClassContext(), "1");
+	displayAllVarsOfContext(getClassContext());
 
 	return 0;
 }
