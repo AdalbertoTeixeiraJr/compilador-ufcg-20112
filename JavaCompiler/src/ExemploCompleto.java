@@ -125,8 +125,8 @@ class ExemploCompleto {
 			meanGrade = tmp / studentGradesClassA.length;
 			break;
 		case (CLASS_B):
-			for (double grade = 0; grade <= studentGradesClassB; grade++) {
-				tmp = tmp + grade;
+			for (int i = 0; i < studentGradesClassB.length; i++) {
+				tmp += studentGradesClassB[i];
 			}
 			meanGrade = tmp / studentGradesClassB.length;
 			break;
@@ -142,22 +142,22 @@ class ExemploCompleto {
 
 	static double getHighestGrade() {
 		double high = 0.0;
-		for (double grade = 0; grade <= studentGradesClassA; garde++) {
-			high = (grade > high) ? grade : high;
+		for (int i = 0; i <= studentGradesClassA.length; i++) {
+			high = (studentGradesClassA[i] > high) ? studentGradesClassA[i] : high;
 		}
-		for (double grade = 0; grade <= studentGradesClassB; garde++) {
-			high = (grade > high) ? grade : high;
+		for (int i = 0; i <= studentGradesClassB.length; i++) {
+			high = (studentGradesClassB[i] > high) ? studentGradesClassB[i] : high;
 		}
 		return high;
 	}
 
 	static double getLowestGrade() {
 		double low = 10;
-		for (double grade = 0; grade <= studentGradesClassA; garde++) {
-			low = (grade < low) ? grade : low;
+		for (int i = 0; i <= studentGradesClassA.length; i++) {
+			low = (studentGradesClassA[i] < low) ? studentGradesClassA[i] : low;
 		}
-		for (double grade = 0; grade <= studentGradesClassB; garde++) {
-			low = (grade > low) ? grade : low;
+		for (int i = 0; i <= studentGradesClassB.length; i++) {
+			low = (studentGradesClassB[i] > low) ? studentGradesClassB[i] : low;
 		}
 		return low;
 	}
@@ -168,16 +168,16 @@ class ExemploCompleto {
 		double mean = calculateMeanGradeByClass(myClass);
 		switch (myClass) {
 		case (CLASS_A):
-			for (double grade = 0; grade <= studentGradesClassA; garde++) {
-				result += (grade - mean) * (grade - mean);
+			for (int i = 0; i <= studentGradesClassA.length; i++) {
+				result += (studentGradesClassA[i] - mean) * (studentGradesClassA[i] - mean);
 			}
 			result = result / studentGradesClassA.length;
 			break;
 		case (CLASS_B):
-			for (double grade = 0; grade <= studentGradesClassB; garde++) {
-				result += (grade - mean) * (grade - mean);
+			for (int i = 0; i <= studentGradesClassB.length; i++) {
+				result += (studentGradesClassB[i] - mean) * (studentGradesClassB[i] - mean);
 			}
-			result /= studentGradesClassA.length();
+			result /= studentGradesClassA.length;
 			break;
 		default:
 		}
