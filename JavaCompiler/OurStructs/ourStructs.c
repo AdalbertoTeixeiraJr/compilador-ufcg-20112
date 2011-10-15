@@ -1,3 +1,13 @@
+/*
+ ============================================================================
+ Name        : OurStructs.c
+ Author      : Andrey Menezes, Adalberto Teixeira e Augusto Queiroz
+ Version     :
+ Copyright   :
+ Description :
+ ============================================================================
+ */
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -6,8 +16,11 @@
 
 VarsContext * classContext = NULL;
 
+static VarsContext * createContext(char * name);
+static int addVarInContext(VarsContext * context, char * id, char * typeval);
+
 /*
- * =============== DATA STRUCTURES FUNCTIONS
+ * =============== VARSCONTEXT FUNCTION DEFINITIONS
  */
 
 int createClassContext(char * className){
@@ -26,10 +39,10 @@ VarsContext * createBlockContext(char * name){
 }
 
 /*
- * CONTEXT VAR LIST FUNCTIONS
+ * STATIC FUNCTIONS
  */
 
-VarsContext * createContext(char * name){
+static VarsContext * createContext(char * name){
 
 	VarsContext * context = (VarsContext*) malloc(sizeof(VarsContext));
 
@@ -49,49 +62,63 @@ VarsContext * createContext(char * name){
 	return context;
 }
 
-int addVarInContext(VarsContext * context, char * id, char * typeval){
+static int addVarInContext(VarsContext * context, char * id, char * typeval){
 	int result = OK;
 
-	if (hasIdInContextList(context, id) == NO){
+	varNode * node = (varNode*) malloc(sizeof(varNode));
 
-		varNode * node = (varNode*) malloc(sizeof(varNode));
+	if(node != NULL){
 
-		if(node != NULL){
+		// Allocate and copy the id char value
+		node->id = (char *) malloc(sizeof(char) * MAX_ID_SIZE);
+		if(node->id != NULL){
+			strcpy(node->id, id);
 
-			// Allocate and copy the id char value
-			node->id = (char *) malloc(sizeof(char) * MAX_ID_SIZE);
-			if(node->id != NULL){
-				strcpy(node->id, id);
-
-				// Allocate and copy the typeval char value
-				node->typeval = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
-				if (node->typeval != NULL){
-					strcpy(node->typeval, typeval);
-				}else{
-					result = MALLOC_ERROR_INSUFFICIENT_MEMORY;
-				}
-
+			// Allocate and copy the typeval char value
+			node->typeval = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
+			if (node->typeval != NULL){
+				strcpy(node->typeval, typeval);
 			}else{
 				result = MALLOC_ERROR_INSUFFICIENT_MEMORY;
 			}
 
-			// Insert the node into the class context struct
-			if (context->listLength <= 0){
-				context->varListStart = node;
-				context->varListEnd = node;
-			}else{
-				context->varListEnd->nextNode = node;
-			}
-			// Update the list length
-			context->listLength++;
-
 		}else{
 			result = MALLOC_ERROR_INSUFFICIENT_MEMORY;
 		}
+
+		// Insert the node into the class context struct
+		if (context->listLength <= 0){
+			context->varListStart = node;
+			context->varListEnd = node;
+		}else{
+			context->varListEnd->nextNode = node;
+			context->varListEnd = node;
+		}
+		// Update the list length
+		context->listLength++;
+
 	}else{
-		result = CLASS_CONTEXT_ID_ALREADY_EXISTS;
+		result = MALLOC_ERROR_INSUFFICIENT_MEMORY;
 	}
 
+	return result;
+}
+
+/*
+ * PUBLIC FUNCTIONS
+ */
+
+int addVarListInContext(VarsContext * context, StrNode * node, char * typeval){
+	int result = OK;
+	while(node != NULL){
+		result = addVarInContext(context, node->str, typeval);
+
+		if (result != OK){
+			break;
+		}else{
+			node = node->next;
+		}
+	}
 	return result;
 }
 
@@ -132,8 +159,66 @@ void freeContext(VarsContext * context){
 	free(context);
 }
 
-void displayValuesByNode(VarsContext * context, char * id){
+void displayVar(VarsContext * context, char * id){
 	printf("ID: %s; Typeval: %s\n", id, getTypevalInContextList(context, id));
 }
 
+void displayAllVarsOfContext(VarsContext * context){
+
+	int i;
+	varNode * node = context->varListStart;
+
+	printf("VarsContext Name: %s\n", context->name);
+	for (i = 0; i < context->listLength; i++){
+		printf("ID: %s; Typeval: %s\n", node->id, node->typeval);
+		node = node->nextNode;
+	}
+}
+
+/*
+ * =============== STRING NODE FUNCTION DEFINITIONS
+ */
+
+StrNode * createStrNode(VarsContext * context, char * id){
+
+	StrNode * node = NULL;
+
+	if (hasIdInContextList(context, id) == NO){
+
+		node = (StrNode*) malloc(sizeof(StrNode));
+
+		if (node != NULL){
+			node->str = (char *) malloc(sizeof(char) * MAX_ID_SIZE);
+			if (node->str != NULL){
+				strcpy(node->str, id);
+			}else{
+				node = NULL;
+			}
+
+			node->next = NULL;
+		}else{
+			node = NULL;
+		}
+	}else{
+		node = NULL;
+	}
+	return node;
+}
+
+int addStringToNode(VarsContext * context, StrNode * firstNode, char * id){
+	int result = OK;
+	StrNode * node = firstNode;
+	if (node != NULL){
+		while(node->next != NULL){
+			node = node->next;
+		}
+		node->next = createStrNode(context, id);
+		if (node->next == NULL){
+			result = CLASS_CONTEXT_ID_ALREADY_EXISTS;
+		}
+	}else{
+		result = MALLOC_ERROR_INSUFFICIENT_MEMORY;
+	}
+	return result;
+}
 
