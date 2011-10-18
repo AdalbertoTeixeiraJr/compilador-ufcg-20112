@@ -3,42 +3,38 @@
 
 int main(){
 
-	char * className = "Classe A";
-	char * id1 = "a";
-	char * id2 = "b";
-	char * id3 = "c";
-	char * id4 = "d";
-	char * id5 = "e";
-
-	char * typeval1 = "STRING";
-
-	if (createClassContext(className) != OK){
-		puts("Error Class Creation!");
-	}
-
-	if (addStringToNode(getClassContext(), id1) != OK){
-		puts("Error Id1!");
-	}
-	if (addStringToNode(getClassContext(), id2) != OK){
-		puts("Error Id2!");
-	}
-	if (addStringToNode(getClassContext(), id3) != OK){
-		puts("Error Id3!");
-	}
-	if (addStringToNode(getClassContext(), id4) != OK){
-		puts("Error Id4!");
-	}
-	if (addStringToNode(getClassContext(), id5) != OK){
-		puts("Error Id5!");
+	if (createClassContext("Classe A") != OK){
+		printf("Error Class Creation!\n");
 	}
 
 
-	if (addVarListInContext(getClassContext(), typeval1, NO) != OK){
-		puts("Error Context Addition!");
+	if (insertStringToStrList("a") != OK){
+		printf("Error Id1!\n");
+	}
+	if (insertStringToStrList("a") != OK){
+		printf("Error Id2!\n");
+	}
+	if (insertStringToStrList("c") != OK){
+		printf("Error Id3!\n");
 	}
 
 
-	displayAllVarsOfContext(getClassContext());
+	if (insertVarListInClassContext("STRING", NO) != OK){
+		printf("Error VarList Addition!\n");
+	}
+
+
+	if(insertMethodInClassContext("MethodA", "INT") != OK){
+		printf("Error Method1!\n");
+	}
+	if(insertMethodInClassContext("MethodA", "INT") != OK){
+		printf("Error Method2!\n");
+	}
+	if(insertMethodInClassContext("MethodC", "INT") != OK){
+		printf("Error Method3!\n");
+	}
+
+	displayClassContext();
 
 	return 0;
 }
