@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "ourStructs.h"
+#include "ClassContext.h"
 
 int main(){
 
