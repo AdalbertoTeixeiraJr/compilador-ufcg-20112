@@ -14,6 +14,8 @@
 
 #include "ClassContext.h"
 
+MethodNode * getCurrentMethod();
+
 static StrNode * createStrNode(char * str);
 static StrNode * getIdInStrList(char * id);
 static void freeStrList();
@@ -21,6 +23,10 @@ static void freeStrList();
 ClassContext * classContext = NULL;
 StrNode * strList = NULL;
 int currentContext = CLASS_CONTEXT;
+
+/*
+ * ALL CONTEXT FUNCTION DEFINITIONS
+ */
 
 void setCurrentContext(int context){
 	currentContext = context;
@@ -157,15 +163,28 @@ void displayClassContext(){
  * METHOD FUNCTION DEFINITIONS
  */
 
-int insertVarListInCurrMethodContext(char * typeval, int isFinal){
-	int result = OK;
+/*
+ * STATIC FUNCTIONS
+ */
 
-	// GET THE CURRENT METHOD
+MethodNode * getCurrentMethod(){
 	MethodNode * methodNode = classContext->methodContext;
 
 	while(methodNode->nextMethod != NULL){
 		methodNode = methodNode->nextMethod;
 	}
+	return methodNode;
+}
+
+/*
+ * PUBLIC FUNCTIONS
+ */
+
+int insertVarListInCurrMethodContext(char * typeval, int isFinal){
+	int result = OK;
+
+	// GET THE CURRENT METHOD
+	MethodNode * methodNode = getCurrentMethod();
 
 	// INSERT THE VAR LIST AT THE METHOD VAR LIST
 	StrNode * strNode = strList;
@@ -186,16 +205,28 @@ int insertVarListInCurrMethodContext(char * typeval, int isFinal){
 	return result;
 }
 
-int isVarFinalInMethodContext(char * id){
-	return 1;
+int isVarFinalInCurrMethodContext(char * id){
+	int result = INEXISTANT_ID_IN_CONTEXT;
+	VarNode * node = getVarNodeInList(getCurrentMethod()->varNodes, id);
+
+	if (node != NULL){
+		result = node->isFinal;
+	}
+	return result;
 }
 
-VarNode * getVarInMethodContext(char * id){
-	return NULL;
+VarNode * getVarInCurrMethodContext(char * id){
+	return getVarNodeInList(getCurrentMethod()->varNodes, id);
 }
 
-char * getVarTypevalInMethodContext (char * id){
-	return NULL;
+char * getVarTypevalInCurrMethodContext (char * id){
+	char * result = NULL;
+	VarNode * node = getVarNodeInList(getCurrentMethod()->varNodes, id);
+
+	if (node != NULL){
+		result = node->typeval;
+	}
+	return result;
 }
 
 /*
@@ -261,7 +292,7 @@ int insertStringToStrList(char * id){
 
 	// IS THERE ANOTHER OF THIS? IT DEPENDS ON THE CONTEXT...
 	if(currentContext == METHOD_CONTEXT){
-		if (getVarInMethodContext(id) != NULL || getIdInStrList(id) != NULL){
+		if (getVarInCurrMethodContext(id) != NULL || getIdInStrList(id) != NULL){
 			result = ID_ALREADY_EXISTS;
 		}
 	}else{
