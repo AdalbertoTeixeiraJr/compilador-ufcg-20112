@@ -3,6 +3,8 @@
 
 int main(){
 
+	setCurrentContext(CLASS_CONTEXT);
+
 	if (createClassContext("Classe A") != OK){
 		printf("Error Class Creation!\n");
 	}
@@ -11,7 +13,7 @@ int main(){
 	if (insertStringToStrList("a") != OK){
 		printf("Error Id1!\n");
 	}
-	if (insertStringToStrList("a") != OK){
+	if (insertStringToStrList("b") != OK){
 		printf("Error Id2!\n");
 	}
 	if (insertStringToStrList("c") != OK){
@@ -19,22 +21,43 @@ int main(){
 	}
 
 
-	if (insertVarListInClassContext("STRING", NO) != OK){
+	if (insertVarListInGlobalContext("STRING", NO) != OK){
 		printf("Error VarList Addition!\n");
 	}
 
+	setCurrentContext(METHOD_CONTEXT);
 
-	if(insertMethodInClassContext("MethodA", "INT") != OK){
+	if(insertMethod("MethodA", "INT") != OK){
 		printf("Error Method1!\n");
 	}
-	if(insertMethodInClassContext("MethodA", "INT") != OK){
+	if (insertStringToStrList("d") != OK){
+		printf("Error Id4!\n");
+	}
+	insertVarListInCurrMethodContext("DOUBLE", 0);
+
+
+	if(insertMethod("MethodB", "INT") != OK){
 		printf("Error Method2!\n");
 	}
-	if(insertMethodInClassContext("MethodC", "INT") != OK){
+	if(insertMethod("MethodC", "INT") != OK){
 		printf("Error Method3!\n");
 	}
 
+	if (insertStringToStrList("d") != OK){
+		printf("Error Id4!\n");
+	}
+	if (insertStringToStrList("e") != OK){
+		printf("Error Id5!\n");
+	}
+	if (insertStringToStrList("f") != OK){
+		printf("Error Id6!\n");
+	}
+
+	insertVarListInCurrMethodContext("FLOAT", 1);
+
 	displayClassContext();
+
+	freeClassContext();
 
 	return 0;
 }

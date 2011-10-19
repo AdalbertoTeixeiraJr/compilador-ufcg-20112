@@ -13,6 +13,7 @@
 #include <stdio.h>
 
 #include "OurStructs.h"
+
 /*
  * =============== VARNODE FUNCTION DEFINITIONS
  */
@@ -75,6 +76,29 @@ VarNode * getVarNodeInList (VarNode * nodeList, char * id){
 	return nodeList;
 }
 
+void freeVarNodeList(VarNode * list){
+	VarNode * listTmp = list;
+	while(listTmp != NULL){
+		list = listTmp;
+		listTmp = listTmp->nextNode;
+		free(list->id);
+		free(list->typeval);
+		free(list);
+	}
+}
+
+void displayVarNodeList(VarNode * varNodeList){
+	while(varNodeList != NULL){
+		printf("\tID: %s; Typeval: %s; IsFinal: %d\n", varNodeList->id, varNodeList->typeval, varNodeList->isFinal);
+		varNodeList = varNodeList->nextNode;
+	}
+	printf("\n");
+}
+
+/*
+ * =============== METHOD FUNCTION DEFINITIONS
+ */
+
 MethodNode * createMethodNode(char * idName, char * typeReturn){
 
 	MethodNode * node = (MethodNode*) malloc(sizeof(MethodNode));
@@ -109,4 +133,26 @@ MethodNode * getMethodNodeInList (MethodNode * nodeList, char * idName){
 		nodeList = nodeList->nextMethod;
 	}
 	return nodeList;
+}
+
+void freeMethodList(MethodNode * list){
+	MethodNode * listTmp = list;
+	while(listTmp != NULL){
+		list = listTmp;
+		listTmp = listTmp->nextMethod;
+		free(list->idName);
+		free(list->typeReturn);
+		freeVarNodeList(list->varNodes);
+		free(list);
+	}
+}
+
+void displayMethodNodeList(MethodNode * methodNodeList){
+	while(methodNodeList != NULL){
+		printf("IDName: %s; TypeReturn: %s\n", methodNodeList->idName, methodNodeList->typeReturn);
+		printf("MethodVars Context:\n");
+		displayVarNodeList(methodNodeList->varNodes);
+
+		methodNodeList = methodNodeList->nextMethod;
+	}
 }
