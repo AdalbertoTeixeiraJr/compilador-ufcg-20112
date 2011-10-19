@@ -87,6 +87,10 @@ void freeVarNodeList(VarNode * list){
 	}
 }
 
+int isVarNodeEqual(VarNode * var, char * newId){
+	return (strcmp(var->id, newId) == 0) ? YES : NO;
+}
+
 void displayVarNodeList(VarNode * varNodeList){
 	while(varNodeList != NULL){
 		printf("\tID: %s; Typeval: %s; IsFinal: %d\n", varNodeList->id, varNodeList->typeval, varNodeList->isFinal);
@@ -117,11 +121,28 @@ MethodNode * createMethodNode(char * idName, char * typeReturn){
 			}else{
 				node = NULL;
 			}
+
+			node->params = NULL;
+			node->varNodes = NULL;
+			node->nextMethod = NULL;
 		}else{
 			node = NULL;
 		}
 	}
 	return node;
+}
+
+MethodNode * addParamInMethod(MethodNode * method, char * id, char * type){
+	VarNode * params = method->params;
+	if (params != NULL){
+		while(params->nextNode != NULL){
+			params = params->nextNode;
+		}
+		params->nextNode = createVarNode(id, type, NO);
+	}else{
+		method->params = createVarNode(id, type, NO);
+	}
+	return method;
 }
 
 MethodNode * getMethodNodeInList (MethodNode * nodeList, char * idName){
@@ -147,10 +168,37 @@ void freeMethodList(MethodNode * list){
 	}
 }
 
+int isMethodEqual(MethodNode * method1, MethodNode * method2){
+	int result = YES;
+	VarNode * params = method1->params;
+	VarNode * newParams = method2->params;
+
+	if(strcmp(method1->idName, method2->idName) == 0){
+		while(params != NULL){
+			if (newParams != NULL){
+				if(strcmp(params->typeval, newParams->typeval) != 0){
+					result = NO;
+					break;
+				}
+			}else{
+				result = NO;
+				break;
+			}
+			params = params->nextNode;
+			newParams = newParams->nextNode;
+		}
+	}else{
+		result = NO;
+	}
+	return result;
+}
+
 void displayMethodNodeList(MethodNode * methodNodeList){
 	while(methodNodeList != NULL){
-		printf("IDName: %s; TypeReturn: %s\n", methodNodeList->idName, methodNodeList->typeReturn);
-		printf("MethodVars Context:\n");
+		printf("%s %s\n", methodNodeList->typeReturn, methodNodeList->idName);
+		printf("===> params:\n");
+		displayVarNodeList(methodNodeList->params);
+		printf("===> local vars:\n");
 		displayVarNodeList(methodNodeList->varNodes);
 
 		methodNodeList = methodNodeList->nextMethod;

@@ -51,7 +51,8 @@ typedef struct METHODNODE MethodNode;
 struct METHODNODE{
 	char * idName;
 	char * typeReturn;
-	VarNode *varNodes;
+	VarNode * params;
+	VarNode * varNodes;
 	MethodNode * nextMethod;
 };
 
@@ -71,10 +72,13 @@ VarNode * insertVarInVarNodeList(VarNode * nodeList, char * id, char * typeval, 
 VarNode * getVarNodeInList (VarNode * nodeList, char * id);
 void freeVarNodeList(VarNode * list);
 void displayVarNodeList(VarNode * list);
+int isVarNodeEqual(VarNode * var, char * newId);
 
 MethodNode * createMethodNode(char * idName, char * typeReturn);
+MethodNode * addParamInMethod(MethodNode * method, char * id, char * typeval);
 MethodNode * getMethodNodeInList (MethodNode * nodeList, char * idName);
 void freeMethodList(MethodNode * list);
 void displayMethodNodeList(MethodNode * list);
+int isMethodEqual(MethodNode * method1, MethodNode * method2);
 
 #endif /* OURSTRUCTS_H_ */

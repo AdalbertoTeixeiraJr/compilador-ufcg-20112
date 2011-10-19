@@ -14,7 +14,7 @@
 
 #include "ClassContext.h"
 
-MethodNode * getCurrentMethod();
+static MethodNode * getCurrentMethod();
 
 static StrNode * createStrNode(char * str);
 static StrNode * getIdInStrList(char * id);
@@ -167,7 +167,7 @@ void displayClassContext(){
  * STATIC FUNCTIONS
  */
 
-MethodNode * getCurrentMethod(){
+static MethodNode * getCurrentMethod(){
 	MethodNode * methodNode = classContext->methodContext;
 
 	while(methodNode->nextMethod != NULL){
@@ -201,6 +201,28 @@ int insertVarListInCurrMethodContext(char * typeval, int isFinal){
 		}
 	}
 	freeStrList();
+
+	return result;
+}
+
+void addParamInCurrMethod(char * id, char * typeval){
+	MethodNode * curMethod = getCurrentMethod();
+	curMethod = addParamInMethod(curMethod, id, typeval);
+}
+
+int finishCurrMethodSignCreation(){
+	int result = YES;
+
+	// NOW WE CHECK FOR EQUALITY
+	MethodNode * methodList = classContext->methodContext;
+	MethodNode * curMethod = getCurrentMethod();
+	while (methodList != NULL){
+		if (isMethodEqual(methodList, curMethod) == YES){
+			result = NO;
+			break;
+		}
+		methodList = methodList->nextMethod;
+	}
 
 	return result;
 }

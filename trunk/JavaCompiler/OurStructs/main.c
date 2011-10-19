@@ -1,4 +1,5 @@
 #include <stdio.h>
+
 #include "ClassContext.h"
 
 int main(){
@@ -41,6 +42,13 @@ int main(){
 	}
 	if(insertMethod("MethodC", "INT") != OK){
 		printf("Error Method3!\n");
+	}
+
+	addParamInCurrMethod("Param1", "LONG");
+	addParamInCurrMethod("Param2", "LONG");
+
+	if (finishCurrMethodSignCreation() != OK){
+		printf("Error Params1!\n");
 	}
 
 	if (insertStringToStrList("d") != OK){
