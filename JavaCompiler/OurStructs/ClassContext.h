@@ -55,10 +55,9 @@ void displayClassContext();
 /***************** METHOD FUNCTIONS ******************/
 int insertVarListInCurrMethodContext(char * typeval, int isFinal);
 
-//TODO!
-int isVarFinalInMethodContext(char * id);
-VarNode * getVarInMethodContext(char * id);
-char * getVarTypevalInMethodContext (char * id);
+int isVarFinalInCurrMethodContext(char * id);
+VarNode * getVarInCurrMethodContext(char * id);
+char * getVarTypevalInCurrMethodContext (char * id);
 
 /*************** STRING NODE FUNCTIONS ***************/
 //// INSERTING
