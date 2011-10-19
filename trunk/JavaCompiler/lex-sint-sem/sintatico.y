@@ -12,16 +12,24 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include "OurStructs.h"
+#include "ClassContext.h"
 int yylex(void);
 int yyerror(char *msg); //funcao de erro (sobrescrita)
 int line = 1; //declarado no lexico
 int column  = 0; // declarado no lexico
 char* yytext = ""; //declarado no lexico
+char* method_or_field_type = "";
+int final_modifier = 0;
+
+
 %}
 
 %union {
         char* strval;
 	char* typeval;
+	int isFinal;
+	int field_or_method; //field = 0, method = 1
 }
 
 %token CLASS BEG END STATIC PT_VIRGULA OPEN_COLC CLOSE_COLC EQUAL VIRGULA POINT
@@ -30,7 +38,7 @@ char* yytext = ""; //declarado no lexico
 %token FOR IF ELSE WHILE CASE SWITCH DEFAULT DO BREAK CONTINUE GOTO RETURN VOID
 %token MAIN ARGS PUBLIC
 
-%token FINAL TRANSIENT VOLATILE
+%token FINAL
 
 %token <strval> EQUALOP
 %token <strval> RELOP
@@ -48,24 +56,33 @@ char* yytext = ""; //declarado no lexico
 
 
 %type <typeval> numeric_type  primitive_type integral_type floating_point_type
-%type <typeval> variable_declarators /*variable_declarator variable_declarator_id
-%type <typeval> variable_declarators_ variable_declarator_*/
+%type <strval> identifier 
+%type <strval> variable_declarators
+%type <strval> variable_declarator_id
+%type <strval> variable_declarator
+%type <strval> field_declaration
+%type <isFinal> field_modifiers_
+%type <typeval> array_creation_expression
+%type <strval> method_header
+%type <strval> method_declaration
+
 
 
 %%	
 
-compilation_unit :	class_declaration;
+compilation_unit :	class_declaration ;
 
-class_declaration :	CLASS identifier class_body;						
+class_declaration :	CLASS identifier {createClassContext($2);} class_body ;		
 
-identifier :	ID ;
+identifier :	ID;
 
-class_body :	BEG class_body_declaration END;
+class_body :	BEG class_body_declaration END {displayClassContext();};
 
-class_body_declaration :	 class_member_declaration_opt static_initializer class_member_declaration_opt;	
+class_body_declaration :	 class_member_declaration_opt static_initializer class_member_declaration_opt ;	
 
 static_initializer :	PUBLIC STATIC VOID MAIN OPEN_PAREN TYPE_STRING OPEN_COLC CLOSE_COLC 
-			ARGS CLOSE_PAREN block;
+			ARGS CLOSE_PAREN block
+		|	/** empty **/;
 
 block :		BEG block_statements END;
 
@@ -103,24 +120,24 @@ integral_type :		TYPE_BYTE
 floating_point_type :	TYPE_FLOAT 
                 |       TYPE_DOUBLE;
 
-variable_declarators :          variable_declarator variable_declarators_ /*{$1 = $0;} $2 = $0;}*/;
+variable_declarators :          variable_declarator {insertStringToStrList($1);}variable_declarators_ ;
 
-variable_declarator :           variable_declarator_id variable_declarator_ /*{$1 = $0; $2 = $0;}*/;
+variable_declarator : variable_declarator_id variable_declarator_ {$$ = $1;};
 
-variable_declarators_ :         VIRGULA  variable_declarator variable_declarators_ /*{$2 = $0, $3 = $0;}*/
+variable_declarators_ :         VIRGULA  variable_declarator {insertStringToStrList($2);} variable_declarators_	
                         |       /** empty **/;
 
-variable_declarator_ :          EQUAL variable_initializer 
-                        |       /** empty **/;
+variable_declarator_ :          EQUAL variable_initializer /**{$$ = $2}**/ 
+                        |       /** empty **/ /**{$$ = "empty"}**/;
 
-variable_declarator_id :        identifier /*{$1 = $0;}*/; 
+variable_declarator_id :        identifier {$$ = $1;}; 
  
 variable_initializer :         assignment_expression
                         |       array_initializer
 			|	left_hand_side;
 
-array_initializer :	BEG variable_initializers  virgula_opt END
-			|	array_creation_expression; 
+array_initializer :	BEG variable_initializers  virgula_opt END /**{$$ = $2}**/
+			|	array_creation_expression /**{$$ = $0}**/; 
 
 virgula_opt :	VIRGULA
 	|       /** empty **/;
@@ -159,7 +176,7 @@ argument_list : 	expression argument_list_
 argument_list_ : 	VIRGULA expression argument_list_ 
                 | 	/** empty **/;
 
-array_creation_expression : NEW primitive_type dim_exprs dims;
+array_creation_expression : NEW primitive_type dim_exprs dims {$$ = $2;};
 
 dim_exprs : OPEN_COLC dim_expr_or_empty CLOSE_COLC;
 
@@ -389,24 +406,33 @@ class_member_declaration_opt : class_member_declaration class_member_declaration
 class_member_declaration_ : class_member_declaration class_member_declaration_
 			| /** empty **/;
 
-class_member_declaration :     STATIC field_or_method_declaration
+class_member_declaration :     STATIC  field_modifiers_ {final_modifier = $2;} field_or_method_declaration 
+			| 	PT_VIRGULA;
 			
-field_or_method_declaration : field_declaration
-			| 	method_declaration;
+field_or_method_declaration :   primitive_type {method_or_field_type = $1;} colc_opt field_or_method_declaration_rest
+			|	void_method_declaration;
 
-method_declaration :	method_header method_body;
+field_or_method_declaration_rest: method_declaration {
+						setCurrentContext(METHOD_CONTEXT); 
+						insertMethod($1, method_or_field_type);
+						} 
+			|	field_declaration {
+						setCurrentContext(CLASS_CONTEXT);
+						insertVarListInGlobalContext(method_or_field_type, final_modifier);
+						};
 
-method_header :	result_type method_declarator;
+colc_opt: OPEN_COLC CLOSE_COLC
+	| /** empty **/;
 
-result_type :	primitive_type
-	|	array_type 
-	|       VOID;
+method_declaration :	method_header method_body {$$ = $1;};
 
-method_declarator :	identifier OPEN_PAREN formal_parameter_list CLOSE_PAREN;
+method_header :	identifier method_declarator {$$ = $1;};
 
-method_body :	block
-	|	PT_VIRGULA              
-	|	/** empty **/;
+void_method_declaration: VOID identifier method_declarator method_body {setCurrentContext(METHOD_CONTEXT); insertMethod($2, "t_void");};
+
+method_declarator :	OPEN_PAREN formal_parameter_list CLOSE_PAREN;
+
+method_body :	block;
 
 formal_parameter_list :	formal_parameter formal_parameter_list_         
 		|       formal_parameter_list_;
@@ -417,17 +443,11 @@ formal_parameter_list_ : VIRGULA formal_parameter formal_parameter_list_
 formal_parameter :	primitive_type variable_declarator_id 
 	|	array_type variable_declarator_id ;
 
-field_declaration :	field_modifiers_ primitive_type variable_declarators PT_VIRGULA 
-						{$3 = $2;}
-		|	field_modifiers_ primitive_type OPEN_COLC CLOSE_COLC variable_declarators PT_VIRGULA {$5 = $2;};
+field_declaration :	variable_declarators colc_opt PT_VIRGULA /*{$$ = $1;}*/;
 
 
-field_modifiers_ :	field_modifier field_modifiers_
-		|	/** empty **/;
-
-field_modifier :	FINAL
-                |       TRANSIENT
-                |       VOLATILE;
+field_modifiers_ :	FINAL {$$ = YES;}
+		|	/** empty **/ {$$ = NO;};
 
 
 
@@ -448,3 +468,5 @@ int yyerror(char *msg){
         fprintf(stderr,"\tLine %d, Column %d\n", line, column);
         return 1;
 }
+
+

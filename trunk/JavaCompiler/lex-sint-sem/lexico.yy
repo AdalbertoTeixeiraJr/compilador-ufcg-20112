@@ -95,8 +95,6 @@ string_literal	["][^"]*["]
 "case"          		{moveCol();return CASE;}
 "switch"        		{moveCol();return SWITCH;}
 "default"       		{moveCol();return DEFAULT;}
-"transient"     		{moveCol();return TRANSIENT;}
-"volatile"			{moveCol();return VOLATILE;}
 "final"				{moveCol();return FINAL;}
 "class"				{moveCol();return CLASS;}
 "static"        		{moveCol();return STATIC;}

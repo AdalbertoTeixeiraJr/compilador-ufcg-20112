@@ -85,25 +85,23 @@
      ARGS = 301,
      PUBLIC = 302,
      FINAL = 303,
-     TRANSIENT = 304,
-     VOLATILE = 305,
-     EQUALOP = 306,
-     RELOP = 307,
-     SHIFTS = 308,
-     SHIFT_ASSIGN = 309,
-     ARITH_ASSIGN = 310,
-     LOGIC_ASSIGN = 311,
-     ID = 312,
-     TYPE_INT = 313,
-     TYPE_SHORT = 314,
-     TYPE_LONG = 315,
-     TYPE_BYTE = 316,
-     TYPE_BOOL = 317,
-     TYPE_FLOAT = 318,
-     TYPE_DOUBLE = 319,
-     TYPE_CHAR = 320,
-     TYPE_STRING = 321,
-     LITERAL = 322
+     EQUALOP = 304,
+     RELOP = 305,
+     SHIFTS = 306,
+     SHIFT_ASSIGN = 307,
+     ARITH_ASSIGN = 308,
+     LOGIC_ASSIGN = 309,
+     ID = 310,
+     TYPE_INT = 311,
+     TYPE_SHORT = 312,
+     TYPE_LONG = 313,
+     TYPE_BYTE = 314,
+     TYPE_BOOL = 315,
+     TYPE_FLOAT = 316,
+     TYPE_DOUBLE = 317,
+     TYPE_CHAR = 318,
+     TYPE_STRING = 319,
+     LITERAL = 320
    };
 #endif
 /* Tokens.  */
@@ -153,25 +151,23 @@
 #define ARGS 301
 #define PUBLIC 302
 #define FINAL 303
-#define TRANSIENT 304
-#define VOLATILE 305
-#define EQUALOP 306
-#define RELOP 307
-#define SHIFTS 308
-#define SHIFT_ASSIGN 309
-#define ARITH_ASSIGN 310
-#define LOGIC_ASSIGN 311
-#define ID 312
-#define TYPE_INT 313
-#define TYPE_SHORT 314
-#define TYPE_LONG 315
-#define TYPE_BYTE 316
-#define TYPE_BOOL 317
-#define TYPE_FLOAT 318
-#define TYPE_DOUBLE 319
-#define TYPE_CHAR 320
-#define TYPE_STRING 321
-#define LITERAL 322
+#define EQUALOP 304
+#define RELOP 305
+#define SHIFTS 306
+#define SHIFT_ASSIGN 307
+#define ARITH_ASSIGN 308
+#define LOGIC_ASSIGN 309
+#define ID 310
+#define TYPE_INT 311
+#define TYPE_SHORT 312
+#define TYPE_LONG 313
+#define TYPE_BYTE 314
+#define TYPE_BOOL 315
+#define TYPE_FLOAT 316
+#define TYPE_DOUBLE 317
+#define TYPE_CHAR 318
+#define TYPE_STRING 319
+#define LITERAL 320
 
 
 
@@ -181,15 +177,17 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 22 "sintatico.y"
+#line 28 "sintatico.y"
 
         char* strval;
 	char* typeval;
+	int isFinal;
+	int field_or_method; //field = 0, method = 1
 
 
 
 /* Line 1676 of yacc.c  */
-#line 193 "tokens.h"
+#line 191 "tokens.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

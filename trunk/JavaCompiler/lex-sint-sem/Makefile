@@ -21,9 +21,11 @@ REPORT  = --report=all
 lexico  = lexico
 sintatico = sintatico
 tk      = tokens.h
+structs = OurStructs
+context = ClassContext
 
-java_compiler: $(lexico) $(sintatico)
-	$(CC) -o$@ $^  
+java_compiler: $(structs) $(context) $(lexico) $(sintatico) 
+	$(CC) -o $@ $(structs).c $(context).c $(lexico).c $(sintatico).c  
 
 $(lexico): $(lexico).yy
 	$(LEX) -o$(lexico).c $^
@@ -33,5 +35,14 @@ $(sintatico): $(sintatico).y
 	$(YACC) -t --define=$(tk) $(REPORT) -o$(sintatico).c $^
 	$(CC) -o $@ -c $(sintatico).c
 
+$(structs):
+	$(CC) -o $@ -c $(structs).c
+
+$(context):
+	$(CC) -o $@ -c $(context).c 
+
 clean:
-	rm -rf $(lexico) $(lexico).c $(sintatico) $(sintatico).c java_compiler report.txt sintatico.output *~
+	rm -rf $(lexico) $(lexico).c $(sintatico) $(sintatico).c $(structs) $(context) java_compiler report.txt sintatico.output *~
+
+remake: clean java_compiler
+	
