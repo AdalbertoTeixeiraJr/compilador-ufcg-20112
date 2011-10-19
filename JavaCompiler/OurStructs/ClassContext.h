@@ -53,6 +53,8 @@ void displayClassContext();
 
 
 /***************** METHOD FUNCTIONS ******************/
+void addParamInCurrMethod(char * id, char * typeval);
+int finishCurrMethodSignCreation();
 int insertVarListInCurrMethodContext(char * typeval, int isFinal);
 
 int isVarFinalInCurrMethodContext(char * id);
