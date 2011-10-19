@@ -22,6 +22,9 @@
 #define YES	1
 #define NO	0
 
+#define METHOD_CONTEXT	10
+#define CLASS_CONTEXT	20
+
 // ERROR TYPE CONSTANTS
 #define CLASS_CONTEXT_CREATION_ERROR_INSUFFICIENT_MEMORY	-1
 #define ID_ALREADY_EXISTS									-2
@@ -33,8 +36,8 @@
 /*
  * VARNODE STRUCT
  */
-typedef struct VAR_NODE VarNode;
-struct VAR_NODE{
+typedef struct VARNODE VarNode;
+struct VARNODE{
 	char * id;
 	char * typeval;
 	int isFinal;
@@ -44,8 +47,8 @@ struct VAR_NODE{
 /*
  * METHOD STRUCT
  */
-typedef struct METHOD_NODE MethodNode;
-struct METHOD_NODE{
+typedef struct METHODNODE MethodNode;
+struct METHODNODE{
 	char * idName;
 	char * typeReturn;
 	VarNode *varNodes;
@@ -55,8 +58,8 @@ struct METHOD_NODE{
 /*
  * STR STRUCT
  */
-typedef struct STR_NODE StrNode;
-struct STR_NODE{
+typedef struct STRNODE StrNode;
+struct STRNODE{
 	char* str;
 	StrNode * next;
 };
@@ -66,9 +69,12 @@ struct STR_NODE{
 VarNode * createVarNode(char * id, char * typeval, int isFinal);
 VarNode * insertVarInVarNodeList(VarNode * nodeList, char * id, char * typeval, int isFinal);
 VarNode * getVarNodeInList (VarNode * nodeList, char * id);
+void freeVarNodeList(VarNode * list);
+void displayVarNodeList(VarNode * list);
 
 MethodNode * createMethodNode(char * idName, char * typeReturn);
 MethodNode * getMethodNodeInList (MethodNode * nodeList, char * idName);
-
+void freeMethodList(MethodNode * list);
+void displayMethodNodeList(MethodNode * list);
 
 #endif /* OURSTRUCTS_H_ */

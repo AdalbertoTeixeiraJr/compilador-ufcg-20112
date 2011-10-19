@@ -16,8 +16,8 @@
 /*
  * CLASSCONTEXT STRUCT
  */
-typedef struct CLASS_CONTEXT ClassContext;
-struct CLASS_CONTEXT{
+typedef struct CLASSCONTEXT ClassContext;
+struct CLASSCONTEXT{
 	char* name;
 	VarNode * varsContext;
 	MethodNode * methodContext;
@@ -27,23 +27,38 @@ struct CLASS_CONTEXT{
 /*************** FUNCTION DECLARATIONS ***************/
 /*****************************************************/
 
+void setCurrentContext(int context);
+
 /*************** CLASSCONTEXT FUNCTIONS ***************/
 //// CREATING
 int createClassContext(char * className);
+
 //// INSERTING
-int insertVarListInClassContext(char * typeval, int isFinal);
-int insertMethodInClassContext(char * idName, char * typeReturn);
+int insertVarListInGlobalContext(char * typeval, int isFinal);
+int insertMethod(char * idName, char * typeReturn);
+
 //// CHECKING
-int isVarFinalInClassContext(char * id);
+int isVarFinalInGlobalContext(char * id);
+
 //// GETTING
-MethodNode * getMethodInClassContext(char * idName);
-VarNode * getVarInClassContext(char * id);
-char * getVarTypevalInClassContext (char * id);
+MethodNode * getMethod(char * idName);
+VarNode * getVarInGlobalContext(char * id);
+char * getVarTypevalInGlobalContext (char * id);
+
 //// FREEING
 void freeClassContext();
+
 //// DISPLAYING
 void displayClassContext();
 
+
+/***************** METHOD FUNCTIONS ******************/
+int insertVarListInCurrMethodContext(char * typeval, int isFinal);
+
+//TODO!
+int isVarFinalInMethodContext(char * id);
+VarNode * getVarInMethodContext(char * id);
+char * getVarTypevalInMethodContext (char * id);
 
 /*************** STRING NODE FUNCTIONS ***************/
 //// INSERTING
