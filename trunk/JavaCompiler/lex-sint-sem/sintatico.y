@@ -81,7 +81,7 @@ class_body :	BEG class_body_declaration END {displayClassContext();};
 class_body_declaration :	 class_member_declaration_opt static_initializer class_member_declaration_opt ;	
 
 static_initializer :	PUBLIC STATIC VOID MAIN OPEN_PAREN TYPE_STRING OPEN_COLC CLOSE_COLC 
-			ARGS CLOSE_PAREN block
+			ARGS CLOSE_PAREN {insertMethod("MAIN", "t_void");} block
 		|	/** empty **/;
 
 block :		BEG block_statements END;
@@ -95,20 +95,22 @@ block_statements_:	block_statement block_statements_
 block_statement :	local_variable_declaration_statement 
 	|       statement;						
 
-local_variable_declaration_statement : local_variable_declaration PT_VIRGULA local_variable_declaration_;
+local_variable_declaration_statement : local_variable_declaration PT_VIRGULA /*{printf("lin: %d, col: %d\n", line,column);}*/ local_variable_declaration_;
 
-local_variable_declaration_ : local_variable_declaration PT_VIRGULA
+local_variable_declaration_ : local_variable_declaration PT_VIRGULA local_variable_declaration_
 			|	/** empty **/;
 
-local_variable_declaration :    primitive_type variable_declarators
-			|	primitive_type OPEN_COLC CLOSE_COLC variable_declarators;
-						
+local_variable_declaration :    field_modifiers_ primitive_type variable_declarators 
+				{insertVarListInCurrMethodContext($2, $1);}
+			|	field_modifiers_ primitive_type OPEN_COLC CLOSE_COLC variable_declarators
+				{insertVarListInCurrMethodContext($2, $1);};
+					
 
 primitive_type :	numeric_type 
                |       TYPE_BOOL 
                |       TYPE_STRING;
 
-numeric_type :	integral_type 
+numeric_type :	     integral_type 
              |       floating_point_type;
 
 integral_type :		TYPE_BYTE
@@ -120,15 +122,15 @@ integral_type :		TYPE_BYTE
 floating_point_type :	TYPE_FLOAT 
                 |       TYPE_DOUBLE;
 
-variable_declarators :          variable_declarator {insertStringToStrList($1);}variable_declarators_ ;
+variable_declarators :          variable_declarator {insertStringToStrList($1);} variable_declarators_ ;
 
 variable_declarator : variable_declarator_id variable_declarator_ {$$ = $1;};
 
 variable_declarators_ :         VIRGULA  variable_declarator {insertStringToStrList($2);} variable_declarators_	
                         |       /** empty **/;
 
-variable_declarator_ :          EQUAL variable_initializer /**{$$ = $2}**/ 
-                        |       /** empty **/ /**{$$ = "empty"}**/;
+variable_declarator_ :          EQUAL variable_initializer 
+                        |       /** empty **/;
 
 variable_declarator_id :        identifier {$$ = $1;}; 
  
@@ -136,7 +138,7 @@ variable_initializer :         assignment_expression
                         |       array_initializer
 			|	left_hand_side;
 
-array_initializer :	BEG variable_initializers  virgula_opt END /**{$$ = $2}**/
+array_initializer :	BEG variable_initializers  virgula_opt END 
 			|	array_creation_expression /**{$$ = $0}**/; 
 
 virgula_opt :	VIRGULA
@@ -412,10 +414,7 @@ class_member_declaration :     STATIC  field_modifiers_ {final_modifier = $2;} f
 field_or_method_declaration :   primitive_type {method_or_field_type = $1;} colc_opt field_or_method_declaration_rest
 			|	void_method_declaration;
 
-field_or_method_declaration_rest: method_declaration {
-						setCurrentContext(METHOD_CONTEXT); 
-						insertMethod($1, method_or_field_type);
-						} 
+field_or_method_declaration_rest: method_declaration  
 			|	field_declaration {
 						setCurrentContext(CLASS_CONTEXT);
 						insertVarListInGlobalContext(method_or_field_type, final_modifier);
@@ -426,11 +425,12 @@ colc_opt: OPEN_COLC CLOSE_COLC
 
 method_declaration :	method_header method_body {$$ = $1;};
 
-method_header :	identifier method_declarator {$$ = $1;};
+method_header :	identifier {setCurrentContext(METHOD_CONTEXT); insertMethod($1, method_or_field_type);	}
+					method_declarator;
 
 void_method_declaration: VOID identifier method_declarator method_body {setCurrentContext(METHOD_CONTEXT); insertMethod($2, "t_void");};
 
-method_declarator :	OPEN_PAREN formal_parameter_list CLOSE_PAREN;
+method_declarator :	OPEN_PAREN formal_parameter_list CLOSE_PAREN {finishCurrMethodSignCreation();};
 
 method_body :	block;
 
@@ -440,10 +440,10 @@ formal_parameter_list :	formal_parameter formal_parameter_list_
 formal_parameter_list_ : VIRGULA formal_parameter formal_parameter_list_
 		|	/** empty **/;
 
-formal_parameter :	primitive_type variable_declarator_id 
-	|	array_type variable_declarator_id ;
+formal_parameter :	primitive_type variable_declarator_id {addParamInCurrMethod($2, $1);}
+	|	array_type variable_declarator_id {addParamInCurrMethod($2, "t_array");};
 
-field_declaration :	variable_declarators colc_opt PT_VIRGULA /*{$$ = $1;}*/;
+field_declaration :	variable_declarators colc_opt PT_VIRGULA;
 
 
 field_modifiers_ :	FINAL {$$ = YES;}
