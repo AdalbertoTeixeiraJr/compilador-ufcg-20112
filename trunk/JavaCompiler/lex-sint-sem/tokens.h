@@ -101,7 +101,8 @@
      TYPE_DOUBLE = 317,
      TYPE_CHAR = 318,
      TYPE_STRING = 319,
-     LITERAL = 320
+     LITERAL = 320,
+     THIS = 321
    };
 #endif
 /* Tokens.  */
@@ -168,6 +169,7 @@
 #define TYPE_CHAR 318
 #define TYPE_STRING 319
 #define LITERAL 320
+#define THIS 321
 
 
 
