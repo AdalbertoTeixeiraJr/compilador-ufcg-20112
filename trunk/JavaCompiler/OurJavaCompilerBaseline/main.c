@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "ClassContext.h"
 
@@ -79,5 +80,7 @@ int main(){
 
 int yyerror(char *msg){
 	fprintf(stderr,"%s\n",msg);
+	exit(1);
+
 	return 1;
 }

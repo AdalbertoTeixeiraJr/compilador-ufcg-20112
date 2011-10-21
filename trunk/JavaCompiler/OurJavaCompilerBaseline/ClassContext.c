@@ -369,3 +369,12 @@ int insertStringToStrList(char * id){
 
 	return result;
 }
+
+/*************** SEMANTIC CHECK FUNCTIONS ***************/
+
+void checkStaticClassId(char * id){
+	int result = (strcmp(classContext->name, id) == 0) ? OK : WRONG_STATIC_CLASS_CALL;
+	CHECK_RESULT(result);
+}
+
+

@@ -70,4 +70,8 @@ char * getVarTypevalInCurrMethodContext (char * id);
 //// INSERTING
 int insertStringToStrList(char * id);
 
+/*************** SEMANTIC CHECK FUNCTIONS ***************/
+
+void checkStaticClassId(char * id);
+
 #endif /* CLASSCONTEXT_H_ */
