@@ -20,8 +20,14 @@ static StrNode * createStrNode(char * str);
 static StrNode * getIdInStrList(char * id);
 static void freeStrList();
 
+static MethodNode * getCurrentCalledMethod();
+static LineCollumnCoord * getLastLineCollumnFromCalledMethods();
+
 ClassContext * classContext = NULL;
 StrNode * strList = NULL;
+MethodNode * calledMethods = NULL;
+LineCollumnCoord * calledMethodsLC = NULL;
+
 int currentContext = CLASS_CONTEXT;
 
 /*
@@ -172,12 +178,7 @@ void displayClassContext(){
  */
 
 static MethodNode * getCurrentMethod(){
-	MethodNode * methodNode = classContext->methodContext;
-
-	while(methodNode->nextMethod != NULL){
-		methodNode = methodNode->nextMethod;
-	}
-	return methodNode;
+	return getLastMethodNodeInList(classContext->methodContext);
 }
 
 /*
@@ -370,6 +371,87 @@ int insertStringToStrList(char * id){
 	return result;
 }
 
+/*
+ * == AUXILIAR ===== CALLED METHODS STRUCTURE
+ */
+
+int addCalledMethod(char * idName, char * typeReturn){
+	int result = OK;
+
+	MethodNode * newMethod;
+	MethodNode * calledMethodList = calledMethods;
+
+	newMethod = createMethodNode(idName, typeReturn);
+
+	if (newMethod != NULL){
+		if (calledMethodList == NULL){
+			calledMethods = newMethod;
+		}else{
+			while(calledMethodList->nextMethod != NULL){
+				calledMethodList = calledMethodList->nextMethod;
+			}
+			calledMethodList->nextMethod = newMethod;
+		}
+	}else{
+		result = CALLED_METHOD_CREATION_MALLOC_ERROR;
+	}
+
+	CHECK_RESULT(result);
+	return result;
+}
+
+int addArgsToCurrCalledMethod(char * id, char * typeval){
+	int result = OK;
+
+	MethodNode * curCalledMethod = getCurrentCalledMethod();
+	if (curCalledMethod != NULL){
+		curCalledMethod = addParamInMethod(curCalledMethod, id, typeval);
+	}else{
+		result = CURR_CALLED_METHOD_IS_NULL;
+	}
+
+	CHECK_RESULT(result);
+	return result;
+}
+
+int setLineCollumnOfCalledMethod(int line, int collumn){
+	int result = OK;
+
+	LineCollumnCoord * newLineCollumn;
+	LineCollumnCoord * lastLineCollumn = getLastLineCollumnFromCalledMethods();
+
+	newLineCollumn = (LineCollumnCoord*) malloc(sizeof(LineCollumnCoord));
+
+	if (newLineCollumn != NULL){
+		newLineCollumn->line = line;
+		newLineCollumn->collumn = collumn;
+		newLineCollumn->next = NULL;
+
+		if (lastLineCollumn == NULL){
+			calledMethodsLC = newLineCollumn;
+		}else{
+			lastLineCollumn->next = newLineCollumn;
+		}
+	}else{
+		result = CALLED_METHOD_LINE_COLLUMN_CREATION_MALLOC_ERROR;
+	}
+
+	CHECK_RESULT(result);
+	return result;
+}
+
+/*
+ * STATIC FUNCTIONS
+ */
+
+static MethodNode * getCurrentCalledMethod(){
+	return getLastMethodNodeInList(calledMethods);
+}
+
+static LineCollumnCoord * getLastLineCollumnFromCalledMethods(){
+	return getLastLineCollumCoordInList(calledMethodsLC);
+}
+
 /*************** SEMANTIC CHECK FUNCTIONS ***************/
 
 void checkStaticClassId(char * id){
@@ -377,4 +459,36 @@ void checkStaticClassId(char * id){
 	CHECK_RESULT(result);
 }
 
+int checkCalledAndRealMethodsCorrespondence(){
+	int result = OK;
+
+	MethodNode * calledMethodList = calledMethods;
+	MethodNode * declaredMethodList = NULL;
+	LineCollumnCoord * lineCollumnList = calledMethodsLC;
+
+	while(calledMethodList != NULL){
+		declaredMethodList = classContext->methodContext;
+		while(declaredMethodList != NULL){
+			if (isMethodEqual(declaredMethodList, calledMethodList) == NO){
+				fprintf(stderr,"MethodName: %s, Line: %d, Collumn: %d\n", calledMethodList->idName, lineCollumnList->line, lineCollumnList->collumn);
+				result = WRONG_METHOD_CALL;
+				break;
+			}
+			declaredMethodList = declaredMethodList->nextMethod;
+		}
+
+		if(result == OK){
+			calledMethodList = calledMethodList->nextMethod;
+			lineCollumnList = lineCollumnList->next;
+		}else{
+			break;
+		}
+	}
+
+	freeMethodList(calledMethods);
+	freeLineCollumnCoordList(calledMethodsLC);
+
+	CHECK_RESULT(result);
+	return result;
+}
 
