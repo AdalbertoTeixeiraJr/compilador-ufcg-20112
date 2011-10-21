@@ -66,12 +66,18 @@ int isVarFinalInCurrMethodContext(char * id);
 VarNode * getVarInCurrMethodContext(char * id);
 char * getVarTypevalInCurrMethodContext (char * id);
 
+/*************** CALLED METHODS FUNCTIONS ***************/
+int addCalledMethod(char * idName, char * typeReturn);
+int addArgsToCurrCalledMethod(char * id, char * typeval);
+int setLineCollumnOfCalledMethod(int line, int collumn);
+void freeCalledMethodList();
+
 /*************** STRING NODE FUNCTIONS ***************/
 //// INSERTING
 int insertStringToStrList(char * id);
 
 /*************** SEMANTIC CHECK FUNCTIONS ***************/
-
 void checkStaticClassId(char * id);
+int checkCalledAndRealMethodsCorrespondence();
 
 #endif /* CLASSCONTEXT_H_ */

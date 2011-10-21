@@ -146,14 +146,24 @@ MethodNode * addParamInMethod(MethodNode * method, char * id, char * type){
 }
 
 MethodNode * getMethodNodeInList (MethodNode * nodeList, char * idName){
-
-	while(nodeList != NULL){
-		if (strcmp(nodeList->idName, idName) == 0){
+	MethodNode * method = nodeList;
+	while(method != NULL){
+		if (strcmp(method->idName, idName) == 0){
 			break;
 		}
-		nodeList = nodeList->nextMethod;
+		method = method->nextMethod;
 	}
-	return nodeList;
+	return method;
+}
+
+MethodNode * getLastMethodNodeInList (MethodNode * methodList){
+	MethodNode * method = methodList;
+	if (method != NULL){
+		while(method->nextMethod != NULL){
+			method = method->nextMethod;
+		}
+	}
+	return method;
 }
 
 void freeMethodList(MethodNode * list){
@@ -202,5 +212,28 @@ void displayMethodNodeList(MethodNode * methodNodeList){
 		displayVarNodeList(methodNodeList->varNodes);
 
 		methodNodeList = methodNodeList->nextMethod;
+	}
+}
+
+/*
+ * =============== LINE COLLUMN COORD FUNCTION DEFINITIONS
+ */
+
+LineCollumnCoord * getLastLineCollumCoordInList(LineCollumnCoord * calledMethodsLC){
+	LineCollumnCoord * lineCollumnCoord = calledMethodsLC;
+	if (lineCollumnCoord != NULL){
+		while(lineCollumnCoord->next != NULL){
+			lineCollumnCoord = lineCollumnCoord->next;
+		}
+	}
+	return lineCollumnCoord;
+}
+
+void freeLineCollumnCoordList(LineCollumnCoord * list){
+	LineCollumnCoord * listTmp = list;
+	while(listTmp != NULL){
+		list = listTmp;
+		listTmp = listTmp->next;
+		free(list);
 	}
 }

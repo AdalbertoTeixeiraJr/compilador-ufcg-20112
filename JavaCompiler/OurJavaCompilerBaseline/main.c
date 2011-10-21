@@ -71,6 +71,13 @@ int main(){
 
 	insertVarListInCurrMethodContext("FLOAT", 1);
 
+	// add called method
+	addCalledMethod("Metodo", "STRING");
+	addArgsToCurrCalledMethod("OPA", "TIPO");
+	setLineCollumnOfCalledMethod(1,2);
+
+	checkCalledAndRealMethodsCorrespondence();
+
 	displayClassContext();
 
 	freeClassContext();
@@ -80,7 +87,7 @@ int main(){
 
 int yyerror(char *msg){
 	fprintf(stderr,"%s\n",msg);
-	exit(1);
+//	exit(1);
 
 	return 1;
 }
