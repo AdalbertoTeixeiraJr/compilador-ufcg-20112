@@ -54,8 +54,10 @@ int final_modifier = 0;
 
 %token <strval, typeval> LITERAL
 
-
+/** Types **/
 %type <typeval> numeric_type  primitive_type integral_type floating_point_type
+
+/** Fields and Methods **/
 %type <strval> identifier 
 %type <strval> variable_declarators
 %type <strval> variable_declarator_id
@@ -65,6 +67,28 @@ int final_modifier = 0;
 %type <typeval> array_creation_expression
 %type <strval> method_header
 %type <strval> method_declaration
+
+/** Expressions **/
+%type <typeval> conditional_or_expression
+%type <typeval> conditional_or_expression_
+%type <typeval> conditional_and_expression_ 
+%type <typeval> inclusive_or_expression_ 
+%type <typeval> exclusive_or_expression_ 
+%type <typeval> and_expression_	
+%type <typeval> equality_expression_ 
+%type <typeval> relational_expression_ 
+%type <typeval> shift_expression_ 
+%type <typeval> additive_expression_ 
+%type <typeval> multiplicative_expression_
+%type <typeval> conditional_and_expression
+%type <typeval> inclusive_or_expression 
+%type <typeval> exclusive_or_expression 
+%type <typeval> and_expression	
+%type <typeval> equality_expression 
+%type <typeval> relational_expression 
+%type <typeval> shift_expression 
+%type <typeval> additive_expression 
+%type <typeval> multiplicative_expression
 
 
 
@@ -129,12 +153,12 @@ variable_declarator : variable_declarator_id variable_declarator_ {$$ = $1;};
 variable_declarators_ :         VIRGULA  variable_declarator {insertStringToStrList($2);} variable_declarators_	
                         |       /** empty **/;
 
-variable_declarator_ :          EQUAL variable_initializer 
+variable_declarator_ :          EQUAL variable_initializer /** metodo que compare com o method_or_field_type **/
                         |       /** empty **/;
 
 variable_declarator_id :        identifier {$$ = $1;}; 
  
-variable_initializer :         assignment_expression
+variable_initializer :         assignment_expression /** comparar se o tipo de retorno ta certo **/
                         |       array_initializer
 			|	left_hand_side;
 
@@ -150,11 +174,12 @@ variable_initializers :         variable_initializer variable_initializers_
 variable_initializers_ :        VIRGULA variable_initializer variable_initializers_ 
                         |       /** empty **/; 
 
-expression : assignment_expression;
+expression : assignment_expression /** tipo de retorno **/;
 
 assignment_expression : conditional_expression;
 
-field_access : identifier POINT identifier;
+field_access : identifier POINT identifier /** metodo que compara o $1 com o nome da classe*/
+	|	THIS POINT identifier;
 
 left_hand_side :	field_access 
                 |       array_access;
@@ -168,7 +193,7 @@ array_access : primary_no_new_array OPEN_COLC expression CLOSE_COLC;
 
 primary_no_new_array : 	LITERAL 
 		| 	field_access 
-		|	method_invocation 
+		|	method_invocation /** verifica se o metodo ja foi declarado, se nao insere na lista de metodos nao declarados **/ /** compara o tipo de retorno tbm **/
 	        | 	array_access
 		|	identifier;
 
@@ -190,22 +215,22 @@ dims: dim_exprs
 
 
 
-conditional_expression : conditional_or_expression 
+conditional_expression : conditional_or_expression /** {$$ = $1} **/
                         | OPEN_PAREN conditional_or_expression CLOSE_PAREN conditional_opt
-			| conditional_or_expression QUESTION_MARK conditional_expression TWO_POINTS conditional_expression;
-			| OPEN_PAREN conditional_or_expression CLOSE_PAREN QUESTION_MARK  conditional_expression TWO_POINTS conditional_expression;
+			| conditional_or_expression /** tem que retornar um boolean **/ QUESTION_MARK conditional_expression TWO_POINTS conditional_expression;
+			| OPEN_PAREN conditional_or_expression CLOSE_PAREN QUESTION_MARK  conditional_expression TWO_POINTS conditional_expression; /** nao entendi essa regra! **/
 
 
-conditional_opt: conditional_or_expression_ 
-	|	conditional_and_expression_
-	|	inclusive_or_expression_
-	|	exclusive_or_expression_
-	|	and_expression_	
-	|	equality_expression_
-	|	relational_expression_
-	|	shift_expression_
-	|	additive_expression_
-	|	multiplicative_expression_
+conditional_opt: conditional_or_expression_ /** {$$ = $1} **/
+	|	conditional_and_expression_ /** {$$ = $1} **/
+	|	inclusive_or_expression_ /** {$$ = $1} **/
+	|	exclusive_or_expression_ /** {$$ = $1} **/
+	|	and_expression_	/** {$$ = $1} **/
+	|	equality_expression_ /** {$$ = $1} **/
+	|	relational_expression_ /** {$$ = $1} **/
+	|	shift_expression_ /** {$$ = $1} **/
+	|	additive_expression_ /** {$$ = $1} **/
+	|	multiplicative_expression_ /** {$$ = $1} **/
 	|	/* empty */;
 
 
@@ -222,7 +247,7 @@ conditional_and_expression_ : AND_LOGIC inclusive_or_expression conditional_and_
 			| /** empty **/;
 
 inclusive_or_expression : exclusive_or_expression  inclusive_or_expression_ 
-		|	exclusive_or_expression  OPEN_PAREN conditional_expression CLOSE_PAREN    ;
+		|	exclusive_or_expression  OPEN_PAREN conditional_expression CLOSE_PAREN;
 
 inclusive_or_expression_ : OR exclusive_or_expression inclusive_or_expression_ 
                         | /** empty **/;
@@ -234,7 +259,7 @@ exclusive_or_expression_ : OR_EXC and_expression exclusive_or_expression_
                         | /** empty **/;
 
 and_expression : equality_expression and_expression_
-		|	equality_expression OPEN_PAREN conditional_expression CLOSE_PAREN   ;
+		|	equality_expression OPEN_PAREN conditional_expression CLOSE_PAREN;
 
 and_expression_ : AND equality_expression and_expression_ 
                         | /** empty **/;
@@ -265,14 +290,14 @@ additive_expression_ : PLUS multiplicative_expression additive_expression_
 			| /** empty **/;
 
 multiplicative_expression : unary_expression multiplicative_expression_  
-			|    unary_expression OPEN_PAREN conditional_expression  CLOSE_PAREN  ;
+			|    unary_expression OPEN_PAREN conditional_expression  CLOSE_PAREN;
 
 multiplicative_expression_ : MULT unary_expression multiplicative_expression_ 
                         | DIV unary_expression multiplicative_expression_ 
                         | MOD unary_expression multiplicative_expression_
 			| /** empty **/;
 
-unary_expression : 	INCREMENT unary_expression
+unary_expression : 	INCREMENT unary_expression /** verificar pra que tipos cada operacao pode ser feita **/
 		|	DECREMENT unary_expression  
 		|	PLUS unary_expression  
 		|	MINUS unary_expression  
@@ -288,7 +313,7 @@ cast_expression : OPEN_PAREN primitive_type CLOSE_PAREN unary_expression
 reference_type : 	class_type
 		|       array_type;
 
-class_type :	identifier;
+class_type :	identifier /** verificar se eh o nome da classe, tem ctza que precisa disso, como ele vai referenciar a propria classe?? **/;
 
 array_type :	primitive_type OPEN_COLC CLOSE_COLC;
 

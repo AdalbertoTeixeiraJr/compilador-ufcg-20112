@@ -102,6 +102,7 @@ string_literal	["][^"]*["]
 "public"			{moveCol();return PUBLIC;}
 "main"				{moveCol();return MAIN;}
 "args"				{moveCol();return ARGS;}
+"this"				{moveCol();return THIS;}
 "int"				{moveCol();yylval.typeval ="t_int";
 						return TYPE_INT;}
 "short"				{moveCol();yylval.typeval =strdup("t_short");
