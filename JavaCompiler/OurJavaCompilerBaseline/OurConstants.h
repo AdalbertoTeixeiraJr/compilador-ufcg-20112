@@ -38,6 +38,7 @@
 #define REPEATED_METHOD_PARAM_ID_ERROR						-7
 #define REPEATED_METHOD_ERROR								-8
 #define LOCAL_VARS_LIST_INSERTION_MALLOC_ERROR				-9
+#define WRONG_STATIC_CLASS_CALL								-10
 
 /*********** PUBLIC FUNCTION DECLARATIONS ************/
 void treatErrorResults(int val);
