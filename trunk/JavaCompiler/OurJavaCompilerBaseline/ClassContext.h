@@ -40,7 +40,6 @@ void createClassContext(char * className);
 void insertVarListInGlobalContext(char * typeval, int isFinal); //, int arrayLevels
 void insertMethod(char * idName, char * typeReturn); //, int arrayLevels
 void addParamInCurrMethod(char * id, char * typeval);//, int arrayLevels
-void finishCurrMethodSignCreation();
 void insertVarListInCurrMethodContext(char * typeval, int isFinal);//, int arrayLevels
 
 //// FREEING
@@ -55,7 +54,6 @@ void insertStringToStrList(char * id);
 
 /*************** SEMANTIC CHECK FUNCTIONS ***************/
 void checkStaticClassId(char * id);
-int checkCalledAndRealMethodsCorrespondence();
-
+void checkEqualMethodSignature();
 
 #endif /* CLASSCONTEXT_H_ */

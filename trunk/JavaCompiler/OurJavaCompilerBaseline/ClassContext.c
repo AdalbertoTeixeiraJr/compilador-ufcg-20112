@@ -215,28 +215,6 @@ void addParamInCurrMethod(char * id, char * typeval){
 	CHECK_RESULT(result);
 }
 
-void finishCurrMethodSignCreation(){
-	CHECK_GLOBAL_CONTEXT(currentContext);
-
-	int result = OK;
-
-	// NOW WE CHECK FOR EQUALITY
-	MethodNode * methodList = classContext->methodContext;
-	MethodNode * curMethod = getCurrentMethod();
-
-	if(methodList != NULL){
-		while (methodList->next != NULL){
-			if (isMethodEqual(methodList, curMethod) == YES){
-				result = REPEATED_METHOD_ERROR;
-				break;
-			}
-			methodList = methodList->next;
-		}
-	}
-
-	CHECK_RESULT(result);
-}
-
 void insertVarListInCurrMethodContext(char * typeval, int isFinal){
 	if (currentContext != LOCAL_CONTEXT){
 		freeStrList();
@@ -404,38 +382,24 @@ void checkStaticClassId(char * id){
 	CHECK_RESULT(result);
 }
 
-int checkCalledAndRealMethodsCorrespondence(){
-	int result;
+void checkEqualMethodSignature(){
+	CHECK_GLOBAL_CONTEXT(currentContext);
 
-	MethodNode * calledMethodList = calledMethods;
-	MethodNode * declaredMethodList = NULL;
-	LineCollumnCoord * lineCollumnList = calledMethodsLC;
+	int result = OK;
 
-	while(calledMethodList != NULL){
-		result = WRONG_METHOD_CALL;
-		declaredMethodList = classContext->methodContext;
+	// NOW WE CHECK FOR EQUALITY
+	MethodNode * methodList = classContext->methodContext;
+	MethodNode * curMethod = getCurrentMethod();
 
-		while(declaredMethodList != NULL){
-			if (isMethodEqual(declaredMethodList, calledMethodList) == YES){
-				result = OK;
+	if(methodList != NULL){
+		while (methodList->next != NULL){
+			if (isMethodEqual(methodList, curMethod) == YES){
+				result = REPEATED_METHOD_ERROR;
 				break;
 			}
-			declaredMethodList = declaredMethodList->next;
-		}
-
-		if(result == OK){
-			calledMethodList = calledMethodList->next;
-			lineCollumnList = lineCollumnList->next;
-		}else{
-			fprintf(stderr,"Method Name: %s, Return Type: %s, Line: %d, Collumn: %d\n", calledMethodList->idName, calledMethodList->returnType, lineCollumnList->line, lineCollumnList->collumn);
-			break;
+			methodList = methodList->next;
 		}
 	}
 
-	freeMethodList(calledMethods);
-	freeLineCollumnCoordList(calledMethodsLC);
-
 	CHECK_RESULT(result);
-	return result;
 }
-

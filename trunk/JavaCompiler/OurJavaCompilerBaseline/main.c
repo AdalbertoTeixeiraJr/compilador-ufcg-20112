@@ -16,7 +16,7 @@ int main(){
 	insertVarListInGlobalContext("STRING", NO);
 
 	insertMethod("MethodA", "INT");
-	finishCurrMethodSignCreation();
+	checkEqualMethodSignature();
 
 	setCurrentContext(LOCAL_CONTEXT);
 
@@ -26,7 +26,7 @@ int main(){
 	setCurrentContext(GLOBAL_CONTEXT);
 
 	insertMethod("MethodB", "INT");
-	finishCurrMethodSignCreation();
+	checkEqualMethodSignature();
 
 	insertMethod("MethodC", "INT");
 
@@ -34,7 +34,7 @@ int main(){
 	addParamInCurrMethod("Param2", "LONG");
 	addParamInCurrMethod("Param3", "LONG");
 
-	finishCurrMethodSignCreation();
+	checkEqualMethodSignature();
 
 	setCurrentContext(LOCAL_CONTEXT);
 
