@@ -14,24 +14,35 @@
 
 #include "ClassContext.h"
 
+/*************** STATIC FUNCTIONS ***************/
+//// GETTING
+static MethodNode * getMethod(char * idName);
+static VarNode * getVarInGlobalContext(char * id);
+static char * getVarTypevalInGlobalContext (char * id);
 static MethodNode * getCurrentMethod();
+static VarNode * getVarInCurrMethodContext(char * id);
+static char * getVarTypevalInCurrMethodContext (char * id);
 
+//// CHECKING
+static int isVarFinalInGlobalContext(char * id);
+static int isVarFinalInCurrMethodContext(char * id);
+
+//// STRLIST
 static StrNode * createStrNode(char * str);
 static StrNode * getIdInStrList(char * id);
 static void freeStrList();
 
-static MethodNode * getCurrentCalledMethod();
-static LineCollumnCoord * getLastLineCollumnFromCalledMethods();
 
+/*************** GLOBAL VARIABLES ***************/
 ClassContext * classContext = NULL;
 StrNode * strList = NULL;
 MethodNode * calledMethods = NULL;
 LineCollumnCoord * calledMethodsLC = NULL;
+int currentContext = GLOBAL_CONTEXT;
 
-int currentContext = CLASS_CONTEXT;
 
 /*
- * ALL CONTEXT FUNCTION DEFINITIONS
+ * CLASSCONTEXT FUNCTION DEFINITIONS
  */
 
 void setCurrentContext(int context){
@@ -39,12 +50,29 @@ void setCurrentContext(int context){
 }
 
 /*
- * CLASSCONTEXT FUNCTION DEFINITIONS
+ * STATIC FUNCTIONS
  */
+
+static char * getVarTypevalInGlobalContext (char * id){
+	char * result = NULL;
+	VarNode * node = getVarNodeInList(classContext->varsContext, id);
+
+	if (node != NULL){
+		result = node->typeval;
+	}
+	return result;
+}
+
+static MethodNode * getMethod(char * idName){
+	return getMethodNodeInList(classContext->methodContext, idName);
+}
+
 
 //// CREATING
 
-int createClassContext(char * className){
+void createClassContext(char * className){
+
+	CHECK_GLOBAL_CONTEXT(currentContext);
 
 	int result = OK;
 	classContext = (ClassContext*) malloc(sizeof(ClassContext));
@@ -63,13 +91,15 @@ int createClassContext(char * className){
 	}
 
 	CHECK_RESULT(result);
-
-	return result;
 }
 
 //// INSERTING
 
-int insertVarListInGlobalContext(char * typeval, int isFinal){
+void insertVarListInGlobalContext(char * typeval, int isFinal, int context){
+	if (context != currentContext){
+		return;
+	}
+
 	int result = OK;
 	StrNode * strNode = strList;
 	VarNode * nodeTmp = NULL;
@@ -87,11 +117,11 @@ int insertVarListInGlobalContext(char * typeval, int isFinal){
 	freeStrList();
 
 	CHECK_RESULT(result);
-
-	return result;
 }
 
-int insertMethod(char * idName, char * typeReturn){
+void insertMethod(char * idName, char * typeReturn){
+	CHECK_GLOBAL_CONTEXT(currentContext);
+
 	int result = OK;
 
 	MethodNode * newMethod;
@@ -112,42 +142,12 @@ int insertMethod(char * idName, char * typeReturn){
 	}
 
 	CHECK_RESULT(result);
-
-	return result;
 }
-
-//// CHECKING
-
-int isVarFinalInGlobalContext(char * id){
-	int result = INEXISTANT_ID_IN_CONTEXT;
-	VarNode * node = getVarNodeInList(classContext->varsContext, id);
-
-	if (node != NULL){
-		result = node->isFinal;
-	}
-	return result;
-}
-
 
 //// GETTING
 
 VarNode * getVarInGlobalContext(char * id){
 	return getVarNodeInList(classContext->varsContext, id);
-}
-
-
-char * getVarTypevalInGlobalContext (char * id){
-	char * result = NULL;
-	VarNode * node = getVarNodeInList(classContext->varsContext, id);
-
-	if (node != NULL){
-		result = node->typeval;
-	}
-	return result;
-}
-
-MethodNode * getMethod(char * idName){
-	return getMethodNodeInList(classContext->methodContext, idName);
 }
 
 //// FREEING
@@ -169,6 +169,7 @@ void displayClassContext(){
 	displayMethodNodeList(classContext->methodContext);
 }
 
+
 /*
  * METHOD FUNCTION DEFINITIONS
  */
@@ -181,13 +182,27 @@ static MethodNode * getCurrentMethod(){
 	return getLastMethodNodeInList(classContext->methodContext);
 }
 
+static char * getVarTypevalInCurrMethodContext (char * id){
+	char * result = NULL;
+	VarNode * node = getVarNodeInList(getCurrentMethod()->varNodes, id);
+
+	if (node != NULL){
+		result = node->typeval;
+	}
+	return result;
+}
+
+
 /*
  * PUBLIC FUNCTIONS
  */
 
 // INSERTING
 
-int addParamInCurrMethod(char * id, char * typeval){
+void addParamInCurrMethod(char * id, char * typeval){
+
+	CHECK_GLOBAL_CONTEXT(currentContext);
+
 	int result = OK;
 	MethodNode * curMethod = getCurrentMethod();
 	if (getVarNodeInList(curMethod->params, id) == NULL){
@@ -197,11 +212,11 @@ int addParamInCurrMethod(char * id, char * typeval){
 	}
 
 	CHECK_RESULT(result);
-
-	return result;
 }
 
-int finishCurrMethodSignCreation(){
+void finishCurrMethodSignCreation(){
+	CHECK_GLOBAL_CONTEXT(currentContext);
+
 	int result = YES;
 
 	// NOW WE CHECK FOR EQUALITY
@@ -216,11 +231,11 @@ int finishCurrMethodSignCreation(){
 	}
 
 	CHECK_RESULT(result);
-
-	return result;
 }
 
-int insertVarListInCurrMethodContext(char * typeval, int isFinal){
+void insertVarListInCurrMethodContext(char * typeval, int isFinal){
+	CHECK_LOCAL_CONTEXT(currentContext);
+
 	int result = OK;
 
 	// GET THE CURRENT METHOD
@@ -243,37 +258,12 @@ int insertVarListInCurrMethodContext(char * typeval, int isFinal){
 	freeStrList();
 
 	CHECK_RESULT(result);
-
-	return result;
-}
-
-
-// CHECKING
-
-int isVarFinalInCurrMethodContext(char * id){
-	int result = INEXISTANT_ID_IN_CONTEXT;
-	VarNode * node = getVarNodeInList(getCurrentMethod()->varNodes, id);
-
-	if (node != NULL){
-		result = node->isFinal;
-	}
-	return result;
 }
 
 // GETTING
 
 VarNode * getVarInCurrMethodContext(char * id){
 	return getVarNodeInList(getCurrentMethod()->varNodes, id);
-}
-
-char * getVarTypevalInCurrMethodContext (char * id){
-	char * result = NULL;
-	VarNode * node = getVarNodeInList(getCurrentMethod()->varNodes, id);
-
-	if (node != NULL){
-		result = node->typeval;
-	}
-	return result;
 }
 
 /*
@@ -333,12 +323,16 @@ static void freeStrList(){
  * PUBLIC FUNCTIONS
  */
 
-int insertStringToStrList(char * id){
+void insertStringToStrList(char * id, int context){
+	if (context != currentContext){
+		return;
+	}
+
 	int result = OK;
 	StrNode * node = strList;
 
 	// IS THERE ANOTHER OF THIS? IT DEPENDS ON THE CONTEXT...
-	if(currentContext == METHOD_CONTEXT){
+	if(currentContext == LOCAL_CONTEXT){
 		if (getVarInCurrMethodContext(id) != NULL || getIdInStrList(id) != NULL){
 			result = LOCAL_VAR_ID_ALREADY_EXISTS_ERROR;
 		}
@@ -367,92 +361,39 @@ int insertStringToStrList(char * id){
 	}
 
 	CHECK_RESULT(result);
-
-	return result;
 }
 
-/*
- * == AUXILIAR ===== CALLED METHODS STRUCTURE
- */
 
-int addCalledMethod(char * idName, char * typeReturn){
-	int result = OK;
 
-	MethodNode * newMethod;
-	MethodNode * calledMethodList = calledMethods;
-
-	newMethod = createMethodNode(idName, typeReturn);
-
-	if (newMethod != NULL){
-		if (calledMethodList == NULL){
-			calledMethods = newMethod;
-		}else{
-			while(calledMethodList->next != NULL){
-				calledMethodList = calledMethodList->next;
-			}
-			calledMethodList->next = newMethod;
-		}
-	}else{
-		result = CALLED_METHOD_CREATION_MALLOC_ERROR;
-	}
-
-	CHECK_RESULT(result);
-	return result;
-}
-
-int addArgsToCurrCalledMethod(char * id, char * typeval){
-	int result = OK;
-
-	MethodNode * curCalledMethod = getCurrentCalledMethod();
-	if (curCalledMethod != NULL){
-		curCalledMethod = addParamInMethod(curCalledMethod, id, typeval);
-	}else{
-		result = CURR_CALLED_METHOD_IS_NULL;
-	}
-
-	CHECK_RESULT(result);
-	return result;
-}
-
-int setLineCollumnOfCalledMethod(int line, int collumn){
-	int result = OK;
-
-	LineCollumnCoord * newLineCollumn;
-	LineCollumnCoord * lastLineCollumn = getLastLineCollumnFromCalledMethods();
-
-	newLineCollumn = (LineCollumnCoord*) malloc(sizeof(LineCollumnCoord));
-
-	if (newLineCollumn != NULL){
-		newLineCollumn->line = line;
-		newLineCollumn->collumn = collumn;
-		newLineCollumn->next = NULL;
-
-		if (lastLineCollumn == NULL){
-			calledMethodsLC = newLineCollumn;
-		}else{
-			lastLineCollumn->next = newLineCollumn;
-		}
-	}else{
-		result = CALLED_METHOD_LINE_COLLUMN_CREATION_MALLOC_ERROR;
-	}
-
-	CHECK_RESULT(result);
-	return result;
-}
+/*************** SEMANTIC CHECK FUNCTIONS ***************/
 
 /*
  * STATIC FUNCTIONS
  */
 
-static MethodNode * getCurrentCalledMethod(){
-	return getLastMethodNodeInList(calledMethods);
+static int isVarFinalInCurrMethodContext(char * id){
+	int result = INEXISTANT_ID_IN_CONTEXT;
+	VarNode * node = getVarNodeInList(getCurrentMethod()->varNodes, id);
+
+	if (node != NULL){
+		result = node->isFinal;
+	}
+	return result;
 }
 
-static LineCollumnCoord * getLastLineCollumnFromCalledMethods(){
-	return getLastLineCollumCoordInList(calledMethodsLC);
+static int isVarFinalInGlobalContext(char * id){
+	int result = INEXISTANT_ID_IN_CONTEXT;
+	VarNode * node = getVarNodeInList(classContext->varsContext, id);
+
+	if (node != NULL){
+		result = node->isFinal;
+	}
+	return result;
 }
 
-/*************** SEMANTIC CHECK FUNCTIONS ***************/
+/*
+ * PUBLIC FUNCTIONS
+ */
 
 void checkStaticClassId(char * id){
 	int result = (strcmp(classContext->name, id) == 0) ? OK : WRONG_STATIC_CLASS_CALL;

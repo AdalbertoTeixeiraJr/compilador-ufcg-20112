@@ -22,8 +22,8 @@
 #define YES	1
 #define NO	0
 
-#define METHOD_CONTEXT	10
-#define CLASS_CONTEXT	20
+#define LOCAL_CONTEXT	10
+#define GLOBAL_CONTEXT	20
 
 // SIMPLE ERROR CONSTANTS
 #define INEXISTANT_ID_IN_CONTEXT							-10
