@@ -5,79 +5,45 @@
 
 int main(){
 
-	setCurrentContext(CLASS_CONTEXT);
+	setCurrentContext(GLOBAL_CONTEXT);
 
-	if (createClassContext("Classe A") != OK){
-		printf("Error 1!\n");
-	}
+	createClassContext("Classe A");
 
+	insertStringToStrList("a", GLOBAL_CONTEXT);
+	insertStringToStrList("b", GLOBAL_CONTEXT);
+	insertStringToStrList("c", GLOBAL_CONTEXT);
 
-	if (insertStringToStrList("a") != OK){
-		printf("Error 2!\n");
-	}
-	if (insertStringToStrList("b") != OK){
-		printf("Error 3!\n");
-	}
-	if (insertStringToStrList("c") != OK){
-		printf("Error 4!\n");
-	}
+	insertVarListInGlobalContext("STRING", NO, GLOBAL_CONTEXT);
 
+	setCurrentContext(LOCAL_CONTEXT);
 
-	if (insertVarListInGlobalContext("STRING", NO) != OK){
-		printf("Error 5!\n");
-	}
+	insertMethod("MethodA", "INT");
 
-	setCurrentContext(METHOD_CONTEXT);
-
-	if(insertMethod("MethodA", "INT") != OK){
-		printf("Error 6!\n");
-	}
-	if (insertStringToStrList("d") != OK){
-		printf("Error 7!\n");
-	}
+	insertStringToStrList("d", LOCAL_CONTEXT);
 	insertVarListInCurrMethodContext("DOUBLE", 0);
 
+	insertMethod("MethodB", "INT");
+	insertMethod("MethodC", "INT");
 
-	if(insertMethod("MethodB", "INT") != OK){
-		printf("Error 8!\n");
-	}
-	if(insertMethod("MethodC", "INT") != OK){
-		printf("Error 9!\n");
-	}
+	addParamInCurrMethod("Param1", "LONG");
+	addParamInCurrMethod("Param1", "LONG");
+	addParamInCurrMethod("Param2", "LONG");
 
-	if(addParamInCurrMethod("Param1", "LONG") != OK){
-		printf("Error 10!\n");
-	}
-	if(addParamInCurrMethod("Param1", "LONG") != OK){
-		printf("Error 11!\n");
-	}
-	if(addParamInCurrMethod("Param2", "LONG") != OK){
-		printf("Error 12!\n");
-	}
+	finishCurrMethodSignCreation();
 
-	if (finishCurrMethodSignCreation() != OK){
-		printf("Error 13!\n");
-	}
-
-	if (insertStringToStrList("d") != OK){
-		printf("Error 14!\n");
-	}
-	if (insertStringToStrList("e") != OK){
-		printf("Error 15!\n");
-	}
-	if (insertStringToStrList("f") != OK){
-		printf("Error 16!\n");
-	}
+	insertStringToStrList("d", LOCAL_CONTEXT);
+	insertStringToStrList("e", LOCAL_CONTEXT);
+	insertStringToStrList("f", LOCAL_CONTEXT);
 
 	insertVarListInCurrMethodContext("FLOAT", 1);
 
-	// add called method
-	addCalledMethod("MethodC", "INT");
-	addArgsToCurrCalledMethod("OPA", "LONG");
-	addArgsToCurrCalledMethod("OPA", "LONg");
-	setLineCollumnOfCalledMethod(1,2);
+	//  Add called method
+	//	addCalledMethod("MethodC", "INT");
+	//	addArgsToCurrCalledMethod("OPA", "LONG");
+	//	addArgsToCurrCalledMethod("OPA", "LONg");
+	//	setLineCollumnOfCalledMethod(1,2);
 
-	checkCalledAndRealMethodsCorrespondence();
+	//	checkCalledAndRealMethodsCorrespondence();
 
 	displayClassContext();
 
