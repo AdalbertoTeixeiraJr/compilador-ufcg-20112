@@ -45,7 +45,8 @@
 #define REPEATED_METHOD_ERROR								-10
 #define REPEATED_METHOD_PARAM_ID_ERROR						-11
 #define WRONG_METHOD_CALL									-12
-
+#define DIFFERENT_ARRAY_LEVEL_DEFINITION					-14
+#define INEXISTANT_ID_IN_DECLARATION						-15
 
 /*********** PUBLIC FUNCTION DECLARATIONS ************/
 void treatErrorResults(int val);

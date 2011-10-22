@@ -53,6 +53,9 @@ void treatErrorResults(int val){
 		case(WRONG_METHOD_CALL):
 			yyerror("Semantical Error: there is no declared method for this method call");
 			break;
+		case(DIFFERENT_ARRAY_LEVEL_DEFINITION):
+			yyerror("Semantical Error: the array is being defined with a different level from the declaration");
+			break;
 		default:
 			// do nothing
 			break;

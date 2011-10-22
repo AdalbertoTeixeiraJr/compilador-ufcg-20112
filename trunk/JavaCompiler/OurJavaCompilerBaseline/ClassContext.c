@@ -292,7 +292,6 @@ static StrNode * getIdInStrList(char * id){
 	return strNode;
 }
 
-
 static void freeStrList(){
 	StrNode * tmp;
 	while(strList != NULL){
@@ -400,5 +399,11 @@ void checkEqualMethodSignature(){
 		}
 	}
 
+	CHECK_RESULT(result);
+}
+
+void checkEqualityArrayLevel(int declaredLevel, int definedLevel){
+
+	int result = (declaredLevel == definedLevel)? OK: DIFFERENT_ARRAY_LEVEL_DEFINITION;
 	CHECK_RESULT(result);
 }

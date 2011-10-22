@@ -55,5 +55,6 @@ void insertStringToStrList(char * id);
 /*************** SEMANTIC CHECK FUNCTIONS ***************/
 void checkStaticClassId(char * id);
 void checkEqualMethodSignature();
+void checkEqualityArrayLevel(int declaredLevel, int definedLevel);
 
 #endif /* CLASSCONTEXT_H_ */
