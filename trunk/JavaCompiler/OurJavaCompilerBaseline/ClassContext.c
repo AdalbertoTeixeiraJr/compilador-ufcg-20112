@@ -102,10 +102,10 @@ int insertMethod(char * idName, char * typeReturn){
 		if (methodList == NULL){
 			classContext->methodContext = newMethod;
 		}else{
-			while(methodList->nextMethod != NULL){
-				methodList = methodList->nextMethod;
+			while(methodList->next != NULL){
+				methodList = methodList->next;
 			}
-			methodList->nextMethod = newMethod;
+			methodList->next = newMethod;
 		}
 	}else{
 		result = METHOD_CREATION_MALLOC_ERROR;
@@ -212,7 +212,7 @@ int finishCurrMethodSignCreation(){
 			result = REPEATED_METHOD_ERROR;
 			break;
 		}
-		methodList = methodList->nextMethod;
+		methodList = methodList->next;
 	}
 
 	CHECK_RESULT(result);
@@ -387,10 +387,10 @@ int addCalledMethod(char * idName, char * typeReturn){
 		if (calledMethodList == NULL){
 			calledMethods = newMethod;
 		}else{
-			while(calledMethodList->nextMethod != NULL){
-				calledMethodList = calledMethodList->nextMethod;
+			while(calledMethodList->next != NULL){
+				calledMethodList = calledMethodList->next;
 			}
-			calledMethodList->nextMethod = newMethod;
+			calledMethodList->next = newMethod;
 		}
 	}else{
 		result = CALLED_METHOD_CREATION_MALLOC_ERROR;
@@ -460,27 +460,29 @@ void checkStaticClassId(char * id){
 }
 
 int checkCalledAndRealMethodsCorrespondence(){
-	int result = OK;
+	int result;
 
 	MethodNode * calledMethodList = calledMethods;
 	MethodNode * declaredMethodList = NULL;
 	LineCollumnCoord * lineCollumnList = calledMethodsLC;
 
 	while(calledMethodList != NULL){
+		result = WRONG_METHOD_CALL;
 		declaredMethodList = classContext->methodContext;
+
 		while(declaredMethodList != NULL){
-			if (isMethodEqual(declaredMethodList, calledMethodList) == NO){
-				fprintf(stderr,"MethodName: %s, Line: %d, Collumn: %d\n", calledMethodList->idName, lineCollumnList->line, lineCollumnList->collumn);
-				result = WRONG_METHOD_CALL;
+			if (isMethodEqual(declaredMethodList, calledMethodList) == YES){
+				result = OK;
 				break;
 			}
-			declaredMethodList = declaredMethodList->nextMethod;
+			declaredMethodList = declaredMethodList->next;
 		}
 
 		if(result == OK){
-			calledMethodList = calledMethodList->nextMethod;
+			calledMethodList = calledMethodList->next;
 			lineCollumnList = lineCollumnList->next;
 		}else{
+			fprintf(stderr,"Method Name: %s, Return Type: %s, Line: %d, Collumn: %d\n", calledMethodList->idName, calledMethodList->returnType, lineCollumnList->line, lineCollumnList->collumn);
 			break;
 		}
 	}
