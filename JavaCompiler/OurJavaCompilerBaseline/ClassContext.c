@@ -95,28 +95,29 @@ void createClassContext(char * className){
 
 //// INSERTING
 
-void insertVarListInGlobalContext(char * typeval, int isFinal, int context){
-	if (context != currentContext){
+void insertVarListInGlobalContext(char * typeval, int isFinal){
+	if (currentContext != GLOBAL_CONTEXT){
+		freeStrList();
 		return;
-	}
+	}else{
+		int result = OK;
+		StrNode * strNode = strList;
+		VarNode * nodeTmp = NULL;
 
-	int result = OK;
-	StrNode * strNode = strList;
-	VarNode * nodeTmp = NULL;
-
-	while(strNode != NULL){
-		nodeTmp = insertVarInVarNodeList(classContext->varsContext, strNode->str, typeval, isFinal);
-		if (nodeTmp != NULL){
-			classContext->varsContext = nodeTmp;
-			strNode = strNode->next;
-		}else{
-			result = GLOBAL_VARS_LIST_INSERTION_MALLOC_ERROR;
-			break;
+		while(strNode != NULL){
+			nodeTmp = insertVarInVarNodeList(classContext->varsContext, strNode->str, typeval, isFinal);
+			if (nodeTmp != NULL){
+				classContext->varsContext = nodeTmp;
+				strNode = strNode->next;
+			}else{
+				result = GLOBAL_VARS_LIST_INSERTION_MALLOC_ERROR;
+				break;
+			}
 		}
-	}
-	freeStrList();
+		freeStrList();
 
-	CHECK_RESULT(result);
+		CHECK_RESULT(result);
+	}
 }
 
 void insertMethod(char * idName, char * typeReturn){
@@ -217,47 +218,53 @@ void addParamInCurrMethod(char * id, char * typeval){
 void finishCurrMethodSignCreation(){
 	CHECK_GLOBAL_CONTEXT(currentContext);
 
-	int result = YES;
+	int result = OK;
 
 	// NOW WE CHECK FOR EQUALITY
 	MethodNode * methodList = classContext->methodContext;
 	MethodNode * curMethod = getCurrentMethod();
-	while (methodList != NULL){
-		if (isMethodEqual(methodList, curMethod) == YES){
-			result = REPEATED_METHOD_ERROR;
-			break;
+
+	if(methodList != NULL){
+		while (methodList->next != NULL){
+			if (isMethodEqual(methodList, curMethod) == YES){
+				result = REPEATED_METHOD_ERROR;
+				break;
+			}
+			methodList = methodList->next;
 		}
-		methodList = methodList->next;
 	}
 
 	CHECK_RESULT(result);
 }
 
 void insertVarListInCurrMethodContext(char * typeval, int isFinal){
-	CHECK_LOCAL_CONTEXT(currentContext);
+	if (currentContext != LOCAL_CONTEXT){
+		freeStrList();
+		return;
+	}else{
+		int result = OK;
 
-	int result = OK;
+		// GET THE CURRENT METHOD
+		MethodNode * methodNode = getCurrentMethod();
 
-	// GET THE CURRENT METHOD
-	MethodNode * methodNode = getCurrentMethod();
+		// INSERT THE VAR LIST AT THE METHOD VAR LIST
+		StrNode * strNode = strList;
+		VarNode * nodeTmp = NULL;
 
-	// INSERT THE VAR LIST AT THE METHOD VAR LIST
-	StrNode * strNode = strList;
-	VarNode * nodeTmp = NULL;
-
-	while(strNode != NULL){
-		nodeTmp = insertVarInVarNodeList(methodNode->varNodes, strNode->str, typeval, isFinal);
-		if (nodeTmp != NULL){
-			methodNode->varNodes = nodeTmp;
-			strNode = strNode->next;
-		}else{
-			result = LOCAL_VARS_LIST_INSERTION_MALLOC_ERROR;
-			break;
+		while(strNode != NULL){
+			nodeTmp = insertVarInVarNodeList(methodNode->varNodes, strNode->str, typeval, isFinal);
+			if (nodeTmp != NULL){
+				methodNode->varNodes = nodeTmp;
+				strNode = strNode->next;
+			}else{
+				result = LOCAL_VARS_LIST_INSERTION_MALLOC_ERROR;
+				break;
+			}
 		}
-	}
-	freeStrList();
+		freeStrList();
 
-	CHECK_RESULT(result);
+		CHECK_RESULT(result);
+	}
 }
 
 // GETTING
@@ -323,10 +330,7 @@ static void freeStrList(){
  * PUBLIC FUNCTIONS
  */
 
-void insertStringToStrList(char * id, int context){
-	if (context != currentContext){
-		return;
-	}
+void insertStringToStrList(char * id){
 
 	int result = OK;
 	StrNode * node = strList;
