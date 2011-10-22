@@ -37,10 +37,10 @@ void setCurrentContext(int context);
 void createClassContext(char * className);
 
 //// INSERTING
-void insertVarListInGlobalContext(char * typeval, int isFinal); //, int arrayLevels
-void insertMethod(char * idName, char * typeReturn); //, int arrayLevels
-void addParamInCurrMethod(char * id, char * typeval);//, int arrayLevels
-void insertVarListInCurrMethodContext(char * typeval, int isFinal);//, int arrayLevels
+void insertVarListInGlobalContext(char * typeval, int isFinal, int arrayLevels);
+void insertMethod(char * idName, char * typeReturn, int arrayLevels);
+void addParamInCurrMethod(char * id, char * typeval, int arrayLevels);
+void insertVarListInCurrMethodContext(char * typeval, int isFinal, int arrayLevels);
 
 //// FREEING
 void freeClassContext();
