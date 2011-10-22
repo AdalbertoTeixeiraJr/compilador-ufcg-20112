@@ -23,6 +23,7 @@ struct VARNODE{
 	char * id;
 	char * typeval;
 	int isFinal;
+	int arrayLevels;
 	VarNode *nextNode;
 };
 
@@ -32,10 +33,10 @@ struct VARNODE{
 typedef struct METHODNODE MethodNode;
 struct METHODNODE{
 	char * idName;
-	char * typeReturn;
+	char * returnType;
 	VarNode * params;
 	VarNode * varNodes;
-	MethodNode * nextMethod;
+	MethodNode * next;
 };
 
 /*

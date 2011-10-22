@@ -72,8 +72,9 @@ int main(){
 	insertVarListInCurrMethodContext("FLOAT", 1);
 
 	// add called method
-	addCalledMethod("Metodo", "STRING");
-	addArgsToCurrCalledMethod("OPA", "TIPO");
+	addCalledMethod("MethodC", "INT");
+	addArgsToCurrCalledMethod("OPA", "LONG");
+	addArgsToCurrCalledMethod("OPA", "LONg");
 	setLineCollumnOfCalledMethod(1,2);
 
 	checkCalledAndRealMethodsCorrespondence();

@@ -25,6 +25,7 @@ VarNode * createVarNode(char * id, char * typeval, int isFinal){
 	if(node != NULL){
 		// Set the isFinal field
 		node->isFinal = isFinal;
+		node->arrayLevels = 0;
 
 		// Allocate and copy the id char value
 		node->id = (char *) malloc(sizeof(char) * MAX_ID_SIZE);
@@ -115,16 +116,16 @@ MethodNode * createMethodNode(char * idName, char * typeReturn){
 			strcpy(node->idName, idName);
 
 			// Allocate and copy the typeval char value
-			node->typeReturn = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
-			if (node->typeReturn != NULL){
-				strcpy(node->typeReturn, typeReturn);
+			node->returnType = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
+			if (node->returnType != NULL){
+				strcpy(node->returnType, typeReturn);
 			}else{
 				node = NULL;
 			}
 
 			node->params = NULL;
 			node->varNodes = NULL;
-			node->nextMethod = NULL;
+			node->next = NULL;
 		}else{
 			node = NULL;
 		}
@@ -151,7 +152,7 @@ MethodNode * getMethodNodeInList (MethodNode * nodeList, char * idName){
 		if (strcmp(method->idName, idName) == 0){
 			break;
 		}
-		method = method->nextMethod;
+		method = method->next;
 	}
 	return method;
 }
@@ -159,8 +160,8 @@ MethodNode * getMethodNodeInList (MethodNode * nodeList, char * idName){
 MethodNode * getLastMethodNodeInList (MethodNode * methodList){
 	MethodNode * method = methodList;
 	if (method != NULL){
-		while(method->nextMethod != NULL){
-			method = method->nextMethod;
+		while(method->next != NULL){
+			method = method->next;
 		}
 	}
 	return method;
@@ -170,9 +171,9 @@ void freeMethodList(MethodNode * list){
 	MethodNode * listTmp = list;
 	while(listTmp != NULL){
 		list = listTmp;
-		listTmp = listTmp->nextMethod;
+		listTmp = listTmp->next;
 		free(list->idName);
-		free(list->typeReturn);
+		free(list->returnType);
 		freeVarNodeList(list->varNodes);
 		free(list);
 	}
@@ -205,13 +206,13 @@ int isMethodEqual(MethodNode * method1, MethodNode * method2){
 
 void displayMethodNodeList(MethodNode * methodNodeList){
 	while(methodNodeList != NULL){
-		printf("%s %s\n", methodNodeList->typeReturn, methodNodeList->idName);
+		printf("%s %s\n", methodNodeList->returnType, methodNodeList->idName);
 		printf("===> params:\n");
 		displayVarNodeList(methodNodeList->params);
 		printf("===> local vars:\n");
 		displayVarNodeList(methodNodeList->varNodes);
 
-		methodNodeList = methodNodeList->nextMethod;
+		methodNodeList = methodNodeList->next;
 	}
 }
 
