@@ -46,7 +46,9 @@ int main(){
 		insertStringToStrList("e");
 		insertStringToStrList("f");
 
-		insertVarListInCurrMethodContext("FLOAT", YES, 0);
+		insertVarListInCurrMethodContext("FLOAT", YES, 1);
+
+
 
 	displayClassContext();
 
