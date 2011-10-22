@@ -11,9 +11,11 @@
 
 %{
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include "OurStructs.h"
 #include "ClassContext.h"
+#include "OurConstants.h"
+#include "OurStructs.h"
 int yylex(void);
 int yyerror(char *msg); //funcao de erro (sobrescrita)
 int line = 1; //declarado no lexico
@@ -21,7 +23,9 @@ int column  = 0; // declarado no lexico
 char* yytext = ""; //declarado no lexico
 char* method_or_field_type = "";
 int final_modifier = 0;
-
+int context = 0;
+int array_level = 0;
+//YY_BUFFER_STATE buffer;
 
 %}
 
@@ -30,13 +34,14 @@ int final_modifier = 0;
 	char* typeval;
 	int isFinal;
 	int field_or_method; //field = 0, method = 1
+	int levels;
 }
 
 %token CLASS BEG END STATIC PT_VIRGULA OPEN_COLC CLOSE_COLC EQUAL VIRGULA POINT
 %token QUESTION_MARK TWO_POINTS OR_LOGIC AND_LOGIC OPEN_PAREN CLOSE_PAREN NEW
 %token OR OR_EXC AND PLUS MINUS MULT DIV MOD INCREMENT DECREMENT NOT NOT_BIT 
 %token FOR IF ELSE WHILE CASE SWITCH DEFAULT DO BREAK CONTINUE GOTO RETURN VOID
-%token MAIN ARGS PUBLIC
+%token MAIN ARGS PUBLIC THIS
 
 %token FINAL
 
@@ -67,8 +72,9 @@ int final_modifier = 0;
 %type <typeval> array_creation_expression
 %type <strval> method_header
 %type <strval> method_declaration
+%type <levels> colc_opt, colc_opt_
 
-/** Expressions **/
+/** Expressions **
 %type <typeval> conditional_or_expression
 %type <typeval> conditional_or_expression_
 %type <typeval> conditional_and_expression_ 
@@ -88,27 +94,27 @@ int final_modifier = 0;
 %type <typeval> relational_expression 
 %type <typeval> shift_expression 
 %type <typeval> additive_expression 
-%type <typeval> multiplicative_expression
+%type <typeval> multiplicative_expression **/
 
 
 
 %%	
 
-compilation_unit :	class_declaration ;
+compilation_unit :	class_declaration;
 
-class_declaration :	CLASS identifier {createClassContext($2);} class_body ;		
+class_declaration :	CLASS identifier {createClassContext($2);setCurrentContext(GLOBAL_CONTEXT);/*line_class = line; column_class = column;*/} class_body /*{line = 1/*line_class*; column = 10/*column_class*;setCurrentContext(LOCAL_CONTEXT);printf("l: %d c: %d\n", line, column);} /*class_body*/ {displayClassContext();};		
 
 identifier :	ID;
 
-class_body :	BEG class_body_declaration END {displayClassContext();};
+class_body :	BEG class_body_declaration END ;
 
-class_body_declaration :	 class_member_declaration_opt static_initializer class_member_declaration_opt ;	
+class_body_declaration : class_member_declaration_opt static_initializer /*class_member_declaration_opt*/ ;	
 
 static_initializer :	PUBLIC STATIC VOID MAIN OPEN_PAREN TYPE_STRING OPEN_COLC CLOSE_COLC 
-			ARGS CLOSE_PAREN {insertMethod("MAIN", "t_void");} block
+			ARGS CLOSE_PAREN {insertMethod("MAIN", "t_void",0);} block {checkEqualMethodSignature();}
 		|	/** empty **/;
 
-block :		BEG block_statements END;
+block :		BEG {setCurrentContext(LOCAL_CONTEXT);} block_statements  END {setCurrentContext(GLOBAL_CONTEXT);};
 
 block_statements :	block_statement block_statements_
 		|       block_statements_;
@@ -119,15 +125,15 @@ block_statements_:	block_statement block_statements_
 block_statement :	local_variable_declaration_statement 
 	|       statement;						
 
-local_variable_declaration_statement : local_variable_declaration PT_VIRGULA /*{printf("lin: %d, col: %d\n", line,column);}*/ local_variable_declaration_;
+local_variable_declaration_statement : local_variable_declaration PT_VIRGULA local_variable_declaration_;
 
 local_variable_declaration_ : local_variable_declaration PT_VIRGULA local_variable_declaration_
 			|	/** empty **/;
 
 local_variable_declaration :    field_modifiers_ primitive_type variable_declarators 
-				{insertVarListInCurrMethodContext($2, $1);}
-			|	field_modifiers_ primitive_type OPEN_COLC CLOSE_COLC variable_declarators
-				{insertVarListInCurrMethodContext($2, $1);};
+				{insertVarListInCurrMethodContext($2, $1, 0);}
+			|	field_modifiers_ primitive_type colc_opt_ variable_declarators
+				{insertVarListInCurrMethodContext($2, $1, $3);};
 					
 
 primitive_type :	numeric_type 
@@ -178,7 +184,7 @@ expression : assignment_expression /** tipo de retorno **/;
 
 assignment_expression : conditional_expression;
 
-field_access : identifier POINT identifier /** metodo que compara o $1 com o nome da classe*/
+field_access : identifier  {checkStaticClassId($1);} POINT identifier
 	|	THIS POINT identifier;
 
 left_hand_side :	field_access 
@@ -436,26 +442,28 @@ class_member_declaration_ : class_member_declaration class_member_declaration_
 class_member_declaration :     STATIC  field_modifiers_ {final_modifier = $2;} field_or_method_declaration 
 			| 	PT_VIRGULA;
 			
-field_or_method_declaration :   primitive_type {method_or_field_type = $1;} colc_opt field_or_method_declaration_rest
+field_or_method_declaration :   primitive_type {method_or_field_type = $1;} colc_opt {array_level = $3;} field_or_method_declaration_rest
 			|	void_method_declaration;
 
 field_or_method_declaration_rest: method_declaration  
 			|	field_declaration {
-						setCurrentContext(CLASS_CONTEXT);
-						insertVarListInGlobalContext(method_or_field_type, final_modifier);
+						insertVarListInGlobalContext(method_or_field_type, final_modifier,array_level);
 						};
 
-colc_opt: OPEN_COLC CLOSE_COLC
-	| /** empty **/;
+colc_opt: OPEN_COLC CLOSE_COLC colc_opt_ {$$ = $3+1;}
+	| /** empty **/ {$$ = 0;};
+
+colc_opt_ : OPEN_COLC CLOSE_COLC colc_opt_ {$$ = $3+1;}
+	| /**empty **/ {$$ = 0;};
 
 method_declaration :	method_header method_body {$$ = $1;};
 
-method_header :	identifier {setCurrentContext(METHOD_CONTEXT); insertMethod($1, method_or_field_type);	}
+method_header :	identifier {insertMethod($1, method_or_field_type, array_level);}
 					method_declarator;
 
-void_method_declaration: VOID identifier method_declarator method_body {setCurrentContext(METHOD_CONTEXT); insertMethod($2, "t_void");};
+void_method_declaration: VOID identifier {insertMethod($2, "t_void",0);} method_declarator method_body ;
 
-method_declarator :	OPEN_PAREN formal_parameter_list CLOSE_PAREN {finishCurrMethodSignCreation();};
+method_declarator :	OPEN_PAREN formal_parameter_list CLOSE_PAREN {checkEqualMethodSignature();};
 
 method_body :	block;
 
@@ -465,10 +473,10 @@ formal_parameter_list :	formal_parameter formal_parameter_list_
 formal_parameter_list_ : VIRGULA formal_parameter formal_parameter_list_
 		|	/** empty **/;
 
-formal_parameter :	primitive_type variable_declarator_id {addParamInCurrMethod($2, $1);}
-	|	array_type variable_declarator_id {addParamInCurrMethod($2, "t_array");};
+formal_parameter :	primitive_type variable_declarator_id {addParamInCurrMethod($2, $1,0);}
+	|	primitive_type colc_opt_ variable_declarator_id {addParamInCurrMethod($3,$1,$2);};
 
-field_declaration :	variable_declarators colc_opt PT_VIRGULA;
+field_declaration :	variable_declarators PT_VIRGULA;
 
 
 field_modifiers_ :	FINAL {$$ = YES;}
@@ -481,7 +489,14 @@ field_modifiers_ :	FINAL {$$ = YES;}
 %%
 
 int main(void) {
+	//YY_BUFFER_STATE buffer = yy_create_buffer(stdin,10000);
 	yydebug=0;
+	/*yylex_destroy();
+	yyrestart(stdin);
+	yy_init_globals();
+	yy_switch_to_buffer(buffer);
+	line = 1; column = 0;
+	setCurrentContext(LOCAL_CONTEXT);*/
 	return yyparse();
 }
 
@@ -491,6 +506,7 @@ int yyerror(char *msg){
         fprintf(stderr,"%s:\n",msg);
 	fprintf(stderr,"\tLast Token: %s - %s\n",yytname[tk],yytext);
         fprintf(stderr,"\tLine %d, Column %d\n", line, column);
+	exit(1);
         return 1;
 }
 

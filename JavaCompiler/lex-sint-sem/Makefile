@@ -22,10 +22,11 @@ lexico  = lexico
 sintatico = sintatico
 tk      = tokens.h
 structs = OurStructs
+constants = OurConstants
 context = ClassContext
 
-java_compiler: $(structs) $(context) $(lexico) $(sintatico) 
-	$(CC) -o $@ $(structs).c $(context).c $(lexico).c $(sintatico).c  
+java_compiler: $(constants) $(structs) $(context) $(lexico) $(sintatico) 
+	$(CC) -o $@ $(constants).c $(structs).c $(context).c $(lexico).c $(sintatico).c  
 
 $(lexico): $(lexico).yy
 	$(LEX) -o$(lexico).c $^
@@ -41,8 +42,11 @@ $(structs):
 $(context):
 	$(CC) -o $@ -c $(context).c 
 
+$(constants):
+	$(CC) -o $@ -c $(constants).c
+
 clean:
-	rm -rf $(lexico) $(lexico).c $(sintatico) $(sintatico).c $(structs) $(context) java_compiler report.txt sintatico.output *~
+	rm -rf $(lexico) $(lexico).c $(sintatico) $(sintatico).c $(structs) $(constants) $(context) java_compiler report.txt sintatico.output *~
 
 remake: clean java_compiler
 	

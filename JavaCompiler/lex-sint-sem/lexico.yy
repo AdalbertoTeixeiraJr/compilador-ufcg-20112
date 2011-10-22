@@ -16,10 +16,12 @@ extern int column; // importa variavel do sintatico
 extern int line; // importa variavel do sintatico
 extern char* yytext;
 void moveCol();
+void moveCol_();
 void moveLine();
 %}
 
-col_delimit	[ \r\t]
+col_delimit	[ \r]
+col_delimit_    [\t]
 line_delimit	[\n]
 id              {letter_no_digit}+({letter})*
 letter          [A-Za-z_0-9]
@@ -53,6 +55,7 @@ string_literal	["][^"]*["]
 %%
 
 {col_delimit}+			{moveCol();}
+{col_delimit_}+			{moveCol_();}
 {line_delimit} 			{moveLine();}
 "//".*{line_delimit} 		{moveLine();}
 "/*"([^*]|[*]+[^/])*[*]+[/]	{moveCol();}
@@ -159,6 +162,8 @@ int yywrap(){
 }
 
 
+
+
 void moveLine(){
    /**segue para proxima linha e reinicia a coluna**/
    line++;
@@ -168,5 +173,10 @@ void moveLine(){
 void moveCol(){
    /**segue para proxima coluna**/
    column += yyleng;
+}
+
+void moveCol_(){
+   /**segue para proxima coluna**/
+   column += 4;
 }
 
