@@ -9,41 +9,40 @@ int main(){
 
 	createClassContext("Classe A");
 
-	insertStringToStrList("a", GLOBAL_CONTEXT);
-	insertStringToStrList("b", GLOBAL_CONTEXT);
-	insertStringToStrList("c", GLOBAL_CONTEXT);
+	insertStringToStrList("a");
+	insertStringToStrList("b");
+	insertStringToStrList("c");
 
-	insertVarListInGlobalContext("STRING", NO, GLOBAL_CONTEXT);
+	insertVarListInGlobalContext("STRING", NO);
+
+	insertMethod("MethodA", "INT");
+	finishCurrMethodSignCreation();
 
 	setCurrentContext(LOCAL_CONTEXT);
 
-	insertMethod("MethodA", "INT");
+		insertStringToStrList("d");
+		insertVarListInCurrMethodContext("DOUBLE", 0);
 
-	insertStringToStrList("d", LOCAL_CONTEXT);
-	insertVarListInCurrMethodContext("DOUBLE", 0);
+	setCurrentContext(GLOBAL_CONTEXT);
 
 	insertMethod("MethodB", "INT");
+	finishCurrMethodSignCreation();
+
 	insertMethod("MethodC", "INT");
 
 	addParamInCurrMethod("Param1", "LONG");
-	addParamInCurrMethod("Param1", "LONG");
 	addParamInCurrMethod("Param2", "LONG");
+	addParamInCurrMethod("Param3", "LONG");
 
 	finishCurrMethodSignCreation();
 
-	insertStringToStrList("d", LOCAL_CONTEXT);
-	insertStringToStrList("e", LOCAL_CONTEXT);
-	insertStringToStrList("f", LOCAL_CONTEXT);
+	setCurrentContext(LOCAL_CONTEXT);
 
-	insertVarListInCurrMethodContext("FLOAT", 1);
+		insertStringToStrList("d");
+		insertStringToStrList("e");
+		insertStringToStrList("f");
 
-	//  Add called method
-	//	addCalledMethod("MethodC", "INT");
-	//	addArgsToCurrCalledMethod("OPA", "LONG");
-	//	addArgsToCurrCalledMethod("OPA", "LONg");
-	//	setLineCollumnOfCalledMethod(1,2);
-
-	//	checkCalledAndRealMethodsCorrespondence();
+		insertVarListInCurrMethodContext("FLOAT", 1);
 
 	displayClassContext();
 
