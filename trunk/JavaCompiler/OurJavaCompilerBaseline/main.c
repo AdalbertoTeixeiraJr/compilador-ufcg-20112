@@ -13,26 +13,30 @@ int main(){
 	insertStringToStrList("b");
 	insertStringToStrList("c");
 
-	insertVarListInGlobalContext("STRING", NO);
+	insertVarListInGlobalContext("STRING", NO, 0);
 
-	insertMethod("MethodA", "INT");
+	insertMethod("MethodA", "INT", 0);
+	addParamInCurrMethod("Param1", "LONG", 0);
+	addParamInCurrMethod("Param2", "LONG", 0);
+	addParamInCurrMethod("Param3", "LONG", 0);
+
 	checkEqualMethodSignature();
 
 	setCurrentContext(LOCAL_CONTEXT);
 
 		insertStringToStrList("d");
-		insertVarListInCurrMethodContext("DOUBLE", 0);
+		insertVarListInCurrMethodContext("DOUBLE", NO, 0);
 
 	setCurrentContext(GLOBAL_CONTEXT);
 
-	insertMethod("MethodB", "INT");
+	insertMethod("MethodB", "INT", 0);
 	checkEqualMethodSignature();
 
-	insertMethod("MethodC", "INT");
+	insertMethod("MethodC", "INT", 0);
 
-	addParamInCurrMethod("Param1", "LONG");
-	addParamInCurrMethod("Param2", "LONG");
-	addParamInCurrMethod("Param3", "LONG");
+	addParamInCurrMethod("Param1", "LONG", 0);
+	addParamInCurrMethod("Param2", "LONG", 0);
+	addParamInCurrMethod("Param3", "LONG", 0);
 
 	checkEqualMethodSignature();
 
@@ -42,7 +46,7 @@ int main(){
 		insertStringToStrList("e");
 		insertStringToStrList("f");
 
-		insertVarListInCurrMethodContext("FLOAT", 1);
+		insertVarListInCurrMethodContext("FLOAT", YES, 0);
 
 	displayClassContext();
 

@@ -37,7 +37,6 @@ static void freeStrList();
 ClassContext * classContext = NULL;
 StrNode * strList = NULL;
 MethodNode * calledMethods = NULL;
-LineCollumnCoord * calledMethodsLC = NULL;
 int currentContext = GLOBAL_CONTEXT;
 
 
@@ -95,7 +94,7 @@ void createClassContext(char * className){
 
 //// INSERTING
 
-void insertVarListInGlobalContext(char * typeval, int isFinal){
+void insertVarListInGlobalContext(char * typeval, int isFinal, int arrayLevels){
 	if (currentContext != GLOBAL_CONTEXT){
 		freeStrList();
 		return;
@@ -105,7 +104,7 @@ void insertVarListInGlobalContext(char * typeval, int isFinal){
 		VarNode * nodeTmp = NULL;
 
 		while(strNode != NULL){
-			nodeTmp = insertVarInVarNodeList(classContext->varsContext, strNode->str, typeval, isFinal);
+			nodeTmp = insertVarInVarNodeList(classContext->varsContext, strNode->str, typeval, isFinal, arrayLevels);
 			if (nodeTmp != NULL){
 				classContext->varsContext = nodeTmp;
 				strNode = strNode->next;
@@ -120,7 +119,7 @@ void insertVarListInGlobalContext(char * typeval, int isFinal){
 	}
 }
 
-void insertMethod(char * idName, char * typeReturn){
+void insertMethod(char * idName, char * typeReturn, int arrayLevels){
 	CHECK_GLOBAL_CONTEXT(currentContext);
 
 	int result = OK;
@@ -128,7 +127,7 @@ void insertMethod(char * idName, char * typeReturn){
 	MethodNode * newMethod;
 	MethodNode * methodList = classContext->methodContext;
 
-	newMethod = createMethodNode(idName, typeReturn);
+	newMethod = createMethodNode(idName, typeReturn, arrayLevels);
 	if (newMethod != NULL){
 		if (methodList == NULL){
 			classContext->methodContext = newMethod;
@@ -200,14 +199,14 @@ static char * getVarTypevalInCurrMethodContext (char * id){
 
 // INSERTING
 
-void addParamInCurrMethod(char * id, char * typeval){
+void addParamInCurrMethod(char * id, char * typeval, int arrayLevels){
 
 	CHECK_GLOBAL_CONTEXT(currentContext);
 
 	int result = OK;
 	MethodNode * curMethod = getCurrentMethod();
 	if (getVarNodeInList(curMethod->params, id) == NULL){
-		curMethod = addParamInMethod(curMethod, id, typeval);
+		curMethod = addParamInMethod(curMethod, id, typeval, arrayLevels);
 	}else{
 		result = REPEATED_METHOD_PARAM_ID_ERROR;
 	}
@@ -215,7 +214,7 @@ void addParamInCurrMethod(char * id, char * typeval){
 	CHECK_RESULT(result);
 }
 
-void insertVarListInCurrMethodContext(char * typeval, int isFinal){
+void insertVarListInCurrMethodContext(char * typeval, int isFinal, int arrayLevels){
 	if (currentContext != LOCAL_CONTEXT){
 		freeStrList();
 		return;
@@ -230,7 +229,7 @@ void insertVarListInCurrMethodContext(char * typeval, int isFinal){
 		VarNode * nodeTmp = NULL;
 
 		while(strNode != NULL){
-			nodeTmp = insertVarInVarNodeList(methodNode->varNodes, strNode->str, typeval, isFinal);
+			nodeTmp = insertVarInVarNodeList(methodNode->varNodes, strNode->str, typeval, isFinal, arrayLevels);
 			if (nodeTmp != NULL){
 				methodNode->varNodes = nodeTmp;
 				strNode = strNode->next;

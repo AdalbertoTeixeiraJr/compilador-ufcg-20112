@@ -34,6 +34,7 @@ typedef struct METHODNODE MethodNode;
 struct METHODNODE{
 	char * idName;
 	char * returnType;
+	int arrayLevels;
 	VarNode * params;
 	VarNode * varNodes;
 	MethodNode * next;
@@ -48,34 +49,21 @@ struct STRNODE{
 	StrNode * next;
 };
 
-/*
- * LINE COLLUMN STRUCT
- */
-typedef struct LINECOLLUMNCOORD LineCollumnCoord;
-struct LINECOLLUMNCOORD{
-	int line;
-	int collumn;
-	LineCollumnCoord * next;
-};
-
 /***************** FUNCTION DECLARATIONS *****************/
 
-VarNode * createVarNode(char * id, char * typeval, int isFinal);
-VarNode * insertVarInVarNodeList(VarNode * nodeList, char * id, char * typeval, int isFinal);
+VarNode * createVarNode(char * id, char * typeval, int isFinal, int arrayLevels);
+VarNode * insertVarInVarNodeList(VarNode * nodeList, char * id, char * typeval, int isFinal, int arrayLevels);
 VarNode * getVarNodeInList (VarNode * nodeList, char * id);
 void freeVarNodeList(VarNode * list);
 void displayVarNodeList(VarNode * list);
 int isVarNodeEqual(VarNode * var, char * newId);
 
-MethodNode * createMethodNode(char * idName, char * typeReturn);
-MethodNode * addParamInMethod(MethodNode * method, char * id, char * typeval);
+MethodNode * createMethodNode(char * idName, char * typeReturn, int arrayLevels);
+MethodNode * addParamInMethod(MethodNode * method, char * id, char * typeval, int arrayLevels);
 MethodNode * getMethodNodeInList (MethodNode * nodeList, char * idName);
 MethodNode * getLastMethodNodeInList (MethodNode * nodeList);
 void freeMethodList(MethodNode * list);
 void displayMethodNodeList(MethodNode * list);
 int isMethodEqual(MethodNode * method1, MethodNode * method2);
-
-LineCollumnCoord * getLastLineCollumCoordInList(LineCollumnCoord * calledMethodsLC);
-void freeLineCollumnCoordList(LineCollumnCoord * list);
 
 #endif /* OURSTRUCTS_H_ */

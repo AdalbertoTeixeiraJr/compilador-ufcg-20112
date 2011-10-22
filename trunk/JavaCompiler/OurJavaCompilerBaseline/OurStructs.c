@@ -18,14 +18,14 @@
  * =============== VARNODE FUNCTION DEFINITIONS
  */
 
-VarNode * createVarNode(char * id, char * typeval, int isFinal){
+VarNode * createVarNode(char * id, char * typeval, int isFinal, int arrayLevels){
 
 	VarNode * node = (VarNode*) malloc(sizeof(VarNode));
 
 	if(node != NULL){
 		// Set the isFinal field
 		node->isFinal = isFinal;
-		node->arrayLevels = 0;
+		node->arrayLevels = arrayLevels;
 
 		// Allocate and copy the id char value
 		node->id = (char *) malloc(sizeof(char) * MAX_ID_SIZE);
@@ -46,9 +46,9 @@ VarNode * createVarNode(char * id, char * typeval, int isFinal){
 	return node;
 }
 
-VarNode * insertVarInVarNodeList(VarNode * nodeList, char * id, char * typeval, int isFinal){
+VarNode * insertVarInVarNodeList(VarNode * nodeList, char * id, char * typeval, int isFinal, int arrayLevels){
 
-	VarNode * node = createVarNode(id, typeval, isFinal);
+	VarNode * node = createVarNode(id, typeval, isFinal, arrayLevels);
 	VarNode * nodeListTmp = nodeList;
 
 	if (node != NULL){
@@ -94,7 +94,7 @@ int isVarNodeEqual(VarNode * var, char * newId){
 
 void displayVarNodeList(VarNode * varNodeList){
 	while(varNodeList != NULL){
-		printf("\tID: %s; Typeval: %s; IsFinal: %d\n", varNodeList->id, varNodeList->typeval, varNodeList->isFinal);
+		printf("\tID: %s; Typeval: %s; IsFinal: %d; ArrayLevels: %d\n", varNodeList->id, varNodeList->typeval, varNodeList->isFinal, varNodeList->arrayLevels);
 		varNodeList = varNodeList->nextNode;
 	}
 	printf("\n");
@@ -104,7 +104,7 @@ void displayVarNodeList(VarNode * varNodeList){
  * =============== METHOD FUNCTION DEFINITIONS
  */
 
-MethodNode * createMethodNode(char * idName, char * typeReturn){
+MethodNode * createMethodNode(char * idName, char * typeReturn, int arrayLevels){
 
 	MethodNode * node = (MethodNode*) malloc(sizeof(MethodNode));
 
@@ -123,6 +123,7 @@ MethodNode * createMethodNode(char * idName, char * typeReturn){
 				node = NULL;
 			}
 
+			node->arrayLevels = arrayLevels;
 			node->params = NULL;
 			node->varNodes = NULL;
 			node->next = NULL;
@@ -133,15 +134,15 @@ MethodNode * createMethodNode(char * idName, char * typeReturn){
 	return node;
 }
 
-MethodNode * addParamInMethod(MethodNode * method, char * id, char * type){
+MethodNode * addParamInMethod(MethodNode * method, char * id, char * type, int arrayLevels){
 	VarNode * params = method->params;
 	if (params != NULL){
 		while(params->nextNode != NULL){
 			params = params->nextNode;
 		}
-		params->nextNode = createVarNode(id, type, NO);
+		params->nextNode = createVarNode(id, type, NO, arrayLevels);
 	}else{
-		method->params = createVarNode(id, type, NO);
+		method->params = createVarNode(id, type, NO, arrayLevels);
 	}
 	return method;
 }
@@ -206,35 +207,12 @@ int isMethodEqual(MethodNode * method1, MethodNode * method2){
 
 void displayMethodNodeList(MethodNode * methodNodeList){
 	while(methodNodeList != NULL){
-		printf("%s %s\n", methodNodeList->returnType, methodNodeList->idName);
+		printf("Name: %s, Return Type: %s, ArrayLevels: %d\n", methodNodeList->idName, methodNodeList->returnType, methodNodeList->arrayLevels);
 		printf("===> params:\n");
 		displayVarNodeList(methodNodeList->params);
 		printf("===> local vars:\n");
 		displayVarNodeList(methodNodeList->varNodes);
 
 		methodNodeList = methodNodeList->next;
-	}
-}
-
-/*
- * =============== LINE COLLUMN COORD FUNCTION DEFINITIONS
- */
-
-LineCollumnCoord * getLastLineCollumCoordInList(LineCollumnCoord * calledMethodsLC){
-	LineCollumnCoord * lineCollumnCoord = calledMethodsLC;
-	if (lineCollumnCoord != NULL){
-		while(lineCollumnCoord->next != NULL){
-			lineCollumnCoord = lineCollumnCoord->next;
-		}
-	}
-	return lineCollumnCoord;
-}
-
-void freeLineCollumnCoordList(LineCollumnCoord * list){
-	LineCollumnCoord * listTmp = list;
-	while(listTmp != NULL){
-		list = listTmp;
-		listTmp = listTmp->next;
-		free(list);
 	}
 }
