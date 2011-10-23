@@ -28,6 +28,17 @@ struct CLASSCONTEXT{
 	MethodNode * methodContext;
 };
 
+/*
+ * AUXILIAR TYPE STRUCT
+ */
+typedef struct TYPESTRUCT TypeStruct;
+struct TYPESTRUCT{
+	char* streval;
+	char* typeval;
+	int isFinal;
+	int levels;
+};
+
 /*****************************************************/
 /*************** FUNCTION DECLARATIONS ***************/
 /*****************************************************/
@@ -69,5 +80,9 @@ void checkEqualityTypeval(char * declarationType, char * definitionType);
 void checkAssignmentConversion(char * actualType, char * assignType);
 void checkCastingConversion(char * actualType, char * castType);
 char * checkMethodConversion();
+
+/*************** SEMANTIC CHECK FUNCTIONS ***************/
+
+TypeStruct * createTypeStruct();
 
 #endif /* CLASSCONTEXT_H_ */

@@ -705,3 +705,18 @@ char * checkMethodConversion(){
 
 	return returnType;
 }
+
+/*
+ *
+ */
+TypeStruct * createTypeStruct(){
+	TypeStruct * type = (TypeStruct *) malloc(sizeof(TypeStruct));
+
+	if (type != NULL){
+		type->streval = NULL;
+		type->typeval = NULL;
+		type->isFinal = 0;
+		type->levels = 0;
+	}
+	return type;
+}
