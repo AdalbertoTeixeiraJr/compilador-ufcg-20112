@@ -70,7 +70,7 @@ void treatErrorResults(int val){
 			yyerror("Semantical Error: this expression should return a boolean type");
 			break;
 		default:
-			printf("INTERNAL ERROR, TRY DEBUGGING IT!");
+			printf("INTERNAL ERROR, TRY DEBUGGING IT (%d)", val);
 			break;
 	}
 }

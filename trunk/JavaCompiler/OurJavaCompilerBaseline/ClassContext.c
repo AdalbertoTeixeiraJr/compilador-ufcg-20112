@@ -603,6 +603,15 @@ void checkEqualityTypeval(char * declarationLevel, char * definitionLevel){
 	CHECK_RESULT(result);
 }
 
+
+void checkEqualityWithBoolean(char * type){
+	int result = WRONG_BOOLEAN_CHECK;
+
+	result = (translateTypevalToInt(type) == OUR_BOOLEAN);
+
+	CHECK_RESULT(result);
+}
+
 void checkAssignmentConversion(char * typeFrom, char * typeTo){
 	int result = WRONG_CASTING_OPERATION;
 	if (checkIdentityConversion(typeFrom, typeTo) == YES ||
@@ -706,10 +715,3 @@ char * checkMethodConversion(){
 	return returnType;
 }
 
-void checkEqualityWithBoolean(char * type){
-	int result = WRONG_BOOLEAN_CHECK;
-
-	result = (translateTypevalToInt(type) == OUR_BOOLEAN);
-
-	CHECK_RESULT(result);
-}
