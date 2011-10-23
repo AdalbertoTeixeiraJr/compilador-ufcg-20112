@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "ClassContext.h"
 
@@ -77,6 +78,13 @@ int main(){
 	addArgsToCalledMethod("LONG", 0);
 	addArgsToCalledMethod("INT", 0);
 	checkMethodConversion();
+
+	TypeStruct * typeStruct = createTypeStruct();
+
+	strcpy(typeStruct->streval, "KKKKK");
+	strcpy(typeStruct->typeval, "QQQQQ");
+	typeStruct->isFinal = 1;
+	typeStruct->levels = 10;
 
 	freeClassContext();
 
