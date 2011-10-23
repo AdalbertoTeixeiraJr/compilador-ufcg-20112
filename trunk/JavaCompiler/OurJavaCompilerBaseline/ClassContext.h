@@ -42,6 +42,9 @@ void insertMethod(char * idName, char * typeReturn, int arrayLevels);
 void addParamInCurrMethod(char * id, char * typeval, int arrayLevels);
 void insertVarListInCurrMethodContext(char * typeval, int isFinal, int arrayLevels);
 
+////GETTING
+char * getVarTypevalInGlobalContext (char * id);
+
 //// FREEING
 void freeClassContext();
 
