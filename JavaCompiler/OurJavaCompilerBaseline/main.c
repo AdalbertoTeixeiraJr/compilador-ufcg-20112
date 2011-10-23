@@ -79,6 +79,8 @@ int main(){
 	addArgsToCalledMethod("INT", 0);
 	checkMethodConversion();
 
+	checkEqualityWithBoolean(NULL);
+
 	freeClassContext();
 
 	return 0;
