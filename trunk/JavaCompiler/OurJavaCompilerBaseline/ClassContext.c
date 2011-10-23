@@ -402,8 +402,13 @@ void checkEqualMethodSignature(){
 	CHECK_RESULT(result);
 }
 
-void checkEqualityArrayLevel(int declaredLevel, int definedLevel){
-
-	int result = (declaredLevel == definedLevel)? OK: DIFFERENT_ARRAY_LEVEL_DEFINITION;
+void checkEqualityArrayLevel(int declarationLevel, int definitionLevel){
+	int result = (declarationLevel == definitionLevel)? OK: DIFFERENT_ARRAY_LEVEL_DEFINITION_DECLARATION;
 	CHECK_RESULT(result);
 }
+
+void checkEqualityTypeval(char * declarationLevel, char * definitionLevel){
+	int result = (strcmp(declarationLevel,definitionLevel)== 0)? OK: DIFFERENT_TYPE_DEFINITION_DECLARATION;
+	CHECK_RESULT(result);
+}
+
