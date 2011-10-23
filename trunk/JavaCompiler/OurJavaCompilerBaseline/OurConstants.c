@@ -116,8 +116,8 @@ void treatErrorResults(int val){
 		case(WRONG_ASSIGN_CONVERSION):
 			yyerror("Semantical Error: the assignment conversion could not be executed");
 			break;
-		case(WRONG_MULT_EXPRESSION):
-			yyerror("Semantical Error: the multiplication expression is not allowed");
+		case(WRONG_BINARY_NUMERIC_EXPRESSION):
+			yyerror("Semantical Error: the binary expression is not allowed");
 			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT (%d)", val);

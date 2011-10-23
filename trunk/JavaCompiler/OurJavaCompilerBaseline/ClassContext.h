@@ -74,6 +74,6 @@ void checkCastingConversion(char * actualType, char * castType);
 char * checkMethodConversion();
 
 // BINARY COMPARISONS
-char * checkMultExpressionResultType(char * leftType, char * rightType);
+char * checkBinaryExpressionResultType(char * leftType, char * rightType);
 
 #endif /* CLASSCONTEXT_H_ */

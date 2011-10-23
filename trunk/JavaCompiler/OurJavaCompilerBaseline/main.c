@@ -83,7 +83,7 @@ int main(){
 
 	checkIncrementDecrement("KKKK", "kkkk", YES);
 
-	checkMultExpressionResultType("t_short", "t_string");
+	checkBinaryExpressionResultType("t_short", "t_string");
 
 	freeClassContext();
 
