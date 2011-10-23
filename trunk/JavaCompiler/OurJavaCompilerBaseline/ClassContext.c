@@ -395,6 +395,10 @@ void addArgsToCalledMethod(char * typeval, int arrayLevels){
  */
 
 int translateTypevalToInt(char * typeval){
+
+	if(typeval == NULL){
+		return OUR_NULL;
+	}
 	if (strcmp(typeval, "t_null") == 0){
 		return OUR_NULL;
 	}else if(strcmp(typeval, "t_boolean") == 0){
