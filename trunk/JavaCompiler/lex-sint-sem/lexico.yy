@@ -36,6 +36,8 @@ double_literal	{signal}?{digit}+.{digit}+{exp_indicator}?{double_sufix}?
 exp_indicator	[eE]{signal}?{digit}+
 float_sufix	[fF]
 double_sufix	[dDfF]
+byte_literal	0b{byte_digit}*
+byte_digit	[0-1]
 hex_literal	0{hex_id}{hex_digit}*
 hex_id		[xX]
 hex_digit	[0-9A-F]
@@ -105,7 +107,6 @@ string_literal	["][^"]*["]
 "public"			{moveCol();return PUBLIC;}
 "main"				{moveCol();return MAIN;}
 "args"				{moveCol();return ARGS;}
-"this"				{moveCol();return THIS;}
 "int"				{moveCol();yylval.typeval ="t_int";
 						return TYPE_INT;}
 "short"				{moveCol();yylval.typeval =strdup("t_short");
@@ -144,6 +145,8 @@ string_literal	["][^"]*["]
 					yylval.typeval =strdup("t_float");return LITERAL;}
 {double_literal} 		{moveCol();yylval.strval = strdup(yytext);
 					yylval.typeval =strdup("t_double");return LITERAL;}
+{byte_literal}			{moveCol();yylval.strval = strdup(yytext);
+					yylval.typeval =strdup("t_byte");return LITERAL;}
 {id}				{moveCol();yylval.strval = strdup(yytext);return ID;}
 {logic_assig}			{moveCol();yylval.strval = strdup(yytext);return LOGIC_ASSIGN;}
 {shift_assig}			{moveCol();yylval.strval = strdup(yytext);return SHIFT_ASSIGN;}
