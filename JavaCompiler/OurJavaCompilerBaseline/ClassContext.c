@@ -33,6 +33,7 @@ int translateTypevalToInt(char * typeval);
 static int checkIdentityConversion(char * typeFrom, char * typeTo);
 static int checkWideningConversion(char * typeFrom, char * typeTo);
 static int checkNarrowingConversion(char * typeFrom, char * typeTo);
+static int checkIncrementDecrementPermission(char * type);
 
 /*************** GLOBAL VARIABLES ***************/
 ClassContext * classContext = NULL;
@@ -394,40 +395,6 @@ void addArgsToCalledMethod(char * typeval, int arrayLevels){
  * STATIC FUNCTIONS
  */
 
-int translateTypevalToInt(char * typeval){
-
-	if(typeval == NULL){
-		return OUR_NULL;
-	}
-	if (strcmp(typeval, "t_null") == 0){
-		return OUR_NULL;
-	}else if(strcmp(typeval, "t_boolean") == 0){
-		return OUR_BOOLEAN;
-	}else if(strcmp(typeval, "t_char") == 0){
-		return OUR_CHAR;
-	}else if(strcmp(typeval, "t_string") == 0){
-		return OUR_STRING;
-	}else if(strcmp(typeval, "t_int") == 0){
-		return OUR_INT;
-	}else if(strcmp(typeval, "t_float") == 0){
-		return OUR_FLOAT;
-	}else if(strcmp(typeval, "t_double") == 0){
-		return OUR_DOUBLE;
-	}else if(strcmp(typeval, "t_hex") == 0){
-		return OUR_HEXA;
-	}else if(strcmp(typeval, "t_oct") == 0){
-		return OUR_OCTAL;
-	}else if(strcmp(typeval, "t_byte") == 0){
-		return OUR_BYTE;
-	}else if(strcmp(typeval, "t_long") == 0){
-		return OUR_LONG;
-	}else if(strcmp(typeval, "t_short") == 0){
-		return OUR_SHORT;
-	}else{
-		return OUR_NULL;
-	}
-}
-
 static int checkIdentityConversion(char * typeFrom, char * typeTo){
 	return (strcmp(typeFrom, typeTo) == 0) ? YES : NO;
 }
@@ -565,7 +532,6 @@ static int checkNarrowingConversion(char * typeFrom, char * typeTo){
 	return result;
 }
 
-
 /*
  * PUBLIC FUNCTIONS
  */
@@ -607,12 +573,32 @@ void checkEqualityTypeval(char * declarationLevel, char * definitionLevel){
 	CHECK_RESULT(result);
 }
 
-
 void checkEqualityWithBoolean(char * type){
 	int result = (translateTypevalToInt(type) == OUR_BOOLEAN) ? OK: WRONG_BOOLEAN_CHECK;
-
 	CHECK_RESULT(result);
 }
+
+void checkIncrementDecrement(char * varType, char * operType, int isFinal){
+	int result = OK;
+	if (translateTypevalToInt(operType) != OUR_EMPTY ){
+		if (isFinal == YES){
+			result = WRONG_FINAL_UPDATE;
+		}else{
+			checkNumericalType(varType);
+		}
+	}
+	CHECK_RESULT(result);
+}
+
+void checkNumericalType(char * type){
+	int ourType = translateTypevalToInt(type);
+	int result = WRONG_NUMERICAL_TYPE;
+	if (ourType != OUR_STRING && ourType != OUR_BOOLEAN){
+		result = OK;
+	}
+	CHECK_RESULT(result);
+}
+
 
 void checkAssignmentConversion(char * typeFrom, char * typeTo){
 	int result = WRONG_CASTING_OPERATION;

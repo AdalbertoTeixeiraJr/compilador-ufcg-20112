@@ -38,6 +38,7 @@
 #define OUR_BYTE 			9
 #define OUR_LONG 			10
 #define OUR_SHORT 			11
+#define OUR_EMPTY 			12
 
 // CONVERSION CONSTANTS
 #define IDENTITY_CONVERSION 1
@@ -70,6 +71,8 @@
 #define INEXISTENT_DECLARED_METHOD_WITH_ID					-16
 #define WRONG_CASTING_OPERATION								-17
 #define WRONG_BOOLEAN_CHECK									-18
+#define WRONG_FINAL_UPDATE									-19
+#define WRONG_NUMERICAL_TYPE								-20
 
 /*********** PUBLIC FUNCTION DECLARATIONS ************/
 void treatErrorResults(int val);

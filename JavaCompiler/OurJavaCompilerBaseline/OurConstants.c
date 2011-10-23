@@ -9,7 +9,42 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include "OurConstants.h"
+
+int translateTypevalToInt(char * typeval){
+
+	if(typeval == NULL){
+		return OUR_EMPTY;
+	}
+	if (strcmp(typeval, "t_null") == 0){
+		return OUR_NULL;
+	}else if(strcmp(typeval, "t_boolean") == 0){
+		return OUR_BOOLEAN;
+	}else if(strcmp(typeval, "t_char") == 0){
+		return OUR_CHAR;
+	}else if(strcmp(typeval, "t_string") == 0){
+		return OUR_STRING;
+	}else if(strcmp(typeval, "t_int") == 0){
+		return OUR_INT;
+	}else if(strcmp(typeval, "t_float") == 0){
+		return OUR_FLOAT;
+	}else if(strcmp(typeval, "t_double") == 0){
+		return OUR_DOUBLE;
+	}else if(strcmp(typeval, "t_hex") == 0){
+		return OUR_HEXA;
+	}else if(strcmp(typeval, "t_oct") == 0){
+		return OUR_OCTAL;
+	}else if(strcmp(typeval, "t_byte") == 0){
+		return OUR_BYTE;
+	}else if(strcmp(typeval, "t_long") == 0){
+		return OUR_LONG;
+	}else if(strcmp(typeval, "t_short") == 0){
+		return OUR_SHORT;
+	}else{
+		return OUR_EMPTY;
+	}
+}
 
 void treatErrorResults(int val){
 	switch(val){
@@ -68,6 +103,12 @@ void treatErrorResults(int val){
 			break;
 		case(WRONG_BOOLEAN_CHECK):
 			yyerror("Semantical Error: this expression should return a boolean type");
+			break;
+		case(WRONG_FINAL_UPDATE):
+			yyerror("Semantical Error: final variables cannot be updated");
+			break;
+		case(WRONG_NUMERICAL_TYPE):
+			yyerror("Semantical Error: this is not a numerical type");
 			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT (%d)", val);
