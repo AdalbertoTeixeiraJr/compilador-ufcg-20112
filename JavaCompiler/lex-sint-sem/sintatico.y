@@ -24,8 +24,9 @@ char* yytext = ""; //declarado no lexico
 char* method_or_field_type = "";
 int final_modifier = 0;
 int context = 0;
-int array_level = 0;
-//YY_BUFFER_STATE buffer;
+int array_level_def = 0;
+int local_level = 0;
+char* id_var_local = "";
 
 %}
 
@@ -41,7 +42,7 @@ int array_level = 0;
 %token QUESTION_MARK TWO_POINTS OR_LOGIC AND_LOGIC OPEN_PAREN CLOSE_PAREN NEW
 %token OR OR_EXC AND PLUS MINUS MULT DIV MOD INCREMENT DECREMENT NOT NOT_BIT 
 %token FOR IF ELSE WHILE CASE SWITCH DEFAULT DO BREAK CONTINUE GOTO RETURN VOID
-%token MAIN ARGS PUBLIC THIS
+%token MAIN ARGS PUBLIC
 
 %token FINAL
 
@@ -72,9 +73,14 @@ int array_level = 0;
 %type <typeval> array_creation_expression
 %type <strval> method_header
 %type <strval> method_declaration
-%type <levels> colc_opt, colc_opt_
+%type <levels> colc_opt 
+%type <levels> colc_opt_
+%type <levels> dim_exprs
+%type <levels> dim_expr_opt
 
-/** Expressions **
+/** Expressions **/
+%type <typeval> expression
+%type <typeval> conditional_expression
 %type <typeval> conditional_or_expression
 %type <typeval> conditional_or_expression_
 %type <typeval> conditional_and_expression_ 
@@ -94,15 +100,24 @@ int array_level = 0;
 %type <typeval> relational_expression 
 %type <typeval> shift_expression 
 %type <typeval> additive_expression 
-%type <typeval> multiplicative_expression **/
-
+%type <typeval> multiplicative_expression 
+%type <strval> field_access
+%type <typeval> array_access
+%type <typeval> left_hand_side
+%type <typeval> primary_no_new_array
+%type <typeval> primary_no_array
+%type <typeval> unary_expression
+%type <typeval> lit
+%type <typeval> conditional_opt
+%type <typeval> postfix_expression_
+%type <typeval> expression_opt
 
 
 %%	
 
 compilation_unit :	class_declaration;
 
-class_declaration :	CLASS identifier {createClassContext($2);setCurrentContext(GLOBAL_CONTEXT);/*line_class = line; column_class = column;*/} class_body /*{line = 1/*line_class*; column = 10/*column_class*;setCurrentContext(LOCAL_CONTEXT);printf("l: %d c: %d\n", line, column);} /*class_body*/ {displayClassContext();};		
+class_declaration :	CLASS identifier {createClassContext($2);setCurrentContext(GLOBAL_CONTEXT);} class_body {displayClassContext();};		
 
 identifier :	ID;
 
@@ -111,7 +126,7 @@ class_body :	BEG class_body_declaration END ;
 class_body_declaration : class_member_declaration_opt static_initializer /*class_member_declaration_opt*/ ;	
 
 static_initializer :	PUBLIC STATIC VOID MAIN OPEN_PAREN TYPE_STRING OPEN_COLC CLOSE_COLC 
-			ARGS CLOSE_PAREN {insertMethod("MAIN", "t_void",0);} block {checkEqualMethodSignature();}
+			ARGS CLOSE_PAREN {insertMethod("MAIN", "t_void",0);} block {checkEqualityCurrentMethodSignature();}
 		|	/** empty **/;
 
 block :		BEG {setCurrentContext(LOCAL_CONTEXT);} block_statements  END {setCurrentContext(GLOBAL_CONTEXT);};
@@ -130,9 +145,9 @@ local_variable_declaration_statement : local_variable_declaration PT_VIRGULA loc
 local_variable_declaration_ : local_variable_declaration PT_VIRGULA local_variable_declaration_
 			|	/** empty **/;
 
-local_variable_declaration :    field_modifiers_ primitive_type variable_declarators 
+local_variable_declaration :    field_modifiers_ primitive_type {method_or_field_type = $2;} variable_declarators 
 				{insertVarListInCurrMethodContext($2, $1, 0);}
-			|	field_modifiers_ primitive_type colc_opt_ variable_declarators
+			|	field_modifiers_ primitive_type colc_opt_ {method_or_field_type = $2;array_level_def = $3;} variable_declarators
 				{insertVarListInCurrMethodContext($2, $1, $3);};
 					
 
@@ -169,7 +184,7 @@ variable_initializer :         assignment_expression /** comparar se o tipo de r
 			|	left_hand_side;
 
 array_initializer :	BEG variable_initializers  virgula_opt END 
-			|	array_creation_expression /**{$$ = $0}**/; 
+			|	array_creation_expression ; 
 
 virgula_opt :	VIRGULA
 	|       /** empty **/;
@@ -180,51 +195,55 @@ variable_initializers :         variable_initializer variable_initializers_
 variable_initializers_ :        VIRGULA variable_initializer variable_initializers_ 
                         |       /** empty **/; 
 
-expression : assignment_expression /** tipo de retorno **/;
+expression : assignment_expression ;
 
 assignment_expression : conditional_expression;
 
-field_access : identifier  {checkStaticClassId($1);} POINT identifier
-	|	THIS POINT identifier;
+field_access : identifier  {checkStaticClassId($1);} POINT identifier {$$ = $4;} ;
 
-left_hand_side :	field_access 
-                |       array_access;
+left_hand_side :	field_access {$$ = getVarTypevalInGlobalContext($1);}
+                |       array_access {$$ = "t_array";};
 
 assignment_operator : EQUAL
 		|       ARITH_ASSIGN 
 		|       SHIFT_ASSIGN 
 	        |	LOGIC_ASSIGN; 
 
-array_access : primary_no_new_array OPEN_COLC expression CLOSE_COLC;
+array_access : primary_no_array dim_expr dim_expr_opt /**{$$local_level = getLevelDiff()}**/;
 
-primary_no_new_array : 	LITERAL 
-		| 	field_access 
-		|	method_invocation /** verifica se o metodo ja foi declarado, se nao insere na lista de metodos nao declarados **/ /** compara o tipo de retorno tbm **/
-	        | 	array_access
-		|	identifier;
+lit : LITERAL;
 
-argument_list : 	expression argument_list_
+primary_no_array: lit {$$ = $1;}
+		| 	field_access {$$ = getVarTypevalInGlobalContext($1);}
+		|	method_invocation {$$ = "t_method";}
+		|	identifier {$$ = "t_type";};
+
+primary_no_new_array : 	primary_no_array
+	        | 	array_access {$$ = "t_array";};
+
+argument_list : 	expression {addArgsToCalledMethod($1,local_level);} argument_list_
 		|	argument_list_;
 
-argument_list_ : 	VIRGULA expression argument_list_ 
+argument_list_ : 	VIRGULA expression {addArgsToCalledMethod($2,local_level);} argument_list_ 
                 | 	/** empty **/;
 
-array_creation_expression : NEW primitive_type dim_exprs dims {$$ = $2;};
+array_creation_expression : NEW primitive_type {checkEqualityTypeval(method_or_field_type, $2);} dim_expr  dim_exprs {checkEqualityArrayLevel(1+$5,array_level_def);};
 
-dim_exprs : OPEN_COLC dim_expr_or_empty CLOSE_COLC;
+dim_exprs : OPEN_COLC dim_expr_or_empty CLOSE_COLC dim_exprs {$$ = $4+1;}
+	|	/** empty **/  {$$ = 0;};
+
+dim_expr: OPEN_COLC expression CLOSE_COLC;
 
 dim_expr_or_empty : expression
 		|	/** empty **/;
 
-dims: dim_exprs
-	| 	/**empty**/;
+dim_expr_opt: dim_expr dim_expr_opt {$$ = $2+1;}
+	|	/** empty **/ {$$ = 0;};
 
-
-
-conditional_expression : conditional_or_expression /** {$$ = $1} **/
+conditional_expression : conditional_or_expression  {$$ = $1;} 
                         | OPEN_PAREN conditional_or_expression CLOSE_PAREN conditional_opt
 			| conditional_or_expression /** tem que retornar um boolean **/ QUESTION_MARK conditional_expression TWO_POINTS conditional_expression;
-			| OPEN_PAREN conditional_or_expression CLOSE_PAREN QUESTION_MARK  conditional_expression TWO_POINTS conditional_expression; /** nao entendi essa regra! **/
+			| OPEN_PAREN conditional_or_expression CLOSE_PAREN QUESTION_MARK  conditional_expression TWO_POINTS conditional_expression; 
 
 
 conditional_opt: conditional_or_expression_ /** {$$ = $1} **/
@@ -237,7 +256,7 @@ conditional_opt: conditional_or_expression_ /** {$$ = $1} **/
 	|	shift_expression_ /** {$$ = $1} **/
 	|	additive_expression_ /** {$$ = $1} **/
 	|	multiplicative_expression_ /** {$$ = $1} **/
-	|	/* empty */;
+	|	/* empty */ {$$ = "t_empty";};
 
 
 conditional_or_expression : conditional_and_expression conditional_or_expression_
@@ -301,39 +320,25 @@ multiplicative_expression : unary_expression multiplicative_expression_
 multiplicative_expression_ : MULT unary_expression multiplicative_expression_ 
                         | DIV unary_expression multiplicative_expression_ 
                         | MOD unary_expression multiplicative_expression_
-			| /** empty **/;
+			| /** empty **/ {$$ = "t_empty";};
 
-unary_expression : 	INCREMENT unary_expression /** verificar pra que tipos cada operacao pode ser feita **/
-		|	DECREMENT unary_expression  
-		|	PLUS unary_expression  
-		|	MINUS unary_expression  
-		|	postfix_expression 
-		|	NOT unary_expression 
+unary_expression : 	INCREMENT unary_expression /** nao pode ser string **/
+		|	DECREMENT unary_expression  /** nao pode ser string **/
+		|	PLUS unary_expression  /** nao pode ser char e string **/
+		|	MINUS unary_expression  /** nao pode ser char e string **/
+		|	postfix_expression /** nao pode ser string **/
+		|	NOT unary_expression {$$ = "t_boolean";}
 		|	NOT_BIT unary_expression 
 		|	cast_expression
-		|	OPEN_PAREN conditional_expression CLOSE_PAREN;
+		|	OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = $2;};
 
-cast_expression : OPEN_PAREN primitive_type CLOSE_PAREN unary_expression 
-		| OPEN_PAREN reference_type CLOSE_PAREN unary_expression_not_plus_minus;
-
-reference_type : 	class_type
-		|       array_type;
-
-class_type :	identifier /** verificar se eh o nome da classe, tem ctza que precisa disso, como ele vai referenciar a propria classe?? **/;
-
-array_type :	primitive_type OPEN_COLC CLOSE_COLC;
-
-
-unary_expression_not_plus_minus : postfix_expression 
-                        | NOT_BIT unary_expression 
-                        | NOT unary_expression
-                        | cast_expression;
+cast_expression : OPEN_PAREN primitive_type CLOSE_PAREN unary_expression;
 
 postfix_expression : primary_no_new_array postfix_expression_;		/** Regra alterada, nao pode ser um novoo array **/
 
-postfix_expression_ : INCREMENT postfix_expression_
+postfix_expression_ : INCREMENT postfix_expression_ /** nao pode ser final **/
 			| DECREMENT postfix_expression_
-                        | /** empty **/;
+                        | /** empty **/ {$$ = "t_empty";};
 
 statement :	statement_without_trailing_substatement
 	|       identifier TWO_POINTS statement
@@ -365,12 +370,11 @@ post_incr_decrement_expression : postfix_expression;
 predecrement_expression : DECREMENT unary_expression;
 
 
-method_invocation : 	identifier OPEN_PAREN argument_list CLOSE_PAREN 
-		|	field_access OPEN_PAREN argument_list CLOSE_PAREN
-		|	LITERAL POINT identifier OPEN_PAREN argument_list CLOSE_PAREN;
+method_invocation : 	identifier {addCalledMethod($1);} OPEN_PAREN argument_list CLOSE_PAREN {finishCalledMethod();}
+		|	field_access OPEN_PAREN {addCalledMethod($1);} argument_list CLOSE_PAREN {finishCalledMethod();} ;
 
-expression_opt : expression
-		|	/** empty **/;
+expression_opt : expression {$$ = $1;}
+		|	/** empty **/ {$$ = "t_empty";};
 
 for_update :	statement_expression_list;
 
@@ -442,12 +446,12 @@ class_member_declaration_ : class_member_declaration class_member_declaration_
 class_member_declaration :     STATIC  field_modifiers_ {final_modifier = $2;} field_or_method_declaration 
 			| 	PT_VIRGULA;
 			
-field_or_method_declaration :   primitive_type {method_or_field_type = $1;} colc_opt {array_level = $3;} field_or_method_declaration_rest
+field_or_method_declaration :   primitive_type {method_or_field_type = $1;} colc_opt {array_level_def = $3;} field_or_method_declaration_rest
 			|	void_method_declaration;
 
 field_or_method_declaration_rest: method_declaration  
 			|	field_declaration {
-						insertVarListInGlobalContext(method_or_field_type, final_modifier,array_level);
+						insertVarListInGlobalContext(method_or_field_type, final_modifier,array_level_def);
 						};
 
 colc_opt: OPEN_COLC CLOSE_COLC colc_opt_ {$$ = $3+1;}
@@ -458,12 +462,12 @@ colc_opt_ : OPEN_COLC CLOSE_COLC colc_opt_ {$$ = $3+1;}
 
 method_declaration :	method_header method_body {$$ = $1;};
 
-method_header :	identifier {insertMethod($1, method_or_field_type, array_level);}
+method_header :	identifier {insertMethod($1, method_or_field_type, array_level_def);}
 					method_declarator;
 
 void_method_declaration: VOID identifier {insertMethod($2, "t_void",0);} method_declarator method_body ;
 
-method_declarator :	OPEN_PAREN formal_parameter_list CLOSE_PAREN {checkEqualMethodSignature();};
+method_declarator :	OPEN_PAREN formal_parameter_list CLOSE_PAREN {checkEqualityCurrentMethodSignature();};
 
 method_body :	block;
 

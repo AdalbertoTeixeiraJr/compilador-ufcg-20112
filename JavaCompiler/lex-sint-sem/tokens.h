@@ -84,25 +84,24 @@
      MAIN = 300,
      ARGS = 301,
      PUBLIC = 302,
-     THIS = 303,
-     FINAL = 304,
-     EQUALOP = 305,
-     RELOP = 306,
-     SHIFTS = 307,
-     SHIFT_ASSIGN = 308,
-     ARITH_ASSIGN = 309,
-     LOGIC_ASSIGN = 310,
-     ID = 311,
-     TYPE_INT = 312,
-     TYPE_SHORT = 313,
-     TYPE_LONG = 314,
-     TYPE_BYTE = 315,
-     TYPE_BOOL = 316,
-     TYPE_FLOAT = 317,
-     TYPE_DOUBLE = 318,
-     TYPE_CHAR = 319,
-     TYPE_STRING = 320,
-     LITERAL = 321
+     FINAL = 303,
+     EQUALOP = 304,
+     RELOP = 305,
+     SHIFTS = 306,
+     SHIFT_ASSIGN = 307,
+     ARITH_ASSIGN = 308,
+     LOGIC_ASSIGN = 309,
+     ID = 310,
+     TYPE_INT = 311,
+     TYPE_SHORT = 312,
+     TYPE_LONG = 313,
+     TYPE_BYTE = 314,
+     TYPE_BOOL = 315,
+     TYPE_FLOAT = 316,
+     TYPE_DOUBLE = 317,
+     TYPE_CHAR = 318,
+     TYPE_STRING = 319,
+     LITERAL = 320
    };
 #endif
 /* Tokens.  */
@@ -151,25 +150,24 @@
 #define MAIN 300
 #define ARGS 301
 #define PUBLIC 302
-#define THIS 303
-#define FINAL 304
-#define EQUALOP 305
-#define RELOP 306
-#define SHIFTS 307
-#define SHIFT_ASSIGN 308
-#define ARITH_ASSIGN 309
-#define LOGIC_ASSIGN 310
-#define ID 311
-#define TYPE_INT 312
-#define TYPE_SHORT 313
-#define TYPE_LONG 314
-#define TYPE_BYTE 315
-#define TYPE_BOOL 316
-#define TYPE_FLOAT 317
-#define TYPE_DOUBLE 318
-#define TYPE_CHAR 319
-#define TYPE_STRING 320
-#define LITERAL 321
+#define FINAL 303
+#define EQUALOP 304
+#define RELOP 305
+#define SHIFTS 306
+#define SHIFT_ASSIGN 307
+#define ARITH_ASSIGN 308
+#define LOGIC_ASSIGN 309
+#define ID 310
+#define TYPE_INT 311
+#define TYPE_SHORT 312
+#define TYPE_LONG 313
+#define TYPE_BYTE 314
+#define TYPE_BOOL 315
+#define TYPE_FLOAT 316
+#define TYPE_DOUBLE 317
+#define TYPE_CHAR 318
+#define TYPE_STRING 319
+#define LITERAL 320
 
 
 
@@ -179,7 +177,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 32 "sintatico.y"
+#line 33 "sintatico.y"
 
         char* strval;
 	char* typeval;
@@ -190,7 +188,7 @@ typedef union YYSTYPE
 
 
 /* Line 1676 of yacc.c  */
-#line 194 "tokens.h"
+#line 192 "tokens.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
