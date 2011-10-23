@@ -23,15 +23,15 @@ static MethodNode * getCurrentMethod();
 static VarNode * getVarInCurrMethodContext(char * id);
 static char * getVarTypevalInCurrMethodContext (char * id);
 
-//// CHECKING
-static int isVarFinalInGlobalContext(char * id);
-static int isVarFinalInCurrMethodContext(char * id);
-
 //// STRLIST
 static StrNode * createStrNode(char * str);
 static StrNode * getIdInStrList(char * id);
 static void freeStrList();
 
+//// CHECKERS
+static int checkIdentityConversion(char * typeFrom, char * typeTo);
+static int checkWideningConversion(char * typeFrom, char * typeTo);
+static int checkNarrowingConversion(char * typeFrom, char * typeTo);
 
 /*************** GLOBAL VARIABLES ***************/
 ClassContext * classContext = NULL;
@@ -386,24 +386,7 @@ void addArgsToCalledMethod(char * typeval, int arrayLevels){
 }
 
 void finishCalledMethod(){
-	int result = WRONG_METHOD_CALL;
-
-	MethodNode * declaredMethodList = classContext->methodContext;
-
-	if(calledMethod != NULL){
-
-		while(declaredMethodList != NULL){
-			if (checkMethodConversion(declaredMethodList, calledMethod) == YES){
-				result = OK;
-				break;
-			}
-			declaredMethodList = declaredMethodList->next;
-		}
-	}
-
-	freeMethodList(calledMethod);
-
-	CHECK_RESULT(result);
+	checkMethodConversion();
 }
 
 /*************** SEMANTIC CHECK FUNCTIONS ***************/
@@ -412,33 +395,11 @@ void finishCalledMethod(){
  * STATIC FUNCTIONS
  */
 
-static int isVarFinalInCurrMethodContext(char * id){
-	int result = INEXISTANT_ID_IN_CONTEXT;
-	VarNode * node = getVarNodeInList(getCurrentMethod()->varNodes, id);
-
-	if (node != NULL){
-		result = node->isFinal;
-	}
-	return result;
+static int checkIdentityConversion(char * typeFrom, char * typeTo){
+	return (strcmp(typeFrom, typeTo) == 0) ? YES : NO;
 }
 
-static int isVarFinalInGlobalContext(char * id){
-	int result = INEXISTANT_ID_IN_CONTEXT;
-	VarNode * node = getVarNodeInList(classContext->varsContext, id);
-
-	if (node != NULL){
-		result = node->isFinal;
-	}
-	return result;
-}
-
-static int checkIdentityPermission(char * typeFrom, char * typeTo){
-	int result = NO;
-	// EQUALS
-	return result;
-}
-
-static int checkWideningPermission(char * typeFrom, char * typeTo){
+static int checkWideningConversion(char * typeFrom, char * typeTo){
 	int result = NO;
 
 	/*
@@ -453,7 +414,7 @@ static int checkWideningPermission(char * typeFrom, char * typeTo){
 	return result;
 }
 
-static int checkNarrowingPermission(char * typeFrom, char * typeTo){
+static int checkNarrowingConversion(char * typeFrom, char * typeTo){
 	int result = NO;
 
 	/*
@@ -510,15 +471,94 @@ void checkEqualityTypeval(char * declarationLevel, char * definitionLevel){
 	CHECK_RESULT(result);
 }
 
-void checkMethodInvocationConversion(char * castType, char * actualType){
+void checkAssignmentConversion(char * actualType, char * assignType){
 
 }
 
-void checkAssignmentConversion(char * castType, char * actualType){
+void checkCastingConversion(char * actualType, char * castType){
 
 }
 
-void checkCastingConversion(char * castType, char * actualType){
+char * checkMethodConversion(){
 
+	int result = YES;
+	char * returnType;
+
+	MethodNode * methodTo = classContext->methodContext;
+	VarNode * paramsTo = methodTo->params;
+	VarNode * paramsFrom = calledMethod->params;
+
+	if(calledMethod != NULL){
+
+		// AT FIRST IT TRIES AN IDENTITY CONVERSION
+		while(methodTo != NULL){
+			if(strcmp(calledMethod->idName, methodTo->idName) == 0){
+				while(paramsFrom != NULL){
+					if (paramsTo != NULL){
+						if(checkIdentityConversion(paramsFrom->typeval, paramsTo->typeval) != YES){
+							result = NO;
+							break;
+						}
+					}else{
+						result = NO;
+						break;
+					}
+					paramsFrom = paramsFrom->nextNode;
+					paramsTo = paramsTo->nextNode;
+				}
+				if (result == YES && paramsTo != NULL){
+					result = NO;
+				}
+			}else{
+				result = NO;
+			}
+
+			methodTo = methodTo->next;
+		}
+
+		if(result != YES){
+			// AT SECOND IT TRIES AN WIDENING CONVERSION
+
+			methodTo = classContext->methodContext;
+			paramsTo = methodTo->params;
+			paramsFrom = calledMethod->params;
+
+			while(methodTo != NULL){
+				if(strcmp(calledMethod->idName, methodTo->idName) == 0){
+					while(paramsFrom != NULL){
+						if (paramsTo != NULL){
+							if(checkWideningConversion(paramsFrom->typeval, paramsTo->typeval) != YES){
+								result = NO;
+								break;
+							}
+						}else{
+							result = NO;
+							break;
+						}
+						paramsFrom = paramsFrom->nextNode;
+						paramsTo = paramsTo->nextNode;
+					}
+					if (result == YES && paramsTo != NULL){
+						result = NO;
+					}
+				}else{
+					result = NO;
+				}
+				methodTo = methodTo->next;
+			}
+		}
+	}
+
+	if(result == YES){
+		returnType = paramsTo->typeval;
+	}else{
+		result = WRONG_METHOD_CALL;
+		returnType = NULL;
+	}
+
+	freeMethodList(calledMethod);
+
+	CHECK_RESULT(result);
+
+	return returnType;
 }
-
