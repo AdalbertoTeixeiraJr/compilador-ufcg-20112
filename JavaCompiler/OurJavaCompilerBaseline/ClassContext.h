@@ -59,7 +59,6 @@ void insertStringToStrList(char * id);
 /*************** CALLED METHODS FUNCTIONS ***************/
 void addCalledMethod(char * idName);
 void addArgsToCalledMethod(char * typeval, int arrayLevels);
-void finishCalledMethod();
 
 /*************** SEMANTIC CHECK FUNCTIONS ***************/
 void checkStaticClassId(char * id);
