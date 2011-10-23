@@ -8,6 +8,7 @@
  ============================================================================
  */
 
+#include <stdio.h>
 #include "OurConstants.h"
 
 void treatErrorResults(int val){

@@ -393,7 +393,7 @@ void finishCalledMethod(){
 	if(calledMethod != NULL){
 
 		while(declaredMethodList != NULL){
-			if (isMethodEqual(declaredMethodList, calledMethod) == YES){
+			if (checkMethodConversion(declaredMethodList, calledMethod) == YES){
 				result = OK;
 				break;
 			}
@@ -431,6 +431,43 @@ static int isVarFinalInGlobalContext(char * id){
 	}
 	return result;
 }
+
+static int checkIdentityPermission(char * typeFrom, char * typeTo){
+	int result = NO;
+	// EQUALS
+	return result;
+}
+
+static int checkWideningPermission(char * typeFrom, char * typeTo){
+	int result = NO;
+
+	/*
+	 * byte to short, int, long, float, or double
+	 * short to int, long, float, or double
+	 * char to int, long, float, or double
+	 * int to long, float, or double
+	 * long to float or double
+	 * float to double
+	 */
+
+	return result;
+}
+
+static int checkNarrowingPermission(char * typeFrom, char * typeTo){
+	int result = NO;
+
+	/*
+	 * short to byte or char
+	 * char to byte or short
+	 * int to byte, short, or char
+	 * long to byte, short, char, or int
+	 * float to byte, short, char, int, or long
+	 * double to byte, short, char, int, long, or float
+	 */
+
+	return result;
+}
+
 
 /*
  * PUBLIC FUNCTIONS
@@ -472,3 +509,16 @@ void checkEqualityTypeval(char * declarationLevel, char * definitionLevel){
 	int result = (strcmp(declarationLevel,definitionLevel)== 0)? OK: DIFFERENT_TYPE_DEFINITION_DECLARATION;
 	CHECK_RESULT(result);
 }
+
+void checkMethodInvocationConversion(char * castType, char * actualType){
+
+}
+
+void checkAssignmentConversion(char * castType, char * actualType){
+
+}
+
+void checkCastingConversion(char * castType, char * actualType){
+
+}
+
