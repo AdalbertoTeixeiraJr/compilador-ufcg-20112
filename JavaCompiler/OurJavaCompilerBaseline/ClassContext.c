@@ -323,7 +323,9 @@ void insertStringToStrList(char * id){
 
 	// IS THERE ANOTHER OF THIS? IT DEPENDS ON THE CONTEXT...
 	if(currentContext == LOCAL_CONTEXT){
-		if (getVarInCurrMethodContext(id) != NULL || getIdInStrList(id) != NULL){
+		if (getIdInStrList(id) != NULL ||
+			getVarInCurrMethodContext(id) != NULL ||
+			getVarNodeInList(getCurrentMethod()->params, id) != NULL){
 			result = LOCAL_VAR_ID_ALREADY_EXISTS_ERROR;
 		}
 	}else{
