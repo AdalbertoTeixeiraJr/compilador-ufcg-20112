@@ -66,6 +66,9 @@ void treatErrorResults(int val){
 		case(WRONG_CASTING_OPERATION):
 			yyerror("Semantical Error: this casting operation is not allowed");
 			break;
+		case(WRONG_BOOLEAN_CHECK):
+			yyerror("Semantical Error: this expression should return a boolean type");
+			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT!");
 			break;

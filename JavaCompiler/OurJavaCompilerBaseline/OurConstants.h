@@ -69,6 +69,7 @@
 #define DIFFERENT_TYPE_DEFINITION_DECLARATION				-15
 #define INEXISTENT_DECLARED_METHOD_WITH_ID					-16
 #define WRONG_CASTING_OPERATION								-17
+#define WRONG_BOOLEAN_CHECK									-18
 
 /*********** PUBLIC FUNCTION DECLARATIONS ************/
 void treatErrorResults(int val);
