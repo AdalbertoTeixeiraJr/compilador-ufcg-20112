@@ -110,6 +110,15 @@ void treatErrorResults(int val){
 		case(WRONG_NUMERICAL_TYPE):
 			yyerror("Semantical Error: this is not a numerical type");
 			break;
+		case(WRONG_IMPLICIT_CONVERSION):
+			yyerror("Semantical Error: the implicit conversion could not be executed");
+			break;
+		case(WRONG_ASSIGN_CONVERSION):
+			yyerror("Semantical Error: the assignment conversion could not be executed");
+			break;
+		case(WRONG_MULT_EXPRESSION):
+			yyerror("Semantical Error: the multiplication expression is not allowed");
+			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT (%d)", val);
 			break;
