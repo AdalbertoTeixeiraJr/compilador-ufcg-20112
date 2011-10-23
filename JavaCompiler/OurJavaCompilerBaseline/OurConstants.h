@@ -75,7 +75,7 @@
 #define WRONG_NUMERICAL_TYPE								-20
 #define WRONG_IMPLICIT_CONVERSION							-21
 #define WRONG_ASSIGN_CONVERSION								-22
-#define WRONG_MULT_EXPRESSION								-23
+#define WRONG_BINARY_NUMERIC_EXPRESSION						-23
 
 /*********** PUBLIC FUNCTION DECLARATIONS ************/
 void treatErrorResults(int val);

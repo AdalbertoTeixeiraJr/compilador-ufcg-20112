@@ -700,7 +700,7 @@ char * checkMethodConversion(){
 
 // BINARY COMPARISONS
 
-char * checkMultExpressionResultType(char * leftType, char * rightType){
+char * checkBinaryExpressionResultType(char * leftType, char * rightType){
 	int result = OK;
 	char * resultType;
 	if (checkNumericalType(leftType) == OK &&
@@ -710,10 +710,10 @@ char * checkMultExpressionResultType(char * leftType, char * rightType){
 			}else if(checkImplicitConversion(rightType, leftType) == OK){
 				resultType = leftType;
 			}else{
-				result = WRONG_MULT_EXPRESSION;
+				result = WRONG_BINARY_NUMERIC_EXPRESSION;
 			}
 	}else{
-		result = WRONG_MULT_EXPRESSION;
+		result = WRONG_BINARY_NUMERIC_EXPRESSION;
 	}
 	CHECK_RESULT(result);
 	return resultType;
