@@ -67,10 +67,13 @@ void checkEqualityArrayLevel(int declarationLevel, int definitionLevel);
 void checkEqualityTypeval(char * declarationType, char * definitionType);
 void checkEqualityWithBoolean(char * type);
 void checkIncrementDecrement(char * varType, char * operType, int isFinal);
-void checkNumericalType(char * type);
+int checkNumericalType(char * type);
 
-void checkAssignmentConversion(char * actualType, char * assignType);
+void checkAssignConversion(char * typeFrom, char * typeTo);
 void checkCastingConversion(char * actualType, char * castType);
 char * checkMethodConversion();
+
+// BINARY COMPARISONS
+char * checkMultExpressionResultType(char * leftType, char * rightType);
 
 #endif /* CLASSCONTEXT_H_ */

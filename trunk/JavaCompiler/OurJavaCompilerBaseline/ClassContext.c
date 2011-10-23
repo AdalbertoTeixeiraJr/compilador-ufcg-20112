@@ -21,7 +21,6 @@ static MethodNode * getFirstMethodWithId(char * idName);
 
 static MethodNode * getCurrentMethod();
 static VarNode * getVarInCurrMethodContext(char * id);
-static char * getVarTypevalInCurrMethodContext (char * id);
 
 //// STRLIST
 static StrNode * createStrNode(char * str);
@@ -33,7 +32,7 @@ int translateTypevalToInt(char * typeval);
 static int checkIdentityConversion(char * typeFrom, char * typeTo);
 static int checkWideningConversion(char * typeFrom, char * typeTo);
 static int checkNarrowingConversion(char * typeFrom, char * typeTo);
-static int checkIncrementDecrementPermission(char * type);
+static int checkImplicitConversion(char * typeFrom, char * typeTo);
 
 /*************** GLOBAL VARIABLES ***************/
 ClassContext * classContext = NULL;
@@ -192,16 +191,6 @@ void displayClassContext(){
 
 static MethodNode * getCurrentMethod(){
 	return getLastMethodNodeInList(classContext->methodContext);
-}
-
-static char * getVarTypevalInCurrMethodContext (char * id){
-	char * result = NULL;
-	VarNode * node = getVarNodeInList(getCurrentMethod()->varNodes, id);
-
-	if (node != NULL){
-		result = node->typeval;
-	}
-	return result;
 }
 
 /*
@@ -532,6 +521,15 @@ static int checkNarrowingConversion(char * typeFrom, char * typeTo){
 	return result;
 }
 
+static int checkImplicitConversion(char * typeFrom, char * typeTo){
+	int result = WRONG_IMPLICIT_CONVERSION;
+	if (checkIdentityConversion(typeFrom, typeTo) == YES ||
+		checkWideningConversion(typeFrom, typeTo) == YES ){
+		result = OK;
+	}
+	return result;
+}
+
 /*
  * PUBLIC FUNCTIONS
  */
@@ -584,28 +582,25 @@ void checkIncrementDecrement(char * varType, char * operType, int isFinal){
 		if (isFinal == YES){
 			result = WRONG_FINAL_UPDATE;
 		}else{
-			checkNumericalType(varType);
+			result = checkNumericalType(varType);
 		}
 	}
 	CHECK_RESULT(result);
 }
 
-void checkNumericalType(char * type){
+int checkNumericalType(char * type){
 	int ourType = translateTypevalToInt(type);
 	int result = WRONG_NUMERICAL_TYPE;
+
 	if (ourType != OUR_STRING && ourType != OUR_BOOLEAN){
 		result = OK;
 	}
 	CHECK_RESULT(result);
+	return result;
 }
 
-
-void checkAssignmentConversion(char * typeFrom, char * typeTo){
-	int result = WRONG_CASTING_OPERATION;
-	if (checkIdentityConversion(typeFrom, typeTo) == YES ||
-		checkWideningConversion(typeFrom, typeTo) == YES ){
-		result = OK;
-	}
+void checkAssignConversion(char * typeFrom, char * typeTo){
+	int result = (checkImplicitConversion(typeFrom, typeTo) == OK) ? OK : WRONG_ASSIGN_CONVERSION;
 	CHECK_RESULT(result);
 }
 
@@ -657,7 +652,7 @@ char * checkMethodConversion(){
 		}
 
 		if(result != YES){
-			// AT SECOND IT TRIES AN WIDENING CONVERSION
+			// AT SECOND checkNumericalTypeIT TRIES AN WIDENING CONVERSION
 
 			methodTo = classContext->methodContext;
 			paramsTo = methodTo->params;
@@ -703,3 +698,23 @@ char * checkMethodConversion(){
 	return returnType;
 }
 
+// BINARY COMPARISONS
+
+char * checkMultExpressionResultType(char * leftType, char * rightType){
+	int result = OK;
+	char * resultType;
+	if (checkNumericalType(leftType) == OK &&
+		(checkNumericalType(rightType) == OK || translateTypevalToInt(rightType) == OUR_EMPTY)){
+			if (checkImplicitConversion(leftType, rightType) == OK){
+				resultType = rightType;
+			}else if(checkImplicitConversion(rightType, leftType) == OK){
+				resultType = leftType;
+			}else{
+				result = WRONG_MULT_EXPRESSION;
+			}
+	}else{
+		result = WRONG_MULT_EXPRESSION;
+	}
+	CHECK_RESULT(result);
+	return resultType;
+}
