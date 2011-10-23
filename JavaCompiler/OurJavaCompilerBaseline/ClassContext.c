@@ -16,8 +16,8 @@
 
 /*************** STATIC FUNCTIONS ***************/
 //// GETTING
-static MethodNode * getMethod(char * idName);
 static VarNode * getVarInGlobalContext(char * id);
+static MethodNode * getFirstMethodWithId(char * idName);
 
 static MethodNode * getCurrentMethod();
 static VarNode * getVarInCurrMethodContext(char * id);
@@ -36,7 +36,7 @@ static void freeStrList();
 /*************** GLOBAL VARIABLES ***************/
 ClassContext * classContext = NULL;
 StrNode * strList = NULL;
-MethodNode * calledMethods = NULL;
+MethodNode * calledMethod = NULL;
 int currentContext = GLOBAL_CONTEXT;
 
 
@@ -56,8 +56,7 @@ static VarNode * getVarInGlobalContext(char * id){
 	return getVarNodeInList(classContext->varsContext, id);
 }
 
-
-static MethodNode * getMethod(char * idName){
+static MethodNode * getFirstMethodWithId(char * idName){
 	return getMethodNodeInList(classContext->methodContext, idName);
 }
 
@@ -151,6 +150,15 @@ char * getVarTypevalInGlobalContext (char * id){
 	return result;
 }
 
+int getVarArrayLevelInGlobalContext (char * id){
+	int result = -1;
+	VarNode * node = getVarNodeInList(classContext->varsContext, id);
+
+	if (node != NULL){
+		result = node->arrayLevels;
+	}
+	return result;
+}
 
 //// FREEING
 
@@ -193,7 +201,6 @@ static char * getVarTypevalInCurrMethodContext (char * id){
 	}
 	return result;
 }
-
 
 /*
  * PUBLIC FUNCTIONS
@@ -345,7 +352,59 @@ void insertStringToStrList(char * id){
 	CHECK_RESULT(result);
 }
 
+void addCalledMethod(char * idName){
+	int result = OK;
 
+	MethodNode * newMethod;
+
+	if (getFirstMethodWithId(idName) != NULL){
+
+		newMethod = createMethodNode(idName, "NULL", 0);
+
+		if (newMethod != NULL){
+			calledMethod = newMethod;
+		}else{
+			result = CALLED_METHOD_CREATION_MALLOC_ERROR;
+		}
+	}else{
+		result = INEXISTENT_DECLARED_METHOD_WITH_ID;
+	}
+
+	CHECK_RESULT(result);
+}
+
+void addArgsToCalledMethod(char * typeval, int arrayLevels){
+	int result = OK;
+
+	if (calledMethod != NULL){
+		calledMethod = addParamInMethod(calledMethod, "ID_DEFAULT", typeval, arrayLevels);
+	}else{
+		result = CALLED_METHOD_IS_NULL;
+	}
+
+	CHECK_RESULT(result);
+}
+
+void finishCalledMethod(){
+	int result = WRONG_METHOD_CALL;
+
+	MethodNode * declaredMethodList = classContext->methodContext;
+
+	if(calledMethod != NULL){
+
+		while(declaredMethodList != NULL){
+			if (isMethodEqual(declaredMethodList, calledMethod) == YES){
+				result = OK;
+				break;
+			}
+			declaredMethodList = declaredMethodList->next;
+		}
+	}
+
+	freeMethodList(calledMethod);
+
+	CHECK_RESULT(result);
+}
 
 /*************** SEMANTIC CHECK FUNCTIONS ***************/
 
@@ -382,7 +441,7 @@ void checkStaticClassId(char * id){
 	CHECK_RESULT(result);
 }
 
-void checkEqualMethodSignature(){
+void checkEqualityCurrentMethodSignature(){
 	CHECK_GLOBAL_CONTEXT(currentContext);
 
 	int result = OK;
@@ -413,4 +472,3 @@ void checkEqualityTypeval(char * declarationLevel, char * definitionLevel){
 	int result = (strcmp(declarationLevel,definitionLevel)== 0)? OK: DIFFERENT_TYPE_DEFINITION_DECLARATION;
 	CHECK_RESULT(result);
 }
-
