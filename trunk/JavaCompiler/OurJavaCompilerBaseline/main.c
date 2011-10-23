@@ -81,6 +81,8 @@ int main(){
 
 	checkEqualityWithBoolean(NULL);
 
+	checkIncrementDecrement("KKKK", "kkkk", YES);
+
 	freeClassContext();
 
 	return 0;

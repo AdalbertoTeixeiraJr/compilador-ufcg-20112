@@ -66,6 +66,8 @@ void checkEqualityCurrentMethodSignature();
 void checkEqualityArrayLevel(int declarationLevel, int definitionLevel);
 void checkEqualityTypeval(char * declarationType, char * definitionType);
 void checkEqualityWithBoolean(char * type);
+void checkIncrementDecrement(char * varType, char * operType, int isFinal);
+void checkNumericalType(char * type);
 
 void checkAssignmentConversion(char * actualType, char * assignType);
 void checkCastingConversion(char * actualType, char * castType);
