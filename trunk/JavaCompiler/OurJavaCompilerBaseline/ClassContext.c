@@ -706,17 +706,10 @@ char * checkMethodConversion(){
 	return returnType;
 }
 
-/*
- *
- */
-TypeStruct * createTypeStruct(){
-	TypeStruct * type = (TypeStruct *) malloc(sizeof(TypeStruct));
+void checkEqualityWithBoolean(char * type){
+	int result = WRONG_BOOLEAN_CHECK;
 
-	if (type != NULL){
-		type->streval = NULL;
-		type->typeval = NULL;
-		type->isFinal = 0;
-		type->levels = 0;
-	}
-	return type;
+	result = (translateTypevalToInt(type) == OUR_BOOLEAN);
+
+	CHECK_RESULT(result);
 }

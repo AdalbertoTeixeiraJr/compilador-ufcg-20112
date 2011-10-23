@@ -79,13 +79,6 @@ int main(){
 	addArgsToCalledMethod("INT", 0);
 	checkMethodConversion();
 
-	TypeStruct * typeStruct = createTypeStruct();
-
-	strcpy(typeStruct->streval, "KKKKK");
-	strcpy(typeStruct->typeval, "QQQQQ");
-	typeStruct->isFinal = 1;
-	typeStruct->levels = 10;
-
 	freeClassContext();
 
 	return 0;
