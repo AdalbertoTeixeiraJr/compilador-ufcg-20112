@@ -61,7 +61,10 @@ void treatErrorResults(int val){
 			yyerror("Semantical Error: the type definition does not correspond to the declaration type");
 			break;
 		case(INEXISTENT_DECLARED_METHOD_WITH_ID):
-			yyerror("Semantical Error: there isn't a method with this name");
+			yyerror("Semantical Error: there is not a method with this name");
+			break;
+		case(WRONG_CASTING_OPERATION):
+			yyerror("Semantical Error: this casting operation is not allowed");
 			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT!");

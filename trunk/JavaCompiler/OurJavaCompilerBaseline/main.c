@@ -60,7 +60,7 @@ int main(){
 	addArgsToCalledMethod("LONG", 0);
 	addArgsToCalledMethod("LONG", 0);
 	addArgsToCalledMethod("INT", 0);
-	finishCalledMethod();
+	checkMethodConversion();
 
 	freeClassContext();
 

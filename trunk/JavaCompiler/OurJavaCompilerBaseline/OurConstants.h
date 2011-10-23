@@ -25,6 +25,21 @@
 #define LOCAL_CONTEXT	10
 #define GLOBAL_CONTEXT	20
 
+// TYPE CONSTANTS
+#define OUR_NULL 			0
+#define OUR_BOOLEAN 		1
+#define OUR_INT 			2
+#define OUR_FLOAT 			3
+#define OUR_DOUBLE 			4
+#define OUR_CHAR 			5
+#define OUR_STRING 			6
+#define OUR_HEXA 			7
+#define OUR_OCTAL 			8
+#define OUR_BYTE 			9
+#define OUR_LONG 			10
+#define OUR_SHORT 			11
+
+// CONVERSION CONSTANTS
 #define IDENTITY_CONVERSION 1
 #define WIDENING_CONVERSION 2
 #define NARROWING_CONVERSION 3
@@ -53,6 +68,7 @@
 #define DIFFERENT_ARRAY_LEVEL_DEFINITION_DECLARATION		-14
 #define DIFFERENT_TYPE_DEFINITION_DECLARATION				-15
 #define INEXISTENT_DECLARED_METHOD_WITH_ID					-16
+#define WRONG_CASTING_OPERATION								-17
 
 /*********** PUBLIC FUNCTION DECLARATIONS ************/
 void treatErrorResults(int val);

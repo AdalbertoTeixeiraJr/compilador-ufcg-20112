@@ -29,6 +29,7 @@ static StrNode * getIdInStrList(char * id);
 static void freeStrList();
 
 //// CHECKERS
+int translateTypevalToInt(char * typeval);
 static int checkIdentityConversion(char * typeFrom, char * typeTo);
 static int checkWideningConversion(char * typeFrom, char * typeTo);
 static int checkNarrowingConversion(char * typeFrom, char * typeTo);
@@ -385,15 +386,41 @@ void addArgsToCalledMethod(char * typeval, int arrayLevels){
 	CHECK_RESULT(result);
 }
 
-void finishCalledMethod(){
-	checkMethodConversion();
-}
-
 /*************** SEMANTIC CHECK FUNCTIONS ***************/
 
 /*
  * STATIC FUNCTIONS
  */
+
+int translateTypevalToInt(char * typeval){
+	if (strcmp(typeval, "t_null") == 0){
+		return OUR_NULL;
+	}else if(strcmp(typeval, "t_boolean") == 0){
+		return OUR_BOOLEAN;
+	}else if(strcmp(typeval, "t_char") == 0){
+		return OUR_CHAR;
+	}else if(strcmp(typeval, "t_string") == 0){
+		return OUR_STRING;
+	}else if(strcmp(typeval, "t_int") == 0){
+		return OUR_INT;
+	}else if(strcmp(typeval, "t_float") == 0){
+		return OUR_FLOAT;
+	}else if(strcmp(typeval, "t_double") == 0){
+		return OUR_DOUBLE;
+	}else if(strcmp(typeval, "t_hex") == 0){
+		return OUR_HEXA;
+	}else if(strcmp(typeval, "t_oct") == 0){
+		return OUR_OCTAL;
+	}else if(strcmp(typeval, "t_byte") == 0){
+		return OUR_BYTE;
+	}else if(strcmp(typeval, "t_long") == 0){
+		return OUR_LONG;
+	}else if(strcmp(typeval, "t_short") == 0){
+		return OUR_SHORT;
+	}else{
+		return OUR_NULL;
+	}
+}
 
 static int checkIdentityConversion(char * typeFrom, char * typeTo){
 	return (strcmp(typeFrom, typeTo) == 0) ? YES : NO;
@@ -401,6 +428,57 @@ static int checkIdentityConversion(char * typeFrom, char * typeTo){
 
 static int checkWideningConversion(char * typeFrom, char * typeTo){
 	int result = NO;
+	int ourTypeFrom = translateTypevalToInt(typeFrom);
+	int ourTypeTo = translateTypevalToInt(typeTo);
+
+	switch(ourTypeFrom){
+		case(OUR_BYTE):
+			if(ourTypeTo == OUR_SHORT ||
+				ourTypeTo == OUR_INT ||
+				ourTypeTo == OUR_LONG ||
+				ourTypeTo == OUR_FLOAT ||
+				ourTypeTo == OUR_DOUBLE){
+				result = YES;
+			}
+			break;
+		case(OUR_SHORT):
+			if(ourTypeTo == OUR_INT ||
+				ourTypeTo == OUR_LONG ||
+				ourTypeTo == OUR_FLOAT ||
+				ourTypeTo == OUR_DOUBLE){
+				result = YES;
+			}
+			break;
+		case(OUR_CHAR):
+			if(ourTypeTo == OUR_INT ||
+				ourTypeTo == OUR_LONG ||
+				ourTypeTo == OUR_FLOAT ||
+				ourTypeTo == OUR_DOUBLE){
+				result = YES;
+			}
+			break;
+		case(OUR_INT):
+			if(ourTypeTo == OUR_LONG ||
+				ourTypeTo == OUR_FLOAT ||
+				ourTypeTo == OUR_DOUBLE){
+				result = YES;
+			}
+			break;
+		case(OUR_LONG):
+			if(ourTypeTo == OUR_FLOAT ||
+				ourTypeTo == OUR_DOUBLE){
+				result = YES;
+			}
+			break;
+		case(OUR_FLOAT):
+			if(ourTypeTo == OUR_DOUBLE){
+				result = YES;
+
+			}
+			break;
+		default:
+			break;
+	}
 
 	/*
 	 * byte to short, int, long, float, or double
@@ -416,7 +494,59 @@ static int checkWideningConversion(char * typeFrom, char * typeTo){
 
 static int checkNarrowingConversion(char * typeFrom, char * typeTo){
 	int result = NO;
+	int ourTypeFrom = translateTypevalToInt(typeFrom);
+	int ourTypeTo = translateTypevalToInt(typeTo);
 
+	switch(ourTypeFrom){
+		case(OUR_SHORT):
+			if(ourTypeTo == OUR_BYTE ||
+				ourTypeTo == OUR_CHAR){
+				result = YES;
+			}
+			break;
+		case(OUR_CHAR):
+			if(ourTypeTo == OUR_BYTE ||
+				ourTypeTo == OUR_SHORT){
+				result = YES;
+			}
+			break;
+		case(OUR_INT):
+			if(ourTypeTo == OUR_BYTE ||
+				ourTypeTo == OUR_SHORT ||
+				ourTypeTo == OUR_CHAR){
+				result = YES;
+			}
+			break;
+		case(OUR_LONG):
+			if(ourTypeTo == OUR_BYTE ||
+				ourTypeTo == OUR_SHORT ||
+				ourTypeTo == OUR_CHAR ||
+				ourTypeTo == OUR_INT){
+				result = YES;
+			}
+			break;
+		case(OUR_FLOAT):
+			if(ourTypeTo == OUR_BYTE ||
+				ourTypeTo == OUR_SHORT ||
+				ourTypeTo == OUR_CHAR ||
+				ourTypeTo == OUR_INT ||
+				ourTypeTo == OUR_LONG){
+				result = YES;
+			}
+			break;
+		case(OUR_DOUBLE):
+			if(ourTypeTo == OUR_BYTE ||
+				ourTypeTo == OUR_SHORT ||
+				ourTypeTo == OUR_CHAR ||
+				ourTypeTo == OUR_INT ||
+				ourTypeTo == OUR_LONG ||
+				ourTypeTo == OUR_FLOAT){
+				result = YES;
+			}
+			break;
+		default:
+			break;
+	}
 	/*
 	 * short to byte or char
 	 * char to byte or short
@@ -471,12 +601,23 @@ void checkEqualityTypeval(char * declarationLevel, char * definitionLevel){
 	CHECK_RESULT(result);
 }
 
-void checkAssignmentConversion(char * actualType, char * assignType){
-
+void checkAssignmentConversion(char * typeFrom, char * typeTo){
+	int result = WRONG_CASTING_OPERATION;
+	if (checkIdentityConversion(typeFrom, typeTo) == YES ||
+		checkWideningConversion(typeFrom, typeTo) == YES ){
+		result = OK;
+	}
+	CHECK_RESULT(result);
 }
 
-void checkCastingConversion(char * actualType, char * castType){
-
+void checkCastingConversion(char * typeFrom, char * typeTo){
+	int result = WRONG_CASTING_OPERATION;
+	if (checkIdentityConversion(typeFrom, typeTo) == YES ||
+		checkWideningConversion(typeFrom, typeTo) == YES ||
+		checkNarrowingConversion(typeFrom, typeTo) == YES){
+		result = OK;
+	}
+	CHECK_RESULT(result);
 }
 
 char * checkMethodConversion(){
