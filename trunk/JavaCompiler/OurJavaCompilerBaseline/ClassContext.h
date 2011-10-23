@@ -44,6 +44,7 @@ void insertVarListInCurrMethodContext(char * typeval, int isFinal, int arrayLeve
 
 ////GETTING
 char * getVarTypevalInGlobalContext (char * id);
+int getVarArrayLevelInGlobalContext (char * id);
 
 //// FREEING
 void freeClassContext();
@@ -55,9 +56,14 @@ void displayClassContext();
 //// INSERTING
 void insertStringToStrList(char * id);
 
+/*************** CALLED METHODS FUNCTIONS ***************/
+void addCalledMethod(char * idName);
+void addArgsToCalledMethod(char * typeval, int arrayLevels);
+void finishCalledMethod();
+
 /*************** SEMANTIC CHECK FUNCTIONS ***************/
 void checkStaticClassId(char * id);
-void checkEqualMethodSignature();
+void checkEqualityCurrentMethodSignature();
 void checkEqualityArrayLevel(int declarationLevel, int definitionLevel);
 void checkEqualityTypeval(char * declarationType, char * definitionType);
 

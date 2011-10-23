@@ -59,8 +59,11 @@ void treatErrorResults(int val){
 		case(DIFFERENT_TYPE_DEFINITION_DECLARATION):
 			yyerror("Semantical Error: the type definition does not correspond to the declaration type");
 			break;
+		case(INEXISTENT_DECLARED_METHOD_WITH_ID):
+			yyerror("Semantical Error: there isn't a method with this name");
+			break;
 		default:
-			// do nothing
+			printf("INTERNAL ERROR, TRY DEBUGGING IT!");
 			break;
 	}
 }

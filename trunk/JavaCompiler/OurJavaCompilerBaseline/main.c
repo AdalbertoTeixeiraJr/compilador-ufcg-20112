@@ -20,7 +20,7 @@ int main(){
 	addParamInCurrMethod("Param2", "LONG", 0);
 	addParamInCurrMethod("Param3", "LONG", 0);
 
-	checkEqualMethodSignature();
+	checkEqualityCurrentMethodSignature();
 
 	setCurrentContext(LOCAL_CONTEXT);
 
@@ -30,7 +30,7 @@ int main(){
 	setCurrentContext(GLOBAL_CONTEXT);
 
 	insertMethod("MethodB", "INT", 0);
-	checkEqualMethodSignature();
+	checkEqualityCurrentMethodSignature();
 
 	insertMethod("MethodC", "INT", 0);
 
@@ -38,7 +38,7 @@ int main(){
 	addParamInCurrMethod("Param2", "LONG", 0);
 	addParamInCurrMethod("Param3", "LONG", 0);
 
-	checkEqualMethodSignature();
+	checkEqualityCurrentMethodSignature();
 
 	setCurrentContext(LOCAL_CONTEXT);
 
@@ -53,7 +53,14 @@ int main(){
 
 	displayClassContext();
 
-	printf("Tipo de A na Classe: %s", getVarTypevalInGlobalContext ("a"));
+	printf("Tipo de A na Classe: %s\n", getVarTypevalInGlobalContext ("a"));
+	printf("ArrayLevel de A na Classe: %d\n", getVarArrayLevelInGlobalContext("a"));
+
+	addCalledMethod("MethodB");
+	addArgsToCalledMethod("LONG", 0);
+	addArgsToCalledMethod("LONG", 0);
+	addArgsToCalledMethod("LONG", 0);
+	finishCalledMethod();
 
 	freeClassContext();
 

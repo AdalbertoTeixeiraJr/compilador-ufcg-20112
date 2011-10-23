@@ -199,6 +199,9 @@ int isMethodEqual(MethodNode * method1, MethodNode * method2){
 			params = params->nextNode;
 			newParams = newParams->nextNode;
 		}
+		if (result == YES && newParams != NULL){
+			result = NO;
+		}
 	}else{
 		result = NO;
 	}
