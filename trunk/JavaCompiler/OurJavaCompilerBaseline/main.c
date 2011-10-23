@@ -25,6 +25,18 @@ int main(){
 	setCurrentContext(LOCAL_CONTEXT);
 
 		insertStringToStrList("d");
+		insertStringToStrList("e");
+		insertStringToStrList("Param1");
+		insertStringToStrList("g");
+		insertStringToStrList("y");
+		insertStringToStrList("1");
+		insertStringToStrList("8");
+		insertStringToStrList("e");
+		insertStringToStrList("s");
+		insertStringToStrList("a");
+		insertStringToStrList("yx");
+		insertStringToStrList("1xxx");
+		insertStringToStrList("8alkl");
 		insertVarListInCurrMethodContext("DOUBLE", NO, 0);
 
 	setCurrentContext(GLOBAL_CONTEXT);
@@ -45,6 +57,10 @@ int main(){
 		insertStringToStrList("d");
 		insertStringToStrList("e");
 		insertStringToStrList("f");
+		insertStringToStrList("g");
+		insertStringToStrList("y");
+		insertStringToStrList("1");
+		insertStringToStrList("8");
 
 		insertVarListInCurrMethodContext("FLOAT", YES, 1);
 
