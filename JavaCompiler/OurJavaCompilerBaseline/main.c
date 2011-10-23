@@ -48,7 +48,8 @@ int main(){
 
 		insertVarListInCurrMethodContext("FLOAT", YES, 1);
 
-
+		checkEqualityArrayLevel(1, 2);
+		checkEqualityTypeval("CHAR", "CHAR");
 
 	displayClassContext();
 
