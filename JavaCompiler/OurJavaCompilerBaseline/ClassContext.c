@@ -18,7 +18,7 @@
 //// GETTING
 static MethodNode * getMethod(char * idName);
 static VarNode * getVarInGlobalContext(char * id);
-static char * getVarTypevalInGlobalContext (char * id);
+
 static MethodNode * getCurrentMethod();
 static VarNode * getVarInCurrMethodContext(char * id);
 static char * getVarTypevalInCurrMethodContext (char * id);
@@ -52,15 +52,10 @@ void setCurrentContext(int context){
  * STATIC FUNCTIONS
  */
 
-static char * getVarTypevalInGlobalContext (char * id){
-	char * result = NULL;
-	VarNode * node = getVarNodeInList(classContext->varsContext, id);
-
-	if (node != NULL){
-		result = node->typeval;
-	}
-	return result;
+static VarNode * getVarInGlobalContext(char * id){
+	return getVarNodeInList(classContext->varsContext, id);
 }
+
 
 static MethodNode * getMethod(char * idName){
 	return getMethodNodeInList(classContext->methodContext, idName);
@@ -146,9 +141,16 @@ void insertMethod(char * idName, char * typeReturn, int arrayLevels){
 
 //// GETTING
 
-VarNode * getVarInGlobalContext(char * id){
-	return getVarNodeInList(classContext->varsContext, id);
+char * getVarTypevalInGlobalContext (char * id){
+	char * result = NULL;
+	VarNode * node = getVarNodeInList(classContext->varsContext, id);
+
+	if (node != NULL){
+		result = node->typeval;
+	}
+	return result;
 }
+
 
 //// FREEING
 

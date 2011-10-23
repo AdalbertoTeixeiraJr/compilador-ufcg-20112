@@ -53,6 +53,8 @@ int main(){
 
 	displayClassContext();
 
+	printf("Tipo de A na Classe: %s", getVarTypevalInGlobalContext ("a"));
+
 	freeClassContext();
 
 	return 0;
