@@ -605,9 +605,7 @@ void checkEqualityTypeval(char * declarationLevel, char * definitionLevel){
 
 
 void checkEqualityWithBoolean(char * type){
-	int result = WRONG_BOOLEAN_CHECK;
-
-	result = (translateTypevalToInt(type) == OUR_BOOLEAN);
+	int result = (translateTypevalToInt(type) == OUR_BOOLEAN) ? OK: WRONG_BOOLEAN_CHECK;
 
 	CHECK_RESULT(result);
 }
