@@ -165,21 +165,28 @@ int getVarArrayLevelInGlobalContext (char * id){
 
 int getVarArrayLevelInBothContexts (char * id){
 	int result = -1;
-	VarNode * node = getVarNodeInList(classContext->varsContext, id);
+	VarNode * node = getVarNodeInList(getCurrentMethod()->varNodes, id);
 
 	if (node != NULL){
 		result = node->arrayLevels;
 	}else{
-		node = getVarNodeInList(classContext->varsContext, id);
+		node = getVarNodeInList(getCurrentMethod()->params, id);
 
 		if (node != NULL){
 			result = node->arrayLevels;
 		}else{
-			result = NO_VAR_FOUND_IN_BOTH_CONTEXTS;
+			node = getVarNodeInList(classContext->varsContext, id);
+
+			if (node != NULL){
+				result = node->arrayLevels;
+			}else{
+				result = NO_VAR_FOUND_IN_BOTH_CONTEXTS;
+			}
 		}
 	}
 	return result;
 }
+
 
 char * getVarTypevalInBothContexts (char * id){
 	int result = OK;
@@ -190,12 +197,18 @@ char * getVarTypevalInBothContexts (char * id){
 	if (node != NULL){
 		resultType = node->typeval;
 	}else{
-		node = getVarNodeInList(classContext->varsContext, id);
+		node = getVarNodeInList(getCurrentMethod()->params, id);
 
 		if (node != NULL){
 			resultType = node->typeval;
 		}else{
-			result = NO_VAR_FOUND_IN_BOTH_CONTEXTS;
+			node = getVarNodeInList(classContext->varsContext, id);
+
+			if (node != NULL){
+				resultType = node->typeval;
+			}else{
+				result = NO_VAR_FOUND_IN_BOTH_CONTEXTS;
+			}
 		}
 	}
 
@@ -702,7 +715,7 @@ void checkEqualsArrayLevel(int declarationLevel, int definitionLevel){
 }
 
 void checkEqualsTypeval(char * declarationLevel, char * definitionLevel){
-	int result = (strcmp(declarationLevel,definitionLevel)== 0)? OK: DIFFERENT_TYPE_DEFINITION_DECLARATION;
+	int result = (strcmp(declarationLevel,definitionLevel)== 0)? OK: DIFFERENT_TYPES;
 	CHECK_RESULT(result);
 }
 

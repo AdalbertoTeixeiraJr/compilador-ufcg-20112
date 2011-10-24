@@ -94,8 +94,8 @@ void treatErrorResults(int val){
 		case(DIFFERENT_ARRAY_LEVEL_DEFINITION_DECLARATION):
 			yyerror("Semantical Error: the array is being defined with a different level from the declaration");
 			break;
-		case(DIFFERENT_TYPE_DEFINITION_DECLARATION):
-			yyerror("Semantical Error: the type definition does not correspond to the declaration type");
+		case(DIFFERENT_TYPES):
+			yyerror("Semantical Error: the types do not correspond to each other");
 			break;
 		case(INEXISTENT_DECLARED_METHOD_WITH_ID):
 			yyerror("Semantical Error: there is not a method with this name");
