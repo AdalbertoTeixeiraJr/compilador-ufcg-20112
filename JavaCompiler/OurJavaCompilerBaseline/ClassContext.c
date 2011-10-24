@@ -612,7 +612,7 @@ void checkIncrementDecrement(char * varType, char * operType, int isFinal){
 int checkNumericalType(char * type){
 	int result = WRONG_NUMERICAL_TYPE;
 
-	if (checkIntegralType(type) || checkFloatType(type)){
+	if (checkIntegralType(type) == OK || checkFloatType(type) == OK){
 		result = OK;
 	}
 	CHECK_RESULT(result);
