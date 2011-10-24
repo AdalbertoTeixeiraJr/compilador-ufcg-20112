@@ -15,36 +15,38 @@
 int translateTypevalToInt(char * typeval){
 
 	if(typeval == NULL){
-		return OUR_EMPTY;
-	}
-	if (strcmp(typeval, "t_null") == 0){
 		return OUR_NULL;
-	}else if(strcmp(typeval, "t_boolean") == 0){
+	}
+	if (strcmp("t_null", typeval) == 0){
+		return OUR_NULL;
+	}else if(strcmp("t_boolean", typeval) == 0){
 		return OUR_BOOLEAN;
-	}else if(strcmp(typeval, "t_char") == 0){
+	}else if(strcmp("t_char", typeval) == 0){
 		return OUR_CHAR;
-	}else if(strcmp(typeval, "t_string") == 0){
+	}else if(strcmp("t_string", typeval) == 0){
 		return OUR_STRING;
-	}else if(strcmp(typeval, "t_int") == 0){
+	}else if(strcmp("t_int", typeval) == 0){
 		return OUR_INT;
-	}else if(strcmp(typeval, "t_float") == 0){
+	}else if(strcmp("t_float", typeval) == 0){
 		return OUR_FLOAT;
-	}else if(strcmp(typeval, "t_double") == 0){
+	}else if(strcmp("t_double", typeval) == 0){
 		return OUR_DOUBLE;
-	}else if(strcmp(typeval, "t_hex") == 0){
+	}else if(strcmp("t_hex", typeval) == 0){
 		return OUR_HEXA;
-	}else if(strcmp(typeval, "t_oct") == 0){
+	}else if(strcmp("t_oct", typeval) == 0){
 		return OUR_OCTAL;
-	}else if(strcmp(typeval, "t_byte") == 0){
+	}else if(strcmp("t_byte", typeval) == 0){
 		return OUR_BYTE;
-	}else if(strcmp(typeval, "t_long") == 0){
+	}else if(strcmp("t_long", typeval) == 0){
 		return OUR_LONG;
-	}else if(strcmp(typeval, "t_short") == 0){
+	}else if(strcmp("t_short", typeval) == 0){
 		return OUR_SHORT;
-	}else if(strcmp(typeval, "t_void") == 0){
+	}else if(strcmp("t_void", typeval) == 0){
 		return OUR_VOID;
-	}else{
+	}else if(strcmp("t_empty", typeval) == 0){
 		return OUR_EMPTY;
+	}else{
+		return OUR_NULL;
 	}
 }
 

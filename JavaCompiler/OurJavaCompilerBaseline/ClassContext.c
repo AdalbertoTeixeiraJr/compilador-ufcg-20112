@@ -890,7 +890,7 @@ char * checkBinaryExpressionResultType(char * leftType, char * rightType){
 char * checkShiftOperator(char * leftType, char * shiftDistanceType){
 	int result = WRONG_SHIFT_OPERATION;
 	if (translateTypevalToInt(shiftDistanceType) == OUR_EMPTY ||
-		(checkIntegralType(leftType) == YES && checkIntegralType(shiftDistanceType) == YES)){
+		(checkIntegralType(leftType) == OK && checkIntegralType(shiftDistanceType) == OK)){
 		result = OK;
 		return leftType;
 	}
