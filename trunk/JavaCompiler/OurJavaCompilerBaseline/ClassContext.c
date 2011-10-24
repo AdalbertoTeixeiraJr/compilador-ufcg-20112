@@ -490,7 +490,7 @@ void addLabel(char * name){
 void checkLabelInCurrMethod(char * name){
 	int result = NO_LABEL_FOUND;
 
-	if (translateTypevalToInt(name) != OUR_EMPTY ){
+	if (strcmp(name, "id_empty") == 0){
 		result = OK;
 	}else{
 		LabelStruct * labels = getCurrentMethod()->labels;
