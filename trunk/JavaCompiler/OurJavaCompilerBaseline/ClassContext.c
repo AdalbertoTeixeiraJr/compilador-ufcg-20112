@@ -237,7 +237,7 @@ int isVarFinalInCurrMethodContext(char * id){
 }
 
 int isVarFinalInBothContexts(char * id){
-	return (isVarFinalInCurrMethodContext(id) == OK || isVarFinalInGlobalContext(id) == OK);
+	return (isVarFinalInCurrMethodContext(id) == OK || isVarFinalInGlobalContext(id) == OK)? YES : NO;
 }
 
 
