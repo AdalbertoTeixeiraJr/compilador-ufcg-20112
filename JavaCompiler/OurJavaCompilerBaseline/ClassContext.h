@@ -81,6 +81,7 @@ char * checkBitwiseLogicalOperator(char * leftType, char * rightType);
 char * checkConditionalAndOrOperator(char * leftType, char * rightType);
 char * checkRelationalOperator(char * leftType, char * rightType);
 char * checkQuestionMarkOperator(char * leftType, char * rightType);
+void checkArrayCreationExpression(char * type);
 
 // AUXILIAR OPERATOR CHOOSER
 char * chooseBinaryOperation(char * leftType, char * rightType, char * oper);

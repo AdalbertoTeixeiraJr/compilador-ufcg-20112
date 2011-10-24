@@ -843,6 +843,15 @@ char * checkQuestionMarkOperator(char * leftType, char * rightType){
 	return resultType;
 }
 
+void checkArrayCreationExpression(char * type){
+	int result = OK;
+
+	if (checkIntegralType(type) != OK){
+		result = WRONG_ARRAY_CREATION_EXPRESSION;
+	}
+	CHECK_RESULT(result);
+}
+
 // AUXILIAR OPERATOR CHOOSER
 char * chooseBinaryOperation(char * leftType, char * rightType, char * oper){
 	int result = OK;
