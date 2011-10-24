@@ -12,6 +12,8 @@
 %{
 #include "tokens.h"
 #include <string.h>
+#include "ClassContext.h"
+
 extern int column; // importa variavel do sintatico
 extern int line; // importa variavel do sintatico
 extern char* yytext;
