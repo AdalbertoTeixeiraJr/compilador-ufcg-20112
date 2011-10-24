@@ -29,6 +29,7 @@ char* id_var_local = "";
 char* type_expr_prec = "";
 int final_update = 0; //0 = not isFinal, 1 = isFinal
 int level_access = 0;
+char* switch_type = "";
 %}
 
 %union {
@@ -341,7 +342,7 @@ unary_expression : 	INCREMENT unary_expression {checkNumericalType($2);$$ = $2;}
 
 cast_expression : OPEN_PAREN primitive_type CLOSE_PAREN unary_expression {checkCastingConversion($4,$2); $$ = $2;};
 
-postfix_expression : primary_no_array postfix_expression_ /**acesso a variavel ou nao**/ {$$ = $1;};	
+postfix_expression : primary_no_array postfix_expression_  {$$ = $1;checkIncrementDecrement($1, $2, final_update);};	
 
 postfix_expression_ : INCREMENT postfix_expression_ {$$ = "t_inc_dec";}
 			| DECREMENT postfix_expression_ {$$ = "t_inc_dec";}
@@ -370,11 +371,11 @@ statement_expression :          primary_no_new_array assignment_operator assignm
                         |       post_incr_decrement_expression 
                         |       predecrement_expression;
 
-preincrement_expression : INCREMENT unary_expression /*{(final_update);}*/;
+preincrement_expression : INCREMENT unary_expression {checkIncrementDecrement($2, "t_inc", final_update);};
 
 post_incr_decrement_expression : postfix_expression;
 
-predecrement_expression : DECREMENT unary_expression /*{(final_update);}*/ ;
+predecrement_expression : DECREMENT unary_expression {checkIncrementDecrement($2, "t_dec", final_update);} ;
 
 
 method_invocation : 	identifier {addCalledMethod($1);} OPEN_PAREN argument_list CLOSE_PAREN {$$ = checkMethodConversion();}
@@ -390,8 +391,8 @@ for_update_opt :	for_update
 
 statement_without_trailing_substatement : block /* falta */
                         |       empty_statement 
-                        |       expression_statement /* falta */
-                        |       switch_statement /* falta */
+                        |       expression_statement 
+                        |       switch_statement 
                         |       do_statement 
                         |       break_statement 
                         |       continue_statement
@@ -403,7 +404,7 @@ empty_statement : PT_VIRGULA;
 expression_statement :	statement_expression PT_VIRGULA;
 
 
-switch_statement : SWITCH OPEN_PAREN expression /** char, byte, short, int **/ CLOSE_PAREN switch_block;
+switch_statement : SWITCH OPEN_PAREN expression {checkIsSwitchExpression($3);switch_type = $3;} CLOSE_PAREN switch_block;
 
 switch_block : BEG switch_block_statement_groups switch_labels END;
 
@@ -421,7 +422,7 @@ switch_labels : switch_label switch_labels_
 switch_labels_ : switch_label switch_labels_ 
 	|	/** empty **/;
 
-switch_label : CASE expression TWO_POINTS
+switch_label : CASE expression {checkEqualsTypeval($2,switch_type);} TWO_POINTS
 	|       DEFAULT TWO_POINTS;
 
 
