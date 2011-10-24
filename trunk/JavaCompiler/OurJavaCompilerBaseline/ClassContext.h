@@ -62,10 +62,10 @@ void addArgsToCalledMethod(char * typeval, int arrayLevels);
 
 /*************** SEMANTIC CHECK FUNCTIONS ***************/
 void checkStaticClassId(char * id);
-void checkEqualityCurrentMethodSignature();
-void checkEqualityArrayLevel(int declarationLevel, int definitionLevel);
-void checkEqualityTypeval(char * declarationType, char * definitionType);
-void checkEqualityWithBoolean(char * type);
+void checkRepeatedCurrentMethodSignature();
+void checkEqualsArrayLevel(int declarationLevel, int definitionLevel);
+void checkEqualsTypeval(char * declarationType, char * definitionType);
+void checkIsBoolean(char * type);
 void checkIncrementDecrement(char * varType, char * operType, int isFinal);
 int checkNumericalType(char * type);
 
@@ -76,5 +76,6 @@ char * checkMethodConversion();
 // BINARY COMPARISONS
 char * checkBinaryExpressionResultType(char * leftType, char * rightType);
 char * checkShiftOperator(char * leftType, char * shiftDistanceType);
+void checkEqualityExpression(char * leftType, char * rightType);
 
 #endif /* CLASSCONTEXT_H_ */

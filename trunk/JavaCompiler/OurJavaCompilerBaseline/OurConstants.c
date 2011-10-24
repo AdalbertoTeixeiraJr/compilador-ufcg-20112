@@ -122,6 +122,9 @@ void treatErrorResults(int val){
 		case(WRONG_SHIFT_EXPRESSION):
 			yyerror("Semantical Error: the shift expression is not allowed");
 			break;
+		case(WRONG_EQUALITY_EXPRESSION):
+			yyerror("Semantical Error: the equality expression is not allowed");
+			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT (%d)", val);
 			break;

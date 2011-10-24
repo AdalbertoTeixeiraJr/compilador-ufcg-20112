@@ -21,7 +21,7 @@ int main(){
 	addParamInCurrMethod("Param2", "LONG", 0);
 	addParamInCurrMethod("Param3", "LONG", 0);
 
-	checkEqualityCurrentMethodSignature();
+	checkRepeatedCurrentMethodSignature();
 
 	setCurrentContext(LOCAL_CONTEXT);
 
@@ -43,7 +43,7 @@ int main(){
 	setCurrentContext(GLOBAL_CONTEXT);
 
 	insertMethod("MethodB", "INT", 0);
-	checkEqualityCurrentMethodSignature();
+	checkRepeatedCurrentMethodSignature();
 
 	insertMethod("MethodC", "INT", 0);
 
@@ -51,7 +51,7 @@ int main(){
 	addParamInCurrMethod("Param2", "LONG", 0);
 	addParamInCurrMethod("Param3", "LONG", 0);
 
-	checkEqualityCurrentMethodSignature();
+	checkRepeatedCurrentMethodSignature();
 
 	setCurrentContext(LOCAL_CONTEXT);
 
@@ -65,8 +65,8 @@ int main(){
 
 		insertVarListInCurrMethodContext("FLOAT", YES, 1);
 
-		checkEqualityArrayLevel(1, 2);
-		checkEqualityTypeval("CHAR", "CHAR");
+		checkEqualsArrayLevel(1, 2);
+		checkEqualsTypeval("CHAR", "CHAR");
 
 	displayClassContext();
 
@@ -79,7 +79,7 @@ int main(){
 	addArgsToCalledMethod("INT", 0);
 	checkMethodConversion();
 
-	checkEqualityWithBoolean(NULL);
+	checkIsBoolean(NULL);
 
 	checkIncrementDecrement("KKKK", "kkkk", YES);
 
