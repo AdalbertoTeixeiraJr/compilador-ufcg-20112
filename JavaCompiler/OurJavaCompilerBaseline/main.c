@@ -40,6 +40,14 @@ int main(){
 		insertStringToStrList("8alkl");
 		insertVarListInCurrMethodContext("DOUBLE", NO, 0);
 
+		addLabel("01");
+		addLabel("02");
+		addLabel("03");
+
+		checkLabelInCurrMethod("01");
+		checkLabelInCurrMethod("02");
+		checkLabelInCurrMethod("03");
+
 	setCurrentContext(GLOBAL_CONTEXT);
 
 	insertMethod("MethodB", "INT", 0);

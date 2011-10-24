@@ -227,6 +227,8 @@ LabelStruct * createLabel(char * name){
 
 	if (label != NULL){
 		label->name = (char *) malloc(MAX_ID_SIZE);
+		strcpy(label->name, name);
+		label->next = NULL;
 	}
 	return label;
 }

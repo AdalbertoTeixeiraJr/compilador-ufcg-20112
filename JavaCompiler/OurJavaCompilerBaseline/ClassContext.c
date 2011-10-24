@@ -461,26 +461,29 @@ void addArgsToCalledMethod(char * typeval, int arrayLevels){
 
 /*************** LABEL FUNCTIONS ***************/
 void addLabel(char * name){
+
 	int result = OK;
 
 	MethodNode * method = getCurrentMethod();
 	LabelStruct * newLabel = createLabel(name);
 	LabelStruct * labels = method->labels;
-	LabelStruct * labelsTmp;
 
-	while(labels != NULL){
-		labelsTmp = labels;
-		if (strcmp(labels->name, name) == 0){
-			result = REPEATED_LABEL_IN_SAME_METHOD;
-			break;
+	if (labels != NULL){
+		while(labels->next != NULL){
+			if (strcmp(labels->name, name) == 0){
+				result = REPEATED_LABEL_IN_SAME_METHOD;
+				break;
+			}
+			labels = labels->next;
 		}
-		labels = labels->next;
 	}
 	if(result == OK){
-		if (labelsTmp == NULL){
+		if (labels == NULL){
 			method->labels = newLabel;
+		}else if (strcmp(labels->name, name) == 0){
+			result = REPEATED_LABEL_IN_SAME_METHOD;
 		}else{
-			labelsTmp->next = newLabel;
+			labels->next = newLabel;
 		}
 	}
 
@@ -801,6 +804,7 @@ char * checkMethodConversion(){
 				}
 			}
 			methodTo = methodTo->next;
+			result = NO;
 		}
 
 		if(result != YES){
@@ -835,6 +839,7 @@ char * checkMethodConversion(){
 					}
 				}
 				methodTo = methodTo->next;
+				result = NO;
 			}
 		}
 	}
