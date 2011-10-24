@@ -49,7 +49,7 @@ int getVarArrayLevelInBothContexts (char * id);
 char * getVarTypevalInBothContexts (char * id);
 int isVarFinalInGlobalContext(char * id);
 int isVarFinalInCurrMethodContext(char * id);
-int isVarFinalInBothsContexts(char * id);
+int isVarFinalInBothContexts(char * id);
 
 //// FREEING
 void freeClassContext();
