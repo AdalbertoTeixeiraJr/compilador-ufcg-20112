@@ -662,7 +662,7 @@ static int checkImplicitConversion(char * typeFrom, char * typeTo){
 static int checkIntegralType(char * type){
 	int result = NO;
 	int ourType = translateTypevalToInt(type);
-	if (ourType == OUR_BYTE || ourType == OUR_SHORT || ourType == OUR_INT || ourType == OUR_LONG || ourType == OUR_CHAR){
+	if (ourType == OUR_BYTE || ourType == OUR_SHORT || (strcmp(type, "t_int") == 0) || ourType == OUR_LONG || ourType == OUR_CHAR){
 		result = OK;
 	}
 	return result;
