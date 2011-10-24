@@ -80,6 +80,7 @@ char* type_expr_prec = "";
 
 /** Expressions **/
 %type <typeval> expression
+%type <typeval> assignment_expression
 %type <typeval> conditional_expression
 %type <typeval> conditional_or_expression
 %type <typeval> conditional_or_expression_
@@ -171,16 +172,19 @@ variable_declarator : variable_declarator_id variable_declarator_ {$$ = $1;};
 variable_declarators_ :         VIRGULA  variable_declarator {insertStringToStrList($2);} variable_declarators_	
                         |       /** empty **/;
 
-variable_declarator_ :          EQUAL variable_initializer /** metodo que compare com o method_or_field_type **/
+variable_declarator_ :          EQUAL {printf("INCIEI ATRIB %d\n", local_level);}variable_initializer
                         |       /** empty **/;
 
 variable_declarator_id :        identifier {$$ = $1;}; 
  
-variable_initializer :         assignment_expression /** comparar se o tipo de retorno e os levels tem que ser 0 ta certo **/
-                        |       array_initializer 
-			|	left_hand_side;
+variable_initializer :        {printf("LEFT\n");} left_hand_side 
+			{checkEqualsArrayLevel(array_level_def, local_level);
+							checkEqualsTypeval(method_or_field_type,$2);}
+			|{printf("ASS\n");} assignment_expression {checkEqualsArrayLevel(array_level_def, local_level);
+							checkEqualsTypeval(method_or_field_type,$2);}
+                        |	array_initializer;
 
-array_initializer :	BEG variable_initializers  virgula_opt END 
+array_initializer :	BEG  {local_level++;} variable_initializers  virgula_opt END {local_level--;}
 			|	array_creation_expression ; 
 
 virgula_opt :	VIRGULA
@@ -198,25 +202,26 @@ assignment_expression : conditional_expression;
 
 field_access : identifier  {checkStaticClassId($1);} POINT identifier {$$ = $4;} ;
 
-left_hand_side :	field_access {$$ = getVarTypevalInGlobalContext($1);}
-                |       array_access {$$ = "t_array";};
+left_hand_side :	{printf("ARR\n");} array_access {$$ = getVarTypevalInBothContexts($2);local_level+getVarArrayLevelInGlobalContext($2);}
+		|	{printf("FIELD\n");} field_access {$$ = getVarTypevalInGlobalContext($2);local_level+getVarArrayLevelInGlobalContext($2);};
 
 assignment_operator : EQUAL
 		|       ARITH_ASSIGN 
 		|       SHIFT_ASSIGN 
 	        |	LOGIC_ASSIGN; 
 
-array_access : primary_no_array dim_expr dim_expr_opt /**{$$local_level = getLevelDiff()}**/;
+array_access : identifier dim_expr dim_expr_opt {local_level = $3+1;}
+		|	field_access dim_expr dim_expr_opt {local_level = $3+1;};
 
 lit : LITERAL;
 
-primary_no_array: lit {$$ = $1;}
+primary_no_array : lit {$$ = $1;}
 		| 	field_access {$$ = getVarTypevalInGlobalContext($1);}
 		|	method_invocation {$$ = $1;}
-		|	identifier {$$ = "t_type";};
+		|	identifier {$$ = getVarTypevalInBothContexts($1);};
 
 primary_no_new_array : 	primary_no_array
-	        | 	array_access {$$ = "t_array";};
+	        | 	array_access {$$ = getVarTypevalInBothContexts($1);};
 
 argument_list : 	expression {addArgsToCalledMethod($1,local_level);} argument_list_
 		|	argument_list_;
@@ -229,18 +234,18 @@ array_creation_expression : NEW primitive_type {checkEqualsTypeval(method_or_fie
 dim_exprs : OPEN_COLC dim_expr_or_empty CLOSE_COLC dim_exprs {$$ = $4+1;}
 	|	/** empty **/  {$$ = 0;};
 
-dim_expr: OPEN_COLC expression CLOSE_COLC;
+dim_expr: OPEN_COLC expression {checkArrayCreationExpression($2);} CLOSE_COLC;
 
-dim_expr_or_empty : expression
+dim_expr_or_empty : expression {checkArrayCreationExpression($1);}
 		|	/** empty **/;
 
 dim_expr_opt: dim_expr dim_expr_opt {$$ = $2+1;}
 	|	/** empty **/ {$$ = 0;};
 
 conditional_expression : conditional_or_expression  {$$ = $1;} 
-                        | OPEN_PAREN conditional_or_expression CLOSE_PAREN conditional_opt /*{$$ = ($2, $4,type_expr_prec);}*/
-			| conditional_or_expression {checkIsBoolean($1);} QUESTION_MARK conditional_expression TWO_POINTS conditional_expression;
-			| OPEN_PAREN conditional_or_expression CLOSE_PAREN {checkIsBoolean($2);} QUESTION_MARK  conditional_expression TWO_POINTS conditional_expression;
+                        | OPEN_PAREN conditional_or_expression CLOSE_PAREN conditional_opt {$$ = chooseBinaryOperation($2, $4,type_expr_prec);}
+			| conditional_or_expression {checkIsBoolean($1);} QUESTION_MARK conditional_expression TWO_POINTS conditional_expression {$$ = checkQuestionMarkOperator($4,$6);};
+			| OPEN_PAREN conditional_or_expression CLOSE_PAREN {checkIsBoolean($2);} QUESTION_MARK  conditional_expression TWO_POINTS conditional_expression {$$ = checkQuestionMarkOperator($6,$8);};
 
 conditional_opt: conditional_or_expression_  {$$ = $1;type_expr_prec = "or";} 
 	|	conditional_and_expression_  {$$ = $1;type_expr_prec = "and";} 
@@ -254,16 +259,16 @@ conditional_opt: conditional_or_expression_  {$$ = $1;type_expr_prec = "or";}
 	|	multiplicative_expression_  {$$ = $1;type_expr_prec = "mult";} 
 	|	/** empty **/ {$$ = "t_empty";type_expr_prec = "empty";};
 
-conditional_or_expression : conditional_and_expression conditional_or_expression_ {checkConditionalAndOrOperator($1,$2);$$ = "t_boolean";}
-		|	conditional_and_expression OPEN_PAREN conditional_expression CLOSE_PAREN {checkConditionalAndOrOperator($1,$3);$$ = "t_boolean";};
+conditional_or_expression : conditional_and_expression conditional_or_expression_ {$$ = checkConditionalAndOrOperator($1,$2);}
+		|	conditional_and_expression OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = checkConditionalAndOrOperator($1,$3);};
 
-conditional_or_expression_ : OR_LOGIC conditional_and_expression conditional_or_expression_ {checkConditionalAndOrOperator($2,$3);$$ = "t_boolean";}
+conditional_or_expression_ : OR_LOGIC conditional_and_expression conditional_or_expression_ {$$ = checkConditionalAndOrOperator($2,$3);}
                         | /** empty **/ {$$ = "t_empty";};
 
-conditional_and_expression : inclusive_or_expression conditional_and_expression_ {checkConditionalAndOrOperator($1,$2);$$ = "t_boolean";}
-		|	inclusive_or_expression OPEN_PAREN conditional_expression CLOSE_PAREN {checkConditionalAndOrOperator($1,$3);$$ = "t_boolean";};
+conditional_and_expression : inclusive_or_expression conditional_and_expression_ {$$ = checkConditionalAndOrOperator($1,$2);}
+		|	inclusive_or_expression OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = checkConditionalAndOrOperator($1,$3);};
 
-conditional_and_expression_ : AND_LOGIC inclusive_or_expression conditional_and_expression_ {checkConditionalAndOrOperator($2,$3);$$ = "t_boolean";}
+conditional_and_expression_ : AND_LOGIC inclusive_or_expression conditional_and_expression_ {$$ = checkConditionalAndOrOperator($2,$3);}
 			| /** empty **/ {$$ = "t_empty";};
 
 inclusive_or_expression : exclusive_or_expression  inclusive_or_expression_ {$$ = checkBitwiseLogicalOperator($1,$2);}
@@ -284,16 +289,16 @@ and_expression : equality_expression and_expression_ {$$ = checkBitwiseLogicalOp
 and_expression_ : AND equality_expression and_expression_ {$$ = checkBitwiseLogicalOperator($2,$3);}
                         | /** empty **/ {$$ = "t_empty";};
 
-equality_expression : relational_expression equality_expression_ {checkEqualityOperator($1,$2);$$ = "t_boolean";}
-		|	relational_expression OPEN_PAREN conditional_expression CLOSE_PAREN {checkEqualityOperator($1,$3);$$ = "t_boolean";};
+equality_expression : relational_expression equality_expression_ {$$ = checkEqualityOperator($1,$2);}
+		|	relational_expression OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = checkEqualityOperator($1,$3);};
 
-equality_expression_ : EQUALOP relational_expression equality_expression_ {checkEqualityOperator($2,$3);$$ = "t_boolean";}
+equality_expression_ : EQUALOP relational_expression equality_expression_ {$$ = checkEqualityOperator($1,$2);}
                         |       /** empty **/ {$$ = "t_empty";};
 
-relational_expression : shift_expression relational_expression_ {checkNumericalType($1);checkNumericalType($2); $$ = "t_boolean";}
-		|	shift_expression OPEN_PAREN conditional_expression CLOSE_PAREN {checkNumericalType($1);checkNumericalType($3); $$ = "t_boolean";};
+relational_expression : shift_expression relational_expression_ {$$ = checkRelationalOperator($1,$2);}
+		|	shift_expression OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = checkRelationalOperator($1,$3);};
 
-relational_expression_ : RELOP shift_expression relational_expression_ {checkNumericalType($2);checkNumericalType($3); $$ = "t_boolean";}
+relational_expression_ : RELOP shift_expression relational_expression_ {$$ = checkRelationalOperator($1,$2);}
                         | /** empty **/ {$$ = "t_empty";};
 
 shift_expression : additive_expression shift_expression_ {$$ = checkShiftOperator($1,$2);}
@@ -309,7 +314,7 @@ additive_expression_ : PLUS multiplicative_expression additive_expression_ {$$ =
                         | MINUS multiplicative_expression additive_expression_ {$$ = checkBinaryExpressionResultType($2,$3);}
 			| /** empty **/ {$$ = "t_empty";};
 
-multiplicative_expression : unary_expression multiplicative_expression_ {$$ = checkBinaryExpressionResultType($1,$2);};
+multiplicative_expression :  unary_expression multiplicative_expression_ {$$ = checkBinaryExpressionResultType($1,$2);};
 
 multiplicative_expression_ : MULT unary_expression multiplicative_expression_ {$$ = checkBinaryExpressionResultType($2,$3);}
                         | DIV unary_expression multiplicative_expression_ {$$ = checkBinaryExpressionResultType($2,$3);}
@@ -328,17 +333,17 @@ unary_expression : 	INCREMENT unary_expression {checkNumericalType($2);$$ = $2;}
 
 cast_expression : OPEN_PAREN primitive_type CLOSE_PAREN unary_expression {checkCastingConversion($4,$2); $$ = $2;};
 
-postfix_expression : primary_no_array postfix_expression_ {$$ = $1;};	
+postfix_expression : primary_no_array postfix_expression_/**acesso a variavel ou nao**/ {$$ = $1;};	
 
 postfix_expression_ : INCREMENT postfix_expression_ {$$ = "t_inc_dec";}
 			| DECREMENT postfix_expression_ {$$ = "t_inc_dec";}
                         | /** empty **/ {$$ = "t_empty";};
 
 statement :	statement_without_trailing_substatement
-	|       identifier TWO_POINTS statement
+	|       identifier {addLabel($1);} TWO_POINTS statement
 	|       IF OPEN_PAREN expression {checkIsBoolean($3);} CLOSE_PAREN optional_else
 	|       WHILE OPEN_PAREN expression {checkIsBoolean($3);} CLOSE_PAREN statement 
-	|       FOR OPEN_PAREN for_init PT_VIRGULA expression_opt /** tem que retornar um boolean ou empty**/ PT_VIRGULA for_update_opt CLOSE_PAREN  statement;
+	|       FOR OPEN_PAREN for_init PT_VIRGULA expression_opt {checkIsEmptyOrBool($5);} PT_VIRGULA for_update_opt CLOSE_PAREN  statement;
 
 optional_else : statement
 	|	statement_no_short_if ELSE statement;
@@ -414,11 +419,11 @@ switch_label : CASE expression TWO_POINTS
 
 do_statement : DO statement WHILE OPEN_PAREN expression {checkIsBoolean($5);} CLOSE_PAREN PT_VIRGULA;
 
-break_statement : BREAK identifier_opt PT_VIRGULA;
+break_statement : BREAK identifier_opt {checkLabelInCurrMethod($2);} PT_VIRGULA;
 
-continue_statement : CONTINUE identifier_opt PT_VIRGULA;
+continue_statement : CONTINUE identifier_opt {checkLabelInCurrMethod($2);} PT_VIRGULA;
 
-goto_statement : GOTO identifier PT_VIRGULA;
+goto_statement : GOTO identifier {checkLabelInCurrMethod($2);} PT_VIRGULA;
 
 return_statement : RETURN expression_opt PT_VIRGULA;
 
@@ -426,10 +431,10 @@ identifier_opt: identifier {$$ = $1;}
 	|	/** empty **/ {$$ = "id_empty";};
 
 statement_no_short_if :         statement_without_trailing_substatement 
-                        |       identifier /** add na lista de labels **/TWO_POINTS statement_no_short_if 
+                        |       identifier {addLabel($1);} TWO_POINTS statement_no_short_if 
                         |       IF OPEN_PAREN  expression {checkIsBoolean($3);} CLOSE_PAREN  statement_no_short_if ELSE statement_no_short_if 
                         |       WHILE OPEN_PAREN expression {checkIsBoolean($3);} CLOSE_PAREN statement_no_short_if 
-                        |       FOR OPEN_PAREN for_init PT_VIRGULA expression_opt /* bool ou empty */ PT_VIRGULA for_update_opt CLOSE_PAREN statement_no_short_if;
+                        |       FOR OPEN_PAREN for_init PT_VIRGULA expression_opt {checkIsEmptyOrBool($5);} PT_VIRGULA for_update_opt CLOSE_PAREN statement_no_short_if;
 
 class_member_declaration_opt : class_member_declaration class_member_declaration_
 			| /** empty **/;
