@@ -163,6 +163,24 @@ int getVarArrayLevelInGlobalContext (char * id){
 	return result;
 }
 
+int getVarArrayLevelInBothContexts (char * id){
+	int result = -1;
+	VarNode * node = getVarNodeInList(classContext->varsContext, id);
+
+	if (node != NULL){
+		result = node->arrayLevels;
+	}else{
+		node = getVarNodeInList(classContext->varsContext, id);
+
+		if (node != NULL){
+			result = node->arrayLevels;
+		}else{
+			result = NO_VAR_FOUND_IN_BOTH_CONTEXTS;
+		}
+	}
+	return result;
+}
+
 char * getVarTypevalInBothContexts (char * id){
 	int result = OK;
 	char * resultType = NULL;
