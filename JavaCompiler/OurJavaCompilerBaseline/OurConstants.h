@@ -78,7 +78,9 @@
 #define WRONG_BINARY_NUMERIC_EXPRESSION						-23
 #define WRONG_SHIFT_OPERATION								-24
 #define WRONG_EQUALITY_OPERATION							-25
-#define WRONG_OPERATION										-26
+#define WRONG_RELATIONAL_OPERATION							-26
+#define WRONG_OPERATION										-27
+
 
 /*********** PUBLIC FUNCTION DECLARATIONS ************/
 void treatErrorResults(int val);
