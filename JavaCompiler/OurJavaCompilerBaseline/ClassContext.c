@@ -828,6 +828,21 @@ char * checkRelationalOperator(char * leftType, char * rightType){
 	return resultType;
 }
 
+char * checkQuestionMarkOperator(char * leftType, char * rightType){
+	int result = OK;
+	char * resultType = NULL;
+
+	if (checkImplicitConversion(leftType, rightType) == OK){
+		resultType = rightType;
+	}else if(checkImplicitConversion(rightType, leftType) == OK){
+		resultType = leftType;
+	}else{
+		result = WRONG_QUESTION_MARK_OPERATION;
+	}
+	CHECK_RESULT(result);
+	return resultType;
+}
+
 // AUXILIAR OPERATOR CHOOSER
 char * chooseBinaryOperation(char * leftType, char * rightType, char * oper){
 	int result = OK;
@@ -856,3 +871,5 @@ char * chooseBinaryOperation(char * leftType, char * rightType, char * oper){
 	CHECK_RESULT(result);
 	return resultType;
 }
+
+

@@ -128,6 +128,9 @@ void treatErrorResults(int val){
 		case(WRONG_RELATIONAL_OPERATION):
 			yyerror("Semantical Error: the relational operation is not allowed");
 			break;
+		case(WRONG_QUESTION_MARK_OPERATION):
+			yyerror("Semantical Error: the question mark operation is not allowed");
+			break;
 		case(WRONG_OPERATION):
 			yyerror("Semantical Error: this operation does not exist");
 			break;
