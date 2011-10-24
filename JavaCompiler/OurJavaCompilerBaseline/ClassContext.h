@@ -46,6 +46,9 @@ void insertVarListInCurrMethodContext(char * typeval, int isFinal, int arrayLeve
 char * getVarTypevalInGlobalContext (char * id);
 int getVarArrayLevelInGlobalContext (char * id);
 char * getVarTypevalInBothContexts (char * id);
+int isVarFinalInGlobalContext(char * id);
+int isVarFinalInCurrMethodContext(char * id);
+int isVarFinalInBothsContexts(char * id);
 
 //// FREEING
 void freeClassContext();
@@ -77,6 +80,7 @@ int checkNumericalType(char * type);
 void checkAssignConversion(char * typeFrom, char * typeTo);
 void checkCastingConversion(char * actualType, char * castType);
 char * checkMethodConversion();
+int checkMethodLevelsAfterConversion();
 
 // BINARY COMPARISONS
 char * checkBinaryExpressionResultType(char * leftType, char * rightType);
