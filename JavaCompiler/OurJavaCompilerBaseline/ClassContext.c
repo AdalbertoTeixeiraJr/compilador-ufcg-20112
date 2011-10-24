@@ -723,8 +723,11 @@ char * checkMethodConversion(){
 char * checkBinaryExpressionResultType(char * leftType, char * rightType){
 	int result = OK;
 	char * resultType;
-	if (checkNumericalType(leftType) == OK &&
-		(checkNumericalType(rightType) == OK || translateTypevalToInt(rightType) == OUR_EMPTY)){
+	if (checkNumericalType(leftType) == OK){
+		if(translateTypevalToInt(rightType) == OUR_EMPTY){
+			resultType = leftType;
+		}
+		else if (checkNumericalType(rightType) == OK ){
 			if (checkImplicitConversion(leftType, rightType) == OK){
 				resultType = rightType;
 			}else if(checkImplicitConversion(rightType, leftType) == OK){
@@ -732,6 +735,9 @@ char * checkBinaryExpressionResultType(char * leftType, char * rightType){
 			}else{
 				result = WRONG_BINARY_NUMERIC_EXPRESSION;
 			}
+		}else{
+			result = WRONG_BINARY_NUMERIC_EXPRESSION;
+		}
 	}else{
 		result = WRONG_BINARY_NUMERIC_EXPRESSION;
 	}
@@ -766,17 +772,28 @@ void checkEqualityOperator(char * leftType, char * rightType){
 	CHECK_RESULT(result);
 }
 
-void checkBitwiseLogicalOperator(char * leftType, char * rightType){
-	int result = WRONG_EQUALITY_OPERATION;
+char * checkBitwiseLogicalOperator(char * leftType, char * rightType){
+	int result = OK;
+	char * resultType = NULL;
 	int ourLeftType = translateTypevalToInt(leftType);
 	int ourRightType = translateTypevalToInt(rightType);
 
-	if (translateTypevalToInt(rightType) == OUR_EMPTY ||
-		(checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK) ||
-		(ourLeftType == OUR_BOOLEAN && ourRightType == OUR_BOOLEAN)){
+	if (translateTypevalToInt(rightType) == OUR_EMPTY){
+		resultType = leftType;
+	}else if(checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK){
+		if (checkImplicitConversion(leftType, rightType) == OK){
+			resultType = rightType;
+		}else if(checkImplicitConversion(rightType, leftType) == OK){
+			resultType = leftType;
+		}else{
+			result = WRONG_EQUALITY_OPERATION;
+		}
+	}else if (ourLeftType == OUR_BOOLEAN && ourRightType == OUR_BOOLEAN){
+		resultType = leftType;
 		result = OK;
 	}
 	CHECK_RESULT(result);
+	return resultType;
 }
 
 void checkConditionalAndOrOperator(char * leftType, char * rightType){
