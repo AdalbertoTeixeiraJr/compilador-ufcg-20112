@@ -982,7 +982,15 @@ void checkIsEmptyOrBool(char* typeval){
       CHECK_RESULT(result);
 }
 
+void checkIsSwitchExpression(char* typeval){
+	int result = WRONG_SWITCH_EXPRESSION;
+	int ourType = translateTypevalToInt(typeval);
 
+	if(ourType == OUR_CHAR || ourType == OUR_BYTE || ourType == OUR_SHORT || ourType == OUR_INT){
+		result = OK;
+	}
+	CHECK_RESULT(result);
+}
 
 // AUXILIAR OPERATOR CHOOSER
 char * chooseBinaryOperation(char * leftType, char * rightType, char * oper){

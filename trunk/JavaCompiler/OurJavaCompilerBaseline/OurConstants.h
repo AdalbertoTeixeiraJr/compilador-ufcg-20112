@@ -86,6 +86,7 @@
 #define REPEATED_LABEL_IN_SAME_METHOD						-31
 #define NOT_BOOL_OR_EMPTY									-32
 #define NO_LABEL_FOUND										-33
+#define WRONG_SWITCH_EXPRESSION								-34
 
 /*********** PUBLIC FUNCTION DECLARATIONS ************/
 void treatErrorResults(int val);
