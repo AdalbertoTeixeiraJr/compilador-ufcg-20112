@@ -7,7 +7,7 @@ class ExemploSequenciadoresEscape {
 			if (mult > 10)
 				break;
 			else {
-				String test = value + " * " + mult + " = "
+				int test = value * mult
 						+ (value * mult);
 				mult++;
 			}
@@ -27,8 +27,7 @@ class ExemploSequenciadoresEscape {
 					if (mult > 10) {
 						break validation2;
 					} else {
-						String pk = value + " * " + mult + " = "
-								+ (value * mult);
+						String pk ="+++++++";
 						mult++;
 					}
 				}
@@ -47,7 +46,7 @@ class ExemploSequenciadoresEscape {
 			if (i == 0)
 				continue;
 			else {
-				String method = "Square (" + i + ") : " + (i * i);
+				int method = (short) initialValue % finalValue;
 			}
 		}
 	}

@@ -1,15 +1,17 @@
 class ExemploExpressoesRelacionais {
 
 	static final int[] notas = { 8, 7, 7, 6, 10, 3 };
+	static int[][] desempenho = {{ 1, 2, 3},{4, 5, 6}};
+	static double nota = 5.0d;
 
 	/* >=, <= */
 	static int mediaAprovados() {
 		int media = 0;
-		for (int y = 0; y < notas.length; y++) {
-			if (notas[y] >= 7) {
-				media += notas[y];
-			} else if (notas[y] <= 5) {
-				media += (notas[y] * (60 / 100));
+		for (int y = 0; y < 6; y++) {
+			if (6 >= 7) {
+				media += ExemploExpressoesRelacionais.nota;
+			} else if (6 <= 5) {
+				media += (ExemploExpressoesRelacionais.nota * (60 / 100));
 			}
 		}
 		return media;
@@ -17,17 +19,17 @@ class ExemploExpressoesRelacionais {
 
 	/* !=, ==, >, < */
 	static void atualizarNota(int aluno, int nota) {
-		int k = notas[aluno];
+		int k = ExemploExpressoesRelacionais.mediaAprovados();
 		if (k != nota) {
 			if (k < nota) {
-				notas[aluno] = nota;
+				nota = nota + 1.0d;
 			}
 			if (k > nota) {
-				notas[aluno] = k + 1;
+				nota = k + 1;
 			}
 		}
 		if (k == nota) {
-			notas[aluno] = k + 2;
+			nota = nota + 2.0d;
 		}
 	}
 	
