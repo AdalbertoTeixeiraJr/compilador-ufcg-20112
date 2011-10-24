@@ -808,3 +808,33 @@ void checkConditionalAndOrOperator(char * leftType, char * rightType){
 	CHECK_RESULT(result);
 }
 
+// AUXILIAR OPERATOR CHOOSER
+char * chooseBinaryOperation(char * leftType, char * rightType, char * oper){
+	int result = OK;
+	char * resultType = NULL;
+
+	if (translateTypevalToInt(rightType) == OUR_EMPTY){
+		resultType = leftType;
+	}else{
+		if(strcmp(oper, "and") == 0 || strcmp(oper, "or") == 0){
+			checkConditionalAndOrOperator(leftType, rightType);
+			return "t_boolean";
+		}else if (strcmp(oper, "inc_or") == 0 || strcmp(oper, "exc_or")== 0 || strcmp(oper, "and_bit")== 0){
+			return checkBitwiseLogicalOperator(leftType, rightType);
+		}else if (strcmp(oper, "equal") == 0){
+			checkConditionalAndOrOperator(leftType, rightType);
+			return "t_boolean";
+		}else if (strcmp(oper, "relop") == 0 && checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK){
+			return "t_boolean";
+		}else if (strcmp(oper, "shift") == 0){
+			return checkShiftOperator(leftType, rightType);
+		}else if (strcmp(oper, "add") == 0 || strcmp(oper, "mult") == 0){
+			return checkBinaryExpressionResultType(leftType, rightType);
+		}else{
+			result = WRONG_OPERATION;
+		}
+	}
+
+	CHECK_RESULT(result);
+	return resultType;
+}

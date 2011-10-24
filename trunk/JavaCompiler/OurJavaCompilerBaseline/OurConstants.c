@@ -125,6 +125,9 @@ void treatErrorResults(int val){
 		case(WRONG_EQUALITY_OPERATION):
 			yyerror("Semantical Error: the equality operation is not allowed");
 			break;
+		case(WRONG_OPERATION):
+			yyerror("Semantical Error: this operation does not exist");
+			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT (%d)", val);
 			break;
