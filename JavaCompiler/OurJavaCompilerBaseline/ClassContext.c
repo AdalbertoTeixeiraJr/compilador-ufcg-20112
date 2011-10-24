@@ -989,7 +989,7 @@ void checkArrayCreationExpression(char * type){
 
 void checkIsEmptyOrBool(char* typeval){
       int result = OK;
-      if((strcmp(typeval, "t_empty") != 0) && (strcmp(typeval, "t_boolean") != OK)){
+      if((strcmp(typeval, "t_empty") != 0) && (strcmp(typeval, "t_boolean") != 0)){
     	  result = NOT_BOOL_OR_EMPTY;
       }
       CHECK_RESULT(result);
