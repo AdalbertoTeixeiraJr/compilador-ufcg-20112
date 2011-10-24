@@ -49,7 +49,7 @@ int getVarArrayLevelInBothContexts (char * id);
 char * getVarTypevalInBothContexts (char * id);
 int isVarFinalInGlobalContext(char * id);
 int isVarFinalInCurrMethodContext(char * id);
-int isVarFinalInBothContexts(char * id);
+int isVarFinalInBothsContexts(char * id);
 
 //// FREEING
 void freeClassContext();
@@ -82,6 +82,9 @@ void checkAssignConversion(char * typeFrom, char * typeTo);
 void checkCastingConversion(char * actualType, char * castType);
 char * checkMethodConversion();
 int checkMethodLevelsAfterConversion();
+void checkArrayCreationExpression(char * type);
+void checkIsEmptyOrBool(char* typeval);
+void checkIsSwitchExpression(char* typeval);
 
 // BINARY COMPARISONS
 char * checkBinaryExpressionResultType(char * leftType, char * rightType);
@@ -91,9 +94,6 @@ char * checkBitwiseLogicalOperator(char * leftType, char * rightType);
 char * checkConditionalAndOrOperator(char * leftType, char * rightType);
 char * checkRelationalOperator(char * leftType, char * rightType);
 char * checkQuestionMarkOperator(char * leftType, char * rightType);
-void checkArrayCreationExpression(char * type);
-void checkIsEmptyOrBool(char* typeval);
-void checkIsSwitchExpression(char* typeval);
 
 // AUXILIAR OPERATOR CHOOSER
 char * chooseBinaryOperation(char * leftType, char * rightType, char * oper);
