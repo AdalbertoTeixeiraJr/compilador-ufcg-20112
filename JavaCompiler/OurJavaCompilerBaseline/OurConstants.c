@@ -149,6 +149,9 @@ void treatErrorResults(int val){
 		case(NO_LABEL_FOUND):
 			yyerror("Semantical Error: there is no label with this name");
 			break;
+		case(WRONG_SWITCH_EXPRESSION):
+			yyerror("Semantical Error: this is not a switch expression allowed type");
+			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT (%d)", val);
 			break;

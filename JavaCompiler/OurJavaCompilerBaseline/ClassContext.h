@@ -93,6 +93,7 @@ char * checkRelationalOperator(char * leftType, char * rightType);
 char * checkQuestionMarkOperator(char * leftType, char * rightType);
 void checkArrayCreationExpression(char * type);
 void checkIsEmptyOrBool(char* typeval);
+void checkIsSwitchExpression(char* typeval);
 
 // AUXILIAR OPERATOR CHOOSER
 char * chooseBinaryOperation(char * leftType, char * rightType, char * oper);
