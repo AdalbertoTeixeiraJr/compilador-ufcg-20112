@@ -185,6 +185,31 @@ char * getVarTypevalInBothContexts (char * id){
 	return resultType;
 }
 
+int isVarFinalInGlobalContext(char * id){
+	int result = INEXISTANT_ID_IN_CONTEXT;
+	VarNode * node = getVarNodeInList(classContext->varsContext, id);
+
+	if (node != NULL){
+		result = node->isFinal;
+	}
+	return result;
+}
+
+int isVarFinalInCurrMethodContext(char * id){
+	int result = INEXISTANT_ID_IN_CONTEXT;
+	VarNode * node = getVarNodeInList(getCurrentMethod()->varNodes, id);
+
+	if (node != NULL){
+		result = node->isFinal;
+	}
+	return result;
+}
+
+int isVarFinalInBothContexts(char * id){
+	return (isVarFinalInCurrMethodContext(id) == OK || isVarFinalInGlobalContext(id) == OK);
+}
+
+
 //// FREEING
 
 void freeClassContext(){
@@ -705,6 +730,8 @@ void checkCastingConversion(char * typeFrom, char * typeTo){
 	CHECK_RESULT(result);
 }
 
+int methodArrayLevelsTmp = 0;
+
 char * checkMethodConversion(){
 
 	int result = YES;
@@ -776,7 +803,8 @@ char * checkMethodConversion(){
 	}
 
 	if(result == YES){
-		returnType = paramsTo->typeval;
+		returnType = methodTo->returnType;
+		methodArrayLevelsTmp = methodTo->arrayLevels;
 	}else{
 		result = WRONG_METHOD_CALL;
 		returnType = NULL;
@@ -788,6 +816,11 @@ char * checkMethodConversion(){
 
 	return returnType;
 }
+
+int checkMethodLevelsAfterConversion(){
+	return methodArrayLevelsTmp;
+}
+
 
 // BINARY COMPARISONS
 
