@@ -725,8 +725,7 @@ char * checkBinaryExpressionResultType(char * leftType, char * rightType){
 	char * resultType;
 	if (translateTypevalToInt(rightType) == OUR_EMPTY){
 		resultType = leftType;
-	}
-	else if (checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK){
+	}else if (checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK){
 		if (checkImplicitConversion(leftType, rightType) == OK){
 			resultType = rightType;
 		}else if(checkImplicitConversion(rightType, leftType) == OK){
@@ -802,6 +801,21 @@ void checkConditionalAndOrOperator(char * leftType, char * rightType){
 		result = OK;
 	}
 	CHECK_RESULT(result);
+}
+
+char * checkRelationalOperator(char * leftType, char * rightType){
+	int result = OK;
+	char * resultType = NULL;
+
+	if (translateTypevalToInt(rightType) == OUR_EMPTY){
+		resultType = leftType;
+	}else if(checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK){
+		resultType = "t_boolean";
+	}else{
+		result = WRONG_RELATIONAL_OPERATION;
+	}
+	CHECK_RESULT(result);
+	return resultType;
 }
 
 // AUXILIAR OPERATOR CHOOSER
