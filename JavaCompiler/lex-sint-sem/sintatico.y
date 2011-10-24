@@ -27,6 +27,8 @@ int array_level_def = 0;
 int local_level = 0;
 char* id_var_local = "";
 char* type_expr_prec = "";
+int final_update = 0; //0 = not isFinal, 1 = isFinal
+int level_access = 0;
 %}
 
 %union {
@@ -167,12 +169,12 @@ floating_point_type :	TYPE_FLOAT
 
 variable_declarators :          variable_declarator {insertStringToStrList($1);} variable_declarators_ ;
 
-variable_declarator : variable_declarator_id variable_declarator_ {$$ = $1;};
+variable_declarator : variable_declarator_id variable_declarator_ {$$ = $1;array_level_def = 0; local_level = 0;};
 
 variable_declarators_ :         VIRGULA  variable_declarator {insertStringToStrList($2);} variable_declarators_	
                         |       /** empty **/;
 
-variable_declarator_ :          EQUAL {printf("INCIEI ATRIB %d\n", local_level);}variable_initializer
+variable_declarator_ :          EQUAL {printf("INCIEI ATRIB %d\n", local_level);} variable_initializer 
                         |       /** empty **/;
 
 variable_declarator_id :        identifier {$$ = $1;}; 
@@ -202,25 +204,31 @@ assignment_expression : conditional_expression;
 
 field_access : identifier  {checkStaticClassId($1);} POINT identifier {$$ = $4;} ;
 
-left_hand_side :	{printf("ARR\n");} array_access {$$ = getVarTypevalInBothContexts($2);local_level+getVarArrayLevelInGlobalContext($2);}
-		|	{printf("FIELD\n");} field_access {$$ = getVarTypevalInGlobalContext($2);local_level+getVarArrayLevelInGlobalContext($2);};
+left_hand_side :	{printf("ARR\n");} array_access {$$ = getVarTypevalInBothContexts($2);local_level = local_level+getVarArrayLevelInGlobalContext($2);}
+		|	{printf("FIELD\n");} field_access {$$ = getVarTypevalInGlobalContext($2);local_level = local_level+getVarArrayLevelInGlobalContext($2);};
 
 assignment_operator : EQUAL
 		|       ARITH_ASSIGN 
 		|       SHIFT_ASSIGN 
 	        |	LOGIC_ASSIGN; 
 
-array_access : identifier dim_expr dim_expr_opt {local_level = $3+1;}
-		|	field_access dim_expr dim_expr_opt {local_level = $3+1;};
+array_access : identifier dim_expr dim_expr_opt {local_level = $3+1; level_access = $3+1;level_access = isVarFinalInBothContexts($1);}
+		|	field_access dim_expr dim_expr_opt {local_level = $3+1; level_access = $3+1;level_access = isVarFinalInGlobalContext($1);};
 
 lit : LITERAL;
 
-primary_no_array : lit {$$ = $1;}
-		| 	field_access {$$ = getVarTypevalInGlobalContext($1);}
-		|	method_invocation {$$ = $1;}
-		|	identifier {$$ = getVarTypevalInBothContexts($1);};
+primary_no_array : lit {$$ = $1; level_access = 0; final_update = 0;}
+		| 	field_access {$$ = getVarTypevalInGlobalContext($1); 
+				level_access = getVarArrayLevelInGlobalContext($1), 
+				final_update = isVarFinalInGlobalContext($1);} 
+		|	method_invocation {$$ = $1;
+				level_access = checkMethodLevelsAfterConversion();
+				final_update = 1;}
+		|	identifier {$$ = getVarTypevalInBothContexts($1);
+				level_access = getVarArrayLevelInBothContexts($1);
+				final_update = isVarFinalInBothContexts($1);};
 
-primary_no_new_array : 	primary_no_array
+primary_no_new_array : 	primary_no_array 
 	        | 	array_access {$$ = getVarTypevalInBothContexts($1);};
 
 argument_list : 	expression {addArgsToCalledMethod($1,local_level);} argument_list_
@@ -333,7 +341,7 @@ unary_expression : 	INCREMENT unary_expression {checkNumericalType($2);$$ = $2;}
 
 cast_expression : OPEN_PAREN primitive_type CLOSE_PAREN unary_expression {checkCastingConversion($4,$2); $$ = $2;};
 
-postfix_expression : primary_no_array postfix_expression_/**acesso a variavel ou nao**/ {$$ = $1;};	
+postfix_expression : primary_no_array postfix_expression_ /**acesso a variavel ou nao**/ {$$ = $1;};	
 
 postfix_expression_ : INCREMENT postfix_expression_ {$$ = "t_inc_dec";}
 			| DECREMENT postfix_expression_ {$$ = "t_inc_dec";}
@@ -357,16 +365,16 @@ statement_expression_list : statement_expression statement_expression_list_     
 statement_expression_list_ : VIRGULA statement_expression statement_expression_list_    
                         |	/** empty **/;
 
-statement_expression :          primary_no_new_array assignment_operator assignment_expression
+statement_expression :          primary_no_new_array assignment_operator assignment_expression 
                         |       preincrement_expression 
                         |       post_incr_decrement_expression 
                         |       predecrement_expression;
 
-preincrement_expression : INCREMENT unary_expression;
+preincrement_expression : INCREMENT unary_expression /*{(final_update);}*/;
 
 post_incr_decrement_expression : postfix_expression;
 
-predecrement_expression : DECREMENT unary_expression;
+predecrement_expression : DECREMENT unary_expression /*{(final_update);}*/ ;
 
 
 method_invocation : 	identifier {addCalledMethod($1);} OPEN_PAREN argument_list CLOSE_PAREN {$$ = checkMethodConversion();}
@@ -380,11 +388,11 @@ for_update :	statement_expression_list;
 for_update_opt :	for_update
 		|       /** empty **/;
 
-statement_without_trailing_substatement : block 
+statement_without_trailing_substatement : block /* falta */
                         |       empty_statement 
-                        |       expression_statement 
-                        |       switch_statement 
-                        |       do_statement
+                        |       expression_statement /* falta */
+                        |       switch_statement /* falta */
+                        |       do_statement 
                         |       break_statement 
                         |       continue_statement
                         |       goto_statement
@@ -425,7 +433,7 @@ continue_statement : CONTINUE identifier_opt {checkLabelInCurrMethod($2);} PT_VI
 
 goto_statement : GOTO identifier {checkLabelInCurrMethod($2);} PT_VIRGULA;
 
-return_statement : RETURN expression_opt PT_VIRGULA;
+return_statement : RETURN expression_opt {checkReturnTypeInCurrMethod(method_or_field_type, $2);} PT_VIRGULA;
 
 identifier_opt: identifier {$$ = $1;}
 	|	/** empty **/ {$$ = "id_empty";};

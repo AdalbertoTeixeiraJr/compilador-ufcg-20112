@@ -140,9 +140,9 @@ string_literal	["][^"]*["]
 {int_literal} 			{moveCol();yylval.strval = strdup(yytext);
 					yylval.typeval =strdup("t_int");return LITERAL;}
 {hex_literal} 			{moveCol();yylval.strval = strdup(yytext);
-					yylval.typeval =strdup("t_hex");return LITERAL;}
+					yylval.typeval =strdup("t_int");return LITERAL;}
 {oct_literal}			{moveCol();yylval.strval = strdup(yytext);
-					yylval.typeval =strdup("t_oct");return LITERAL;}
+					yylval.typeval =strdup("t_int");return LITERAL;}
 {float_literal} 		{moveCol();yylval.strval = strdup(yytext);
 					yylval.typeval =strdup("t_float");return LITERAL;}
 {double_literal} 		{moveCol();yylval.strval = strdup(yytext);
