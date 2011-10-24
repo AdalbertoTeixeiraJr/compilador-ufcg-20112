@@ -84,6 +84,7 @@ int main(){
 	checkIncrementDecrement("KKKK", "kkkk", YES);
 
 	checkBinaryExpressionResultType("t_short", "t_string");
+	checkShiftOperator("t_short", "t_string");
 
 	freeClassContext();
 
