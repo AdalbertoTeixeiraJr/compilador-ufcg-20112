@@ -19,7 +19,7 @@
 
 #define OK	1
 
-#define YES	1
+#define YES	OK
 #define NO	0
 
 #define LOCAL_CONTEXT	10

@@ -88,7 +88,7 @@ int main(){
 
 	checkIsBoolean(NULL);
 
-	checkIncrementDecrement("KKKK", "kkkk", YES);
+	checkIncrementDecrement("t_string", "t_int", NO);
 
 	checkBinaryExpressionResultType("t_short", "t_string");
 	checkShiftOperator("t_short", "t_string");
