@@ -134,6 +134,9 @@ void treatErrorResults(int val){
 		case(WRONG_OPERATION):
 			yyerror("Semantical Error: this operation does not exist");
 			break;
+		case(WRONG_ARRAY_CREATION_EXPRESSION):
+			yyerror("Semantical Error: the array creation expression should contains an integral type");
+			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT (%d)", val);
 			break;
