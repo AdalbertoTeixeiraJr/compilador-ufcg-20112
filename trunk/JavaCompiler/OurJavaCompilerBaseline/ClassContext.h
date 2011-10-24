@@ -76,9 +76,9 @@ char * checkMethodConversion();
 // BINARY COMPARISONS
 char * checkBinaryExpressionResultType(char * leftType, char * rightType);
 char * checkShiftOperator(char * leftType, char * shiftDistanceType);
-void checkEqualityOperator(char * leftType, char * rightType);
+char * checkEqualityOperator(char * leftType, char * rightType);
 char * checkBitwiseLogicalOperator(char * leftType, char * rightType);
-void checkConditionalAndOrOperator(char * leftType, char * rightType);
+char * checkConditionalAndOrOperator(char * leftType, char * rightType);
 char * checkRelationalOperator(char * leftType, char * rightType);
 
 // AUXILIAR OPERATOR CHOOSER
