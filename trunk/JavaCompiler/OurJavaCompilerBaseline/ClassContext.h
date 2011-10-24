@@ -76,6 +76,6 @@ char * checkMethodConversion();
 // BINARY COMPARISONS
 char * checkBinaryExpressionResultType(char * leftType, char * rightType);
 char * checkShiftOperator(char * leftType, char * shiftDistanceType);
-void checkEqualityExpression(char * leftType, char * rightType);
+void checkEqualityOperator(char * leftType, char * rightType);
 
 #endif /* CLASSCONTEXT_H_ */
