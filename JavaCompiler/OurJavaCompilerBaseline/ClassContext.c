@@ -34,6 +34,7 @@ static int checkWideningConversion(char * typeFrom, char * typeTo);
 static int checkNarrowingConversion(char * typeFrom, char * typeTo);
 static int checkImplicitConversion(char * typeFrom, char * typeTo);
 static int checkIntegralType(char * type);
+static int checkFloatType(char * type);
 
 /*************** GLOBAL VARIABLES ***************/
 ClassContext * classContext = NULL;
@@ -540,6 +541,16 @@ static int checkIntegralType(char * type){
 	return result;
 }
 
+static int checkFloatType(char * type){
+	int result = NO;
+	int ourType = translateTypevalToInt(type);
+	if (ourType == OUR_FLOAT || ourType == OUR_DOUBLE){
+		result = OK;
+	}
+	return result;
+}
+
+
 /*
  * PUBLIC FUNCTIONS
  */
@@ -549,7 +560,7 @@ void checkStaticClassId(char * id){
 	CHECK_RESULT(result);
 }
 
-void checkEqualityCurrentMethodSignature(){
+void checkRepeatedCurrentMethodSignature(){
 	CHECK_GLOBAL_CONTEXT(currentContext);
 
 	int result = OK;
@@ -571,17 +582,17 @@ void checkEqualityCurrentMethodSignature(){
 	CHECK_RESULT(result);
 }
 
-void checkEqualityArrayLevel(int declarationLevel, int definitionLevel){
+void checkEqualsArrayLevel(int declarationLevel, int definitionLevel){
 	int result = (declarationLevel == definitionLevel)? OK: DIFFERENT_ARRAY_LEVEL_DEFINITION_DECLARATION;
 	CHECK_RESULT(result);
 }
 
-void checkEqualityTypeval(char * declarationLevel, char * definitionLevel){
+void checkEqualsTypeval(char * declarationLevel, char * definitionLevel){
 	int result = (strcmp(declarationLevel,definitionLevel)== 0)? OK: DIFFERENT_TYPE_DEFINITION_DECLARATION;
 	CHECK_RESULT(result);
 }
 
-void checkEqualityWithBoolean(char * type){
+void checkIsBoolean(char * type){
 	int result = (translateTypevalToInt(type) == OUR_BOOLEAN) ? OK: WRONG_BOOLEAN_CHECK;
 	CHECK_RESULT(result);
 }
@@ -599,10 +610,9 @@ void checkIncrementDecrement(char * varType, char * operType, int isFinal){
 }
 
 int checkNumericalType(char * type){
-	int ourType = translateTypevalToInt(type);
 	int result = WRONG_NUMERICAL_TYPE;
 
-	if (ourType != OUR_STRING && ourType != OUR_BOOLEAN){
+	if (checkIntegralType(type) || checkFloatType(type)){
 		result = OK;
 	}
 	CHECK_RESULT(result);
@@ -741,3 +751,17 @@ char * checkShiftOperator(char * leftType, char * shiftDistanceType){
 	CHECK_RESULT(result);
 	return NULL;
 }
+
+void checkEqualityExpression(char * leftType, char * rightType){
+	int result = WRONG_EQUALITY_EXPRESSION;
+	int ourLeftType = translateTypevalToInt(leftType);
+	int ourRightType = translateTypevalToInt(rightType);
+
+	if ((checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK) ||
+		(ourLeftType == OUR_BOOLEAN && ourRightType == OUR_BOOLEAN)	||
+		(ourLeftType == OUR_NULL && ourRightType == OUR_NULL)){
+		result = OK;
+	}
+	CHECK_RESULT(result);
+}
+
