@@ -39,6 +39,7 @@
 #define OUR_LONG 			10
 #define OUR_SHORT 			11
 #define OUR_EMPTY 			12
+#define OUR_VOID 			13
 
 // CONVERSION CONSTANTS
 #define IDENTITY_CONVERSION 1
@@ -87,6 +88,8 @@
 #define NOT_BOOL_OR_EMPTY									-32
 #define NO_LABEL_FOUND										-33
 #define WRONG_SWITCH_EXPRESSION								-34
+#define WRONG_RETURN_TYPE_IN_CURR_METHOD					-35
+
 
 /*********** PUBLIC FUNCTION DECLARATIONS ************/
 void treatErrorResults(int val);
