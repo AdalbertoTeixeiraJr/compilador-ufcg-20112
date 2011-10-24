@@ -757,7 +757,8 @@ void checkEqualityOperator(char * leftType, char * rightType){
 	int ourLeftType = translateTypevalToInt(leftType);
 	int ourRightType = translateTypevalToInt(rightType);
 
-	if ((checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK) ||
+	if (translateTypevalToInt(rightType) == OUR_EMPTY ||
+		(checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK) ||
 		(ourLeftType == OUR_BOOLEAN && ourRightType == OUR_BOOLEAN)	||
 		(ourLeftType == OUR_NULL && ourRightType == OUR_NULL)){
 		result = OK;
@@ -770,9 +771,23 @@ void checkBitwiseLogicalOperator(char * leftType, char * rightType){
 	int ourLeftType = translateTypevalToInt(leftType);
 	int ourRightType = translateTypevalToInt(rightType);
 
-	if ((checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK) ||
+	if (translateTypevalToInt(rightType) == OUR_EMPTY ||
+		(checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK) ||
 		(ourLeftType == OUR_BOOLEAN && ourRightType == OUR_BOOLEAN)){
 		result = OK;
 	}
 	CHECK_RESULT(result);
 }
+
+void checkConditionalAndOrOperator(char * leftType, char * rightType){
+	int result = WRONG_EQUALITY_OPERATION;
+	int ourLeftType = translateTypevalToInt(leftType);
+	int ourRightType = translateTypevalToInt(rightType);
+
+	if (translateTypevalToInt(rightType) == OUR_EMPTY ||
+		(ourLeftType == OUR_BOOLEAN && ourRightType == OUR_BOOLEAN)){
+		result = OK;
+	}
+	CHECK_RESULT(result);
+}
+
