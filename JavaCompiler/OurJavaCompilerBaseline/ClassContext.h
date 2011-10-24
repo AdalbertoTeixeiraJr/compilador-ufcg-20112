@@ -80,4 +80,7 @@ void checkEqualityOperator(char * leftType, char * rightType);
 char * checkBitwiseLogicalOperator(char * leftType, char * rightType);
 void checkConditionalAndOrOperator(char * leftType, char * rightType);
 
+// AUXILIAR OPERATOR CHOOSER
+char * chooseBinaryOperation(char * leftType, char * rightType, char * oper);
+
 #endif /* CLASSCONTEXT_H_ */
