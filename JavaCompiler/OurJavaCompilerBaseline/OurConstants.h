@@ -76,6 +76,7 @@
 #define WRONG_IMPLICIT_CONVERSION							-21
 #define WRONG_ASSIGN_CONVERSION								-22
 #define WRONG_BINARY_NUMERIC_EXPRESSION						-23
+#define WRONG_SHIFT_EXPRESSION								-24
 
 /*********** PUBLIC FUNCTION DECLARATIONS ************/
 void treatErrorResults(int val);

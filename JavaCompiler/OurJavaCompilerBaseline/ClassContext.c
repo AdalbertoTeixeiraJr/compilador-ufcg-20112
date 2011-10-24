@@ -33,6 +33,7 @@ static int checkIdentityConversion(char * typeFrom, char * typeTo);
 static int checkWideningConversion(char * typeFrom, char * typeTo);
 static int checkNarrowingConversion(char * typeFrom, char * typeTo);
 static int checkImplicitConversion(char * typeFrom, char * typeTo);
+static int checkIntegralType(char * type);
 
 /*************** GLOBAL VARIABLES ***************/
 ClassContext * classContext = NULL;
@@ -530,6 +531,15 @@ static int checkImplicitConversion(char * typeFrom, char * typeTo){
 	return result;
 }
 
+static int checkIntegralType(char * type){
+	int result = NO;
+	int ourType = translateTypevalToInt(type);
+	if (ourType == OUR_BYTE || ourType == OUR_SHORT || ourType == OUR_INT || ourType == OUR_LONG || ourType == OUR_CHAR){
+		result = OK;
+	}
+	return result;
+}
+
 /*
  * PUBLIC FUNCTIONS
  */
@@ -717,4 +727,17 @@ char * checkBinaryExpressionResultType(char * leftType, char * rightType){
 	}
 	CHECK_RESULT(result);
 	return resultType;
+}
+
+
+char * checkShiftOperator(char * leftType, char * shiftDistanceType){
+	int result = WRONG_SHIFT_EXPRESSION;
+	if (translateTypevalToInt(shiftDistanceType) == OUR_EMPTY ||
+		(checkIntegralType(leftType) == YES && checkIntegralType(shiftDistanceType) == YES)){
+		result = OK;
+		return leftType;
+	}
+
+	CHECK_RESULT(result);
+	return NULL;
 }
