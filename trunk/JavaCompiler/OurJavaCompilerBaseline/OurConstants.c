@@ -137,6 +137,15 @@ void treatErrorResults(int val){
 		case(WRONG_ARRAY_CREATION_EXPRESSION):
 			yyerror("Semantical Error: the array creation expression should contains an integral type");
 			break;
+		case(NO_VAR_FOUND_IN_BOTH_CONTEXTS):
+			yyerror("Semantical Error: there is no variable with this id (nor local neither global contexts)");
+			break;
+		case(REPEATED_LABEL_IN_SAME_METHOD):
+			yyerror("Semantical Error: repeated label in the same method");
+			break;
+		case(NOT_BOOL_OR_EMPTY):
+			yyerror("Semantical Error: the type is neither boolean nor empty type");
+			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT (%d)", val);
 			break;
