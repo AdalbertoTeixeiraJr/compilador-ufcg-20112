@@ -28,6 +28,16 @@ struct VARNODE{
 };
 
 /*
+ * LABEL STRUCT
+ */
+typedef struct LABELSTRUCT LabelStruct;
+struct LABELSTRUCT{
+	char* name;
+	LabelStruct * next;
+};
+
+
+/*
  * METHOD STRUCT
  */
 typedef struct METHODNODE MethodNode;
@@ -35,6 +45,7 @@ struct METHODNODE{
 	char * idName;
 	char * returnType;
 	int arrayLevels;
+	LabelStruct * labels;
 	VarNode * params;
 	VarNode * varNodes;
 	MethodNode * next;
@@ -65,5 +76,7 @@ MethodNode * getLastMethodNodeInList (MethodNode * nodeList);
 void freeMethodList(MethodNode * list);
 void displayMethodNodeList(MethodNode * list);
 int isMethodEqual(MethodNode * method1, MethodNode * method2);
+
+LabelStruct * createLabel(char * name);
 
 #endif /* OURSTRUCTS_H_ */

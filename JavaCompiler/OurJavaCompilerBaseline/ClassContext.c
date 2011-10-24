@@ -163,6 +163,28 @@ int getVarArrayLevelInGlobalContext (char * id){
 	return result;
 }
 
+char * getVarTypevalInBothContexts (char * id){
+	int result = OK;
+	char * resultType = NULL;
+
+	VarNode * node = getVarNodeInList(getCurrentMethod()->varNodes, id);
+
+	if (node != NULL){
+		resultType = node->typeval;
+	}else{
+		node = getVarNodeInList(classContext->varsContext, id);
+
+		if (node != NULL){
+			resultType = node->typeval;
+		}else{
+			result = NO_VAR_FOUND_IN_BOTH_CONTEXTS;
+		}
+	}
+
+	CHECK_RESULT(result);
+	return resultType;
+}
+
 //// FREEING
 
 void freeClassContext(){
@@ -251,6 +273,7 @@ void insertVarListInCurrMethodContext(char * typeval, int isFinal, int arrayLeve
 VarNode * getVarInCurrMethodContext(char * id){
 	return getVarNodeInList(getCurrentMethod()->varNodes, id);
 }
+
 
 /*
  * == AUXILIAR ===== STRING NODE FUNCTION DEFINITIONS
@@ -379,6 +402,35 @@ void addArgsToCalledMethod(char * typeval, int arrayLevels){
 
 	CHECK_RESULT(result);
 }
+
+/*************** LABEL FUNCTIONS ***************/
+void addLabel(char * name){
+	int result = OK;
+
+	MethodNode * method = getCurrentMethod();
+	LabelStruct * newLabel = createLabel(name);
+	LabelStruct * labels = method->labels;
+	LabelStruct * labelsTmp;
+
+	while(labels != NULL){
+		labelsTmp = labels;
+		if (strcmp(labels->name, name) == 0){
+			result = REPEATED_LABEL_IN_SAME_METHOD;
+			break;
+		}
+		labels = labels->next;
+	}
+	if(result == OK){
+		if (labelsTmp == NULL){
+			method->labels = newLabel;
+		}else{
+			labelsTmp->next = newLabel;
+		}
+	}
+
+	CHECK_RESULT(result);
+}
+
 
 /*************** SEMANTIC CHECK FUNCTIONS ***************/
 
@@ -881,4 +933,10 @@ char * chooseBinaryOperation(char * leftType, char * rightType, char * oper){
 	return resultType;
 }
 
-
+void checkIsEmptyOrBool(char* typeval){
+      int result = NOT_BOOL_OR_EMPTY;
+      if(strcmp(typeval, "t_empty") == 0 || strcmp(typeval, "t_boolean") == OK ){
+    	  result = OK;
+      }
+      CHECK_RESULT(result);
+}

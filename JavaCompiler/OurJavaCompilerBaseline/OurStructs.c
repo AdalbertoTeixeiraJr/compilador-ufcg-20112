@@ -124,6 +124,7 @@ MethodNode * createMethodNode(char * idName, char * typeReturn, int arrayLevels)
 			}
 
 			node->arrayLevels = arrayLevels;
+			node->labels = NULL;
 			node->params = NULL;
 			node->varNodes = NULL;
 			node->next = NULL;
@@ -219,3 +220,14 @@ void displayMethodNodeList(MethodNode * methodNodeList){
 		methodNodeList = methodNodeList->next;
 	}
 }
+
+
+LabelStruct * createLabel(char * name){
+	LabelStruct * label = (LabelStruct *) malloc(sizeof(LabelStruct));
+
+	if (label != NULL){
+		label->name = (char *) malloc(MAX_ID_SIZE);
+	}
+	return label;
+}
+

@@ -45,6 +45,7 @@ void insertVarListInCurrMethodContext(char * typeval, int isFinal, int arrayLeve
 ////GETTING
 char * getVarTypevalInGlobalContext (char * id);
 int getVarArrayLevelInGlobalContext (char * id);
+char * getVarTypevalInBothContexts (char * id);
 
 //// FREEING
 void freeClassContext();
@@ -59,6 +60,9 @@ void insertStringToStrList(char * id);
 /*************** CALLED METHODS FUNCTIONS ***************/
 void addCalledMethod(char * idName);
 void addArgsToCalledMethod(char * typeval, int arrayLevels);
+
+/*************** LABEL FUNCTIONS ***************/
+void addLabel(char * name);
 
 /*************** SEMANTIC CHECK FUNCTIONS ***************/
 void checkStaticClassId(char * id);
@@ -82,6 +86,7 @@ char * checkConditionalAndOrOperator(char * leftType, char * rightType);
 char * checkRelationalOperator(char * leftType, char * rightType);
 char * checkQuestionMarkOperator(char * leftType, char * rightType);
 void checkArrayCreationExpression(char * type);
+void checkIsEmptyOrBool(char* typeval);
 
 // AUXILIAR OPERATOR CHOOSER
 char * chooseBinaryOperation(char * leftType, char * rightType, char * oper);

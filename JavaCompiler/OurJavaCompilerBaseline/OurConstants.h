@@ -82,6 +82,10 @@
 #define WRONG_QUESTION_MARK_OPERATION						-27
 #define WRONG_OPERATION										-28
 #define WRONG_ARRAY_CREATION_EXPRESSION						-29
+#define NO_VAR_FOUND_IN_BOTH_CONTEXTS						-30
+#define REPEATED_LABEL_IN_SAME_METHOD						-31
+#define NOT_BOOL_OR_EMPTY									-32
+
 
 
 /*********** PUBLIC FUNCTION DECLARATIONS ************/
