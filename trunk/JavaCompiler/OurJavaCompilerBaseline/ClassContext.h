@@ -45,6 +45,7 @@ void insertVarListInCurrMethodContext(char * typeval, int isFinal, int arrayLeve
 ////GETTING
 char * getVarTypevalInGlobalContext (char * id);
 int getVarArrayLevelInGlobalContext (char * id);
+int getVarArrayLevelInBothContexts (char * id);
 char * getVarTypevalInBothContexts (char * id);
 int isVarFinalInGlobalContext(char * id);
 int isVarFinalInCurrMethodContext(char * id);
