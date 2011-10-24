@@ -992,6 +992,20 @@ void checkIsSwitchExpression(char* typeval){
 	CHECK_RESULT(result);
 }
 
+void checkReturnTypeInCurrMethod(char * returnType){
+	int result = WRONG_RETURN_TYPE_IN_CURR_METHOD;
+
+	char * methodReturnType = getCurrentMethod()->returnType;
+
+	if (translateTypevalToInt(returnType) == OUR_EMPTY && translateTypevalToInt(methodReturnType) == OUR_VOID){
+		result = OK;
+	} else if (checkImplicitConversion(returnType, methodReturnType) == OK){
+		result = OK;
+	}
+
+	CHECK_RESULT(result);
+}
+
 // AUXILIAR OPERATOR CHOOSER
 char * chooseBinaryOperation(char * leftType, char * rightType, char * oper){
 	int result = OK;

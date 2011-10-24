@@ -41,6 +41,8 @@ int translateTypevalToInt(char * typeval){
 		return OUR_LONG;
 	}else if(strcmp(typeval, "t_short") == 0){
 		return OUR_SHORT;
+	}else if(strcmp(typeval, "t_void") == 0){
+		return OUR_VOID;
 	}else{
 		return OUR_EMPTY;
 	}
@@ -150,6 +152,9 @@ void treatErrorResults(int val){
 			yyerror("Semantical Error: there is no label with this name");
 			break;
 		case(WRONG_SWITCH_EXPRESSION):
+			yyerror("Semantical Error: this is not a switch expression allowed type");
+			break;
+		case(WRONG_RETURN_TYPE_IN_CURR_METHOD):
 			yyerror("Semantical Error: this is not a switch expression allowed type");
 			break;
 		default:
