@@ -54,11 +54,11 @@ class ExemploComandosAtribuicao {
 	}
 
 	public static void main(String[] args) {
-		ExemploComandosAtribuicao.sumCresc(2, 6);
-		ExemploComandosAtribuicao.sumDecresc(8, 4);
-		ExemploComandosAtribuicao.decrement(10, 2, 3);
-		ExemploComandosAtribuicao.exp(2, 5);
-		ExemploComandosAtribuicao.div(16, 2, 3);
-		ExemploComandosAtribuicao.mod(10, 4);
+		sumCresc(2, 6);
+		sumDecresc(8, 4);
+		decrement(10, 2, 3);
+		exp(2, 5);
+		div(16, 2, 3);
+		mod(10, 4);
 	}
 }

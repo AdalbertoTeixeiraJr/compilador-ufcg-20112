@@ -20,16 +20,16 @@ int yyerror(char *msg); //funcao de erro (sobrescrita)
 int line = 1; //declarado no lexico
 int column  = 0; // declarado no lexico
 char* yytext = ""; //declarado no lexico
-char* method_or_field_type = "";
+char* method_or_field_type = "_______________________";
 int final_modifier = 0;
 int context = 0;
 int array_level_def = 0;
 int local_level = 0;
-char* id_var_local = "";
-char* type_expr_prec = "";
+char* id_var_local = "_______________________";
+char* type_expr_prec = "_______________________";
 int final_update = 0; //0 = not isFinal, 1 = isFinal
 int level_access = 0;
-char* switch_type = "";
+char* switch_type = "_______________________";
 %}
 
 %union {
@@ -124,7 +124,7 @@ char* switch_type = "";
 
 compilation_unit :	class_declaration;
 
-class_declaration :	CLASS identifier {createClassContext($2);setCurrentContext(GLOBAL_CONTEXT);} class_body {displayClassContext();};		
+class_declaration :	CLASS identifier {createClassContext($2);setCurrentContext(GLOBAL_CONTEXT);} class_body /*{displayClassContext();}*/;		
 
 identifier :	ID;
 
@@ -180,12 +180,12 @@ variable_declarator_ :          EQUAL {printf("INCIEI ATRIB %d\n", local_level);
 
 variable_declarator_id :        identifier {$$ = $1;}; 
  
-variable_initializer :        {printf("LEFT\n");} left_hand_side 
+variable_initializer :        {printf("ASS\n");} assignment_expression {checkEqualsArrayLevel(array_level_def, local_level);
+							checkEqualsTypeval(method_or_field_type,$2);}
+                        |{printf("LEFT\n");} left_hand_side 
 			{checkEqualsArrayLevel(array_level_def, local_level);
 							checkEqualsTypeval(method_or_field_type,$2);}
-			|{printf("ASS\n");} assignment_expression {checkEqualsArrayLevel(array_level_def, local_level);
-							checkEqualsTypeval(method_or_field_type,$2);}
-                        |	array_initializer;
+			|	array_initializer;
 
 array_initializer :	BEG  {local_level++;} variable_initializers  virgula_opt END {local_level--;}
 			|	array_creation_expression ; 
@@ -205,8 +205,8 @@ assignment_expression : conditional_expression;
 
 field_access : identifier  {checkStaticClassId($1);} POINT identifier {$$ = $4;} ;
 
-left_hand_side :	{printf("ARR\n");} array_access {$$ = getVarTypevalInBothContexts($2);local_level = local_level+getVarArrayLevelInGlobalContext($2);}
-		|	{printf("FIELD\n");} field_access {$$ = getVarTypevalInGlobalContext($2);local_level = local_level+getVarArrayLevelInGlobalContext($2);};
+left_hand_side :	array_access {$$ = getVarTypevalInBothContexts($1);local_level = local_level+getVarArrayLevelInGlobalContext($1);}
+		|	field_access {$$ = getVarTypevalInGlobalContext($1);local_level = local_level+getVarArrayLevelInGlobalContext($1);};
 
 assignment_operator : EQUAL
 		|       ARITH_ASSIGN 
@@ -225,17 +225,17 @@ primary_no_array : lit {$$ = $1; level_access = 0; final_update = 0;}
 		|	method_invocation {$$ = $1;
 				level_access = checkMethodLevelsAfterConversion();
 				final_update = 1;}
-		|	identifier {$$ = getVarTypevalInBothContexts($1);
+		|	identifier {printf("ID PRIM %s\n",$1);$$ = getVarTypevalInBothContexts($1);
 				level_access = getVarArrayLevelInBothContexts($1);
-				final_update = isVarFinalInBothContexts($1);};
+				final_update = isVarFinalInBothContexts($1);printf("ID FINAL %d\n",final_update);};
 
 primary_no_new_array : 	primary_no_array 
 	        | 	array_access {$$ = getVarTypevalInBothContexts($1);};
 
-argument_list : 	expression {addArgsToCalledMethod($1,local_level);} argument_list_
+argument_list : 	expression {printf("ARG: %s %d\n",$1,local_level); addArgsToCalledMethod($1,local_level);} argument_list_
 		|	argument_list_;
 
-argument_list_ : 	VIRGULA expression {addArgsToCalledMethod($2,local_level);} argument_list_ 
+argument_list_ : 	VIRGULA expression {printf("ARG: %s %d\n",$2,local_level);addArgsToCalledMethod($2,local_level);} argument_list_ 
                 | 	/** empty **/;
 
 array_creation_expression : NEW primitive_type {checkEqualsTypeval(method_or_field_type, $2);} dim_expr  dim_exprs {checkEqualsArrayLevel(1+$5,array_level_def);};
@@ -268,62 +268,62 @@ conditional_opt: conditional_or_expression_  {$$ = $1;type_expr_prec = "or";}
 	|	multiplicative_expression_  {$$ = $1;type_expr_prec = "mult";} 
 	|	/** empty **/ {$$ = "t_empty";type_expr_prec = "empty";};
 
-conditional_or_expression : conditional_and_expression conditional_or_expression_ {$$ = checkConditionalAndOrOperator($1,$2);}
+conditional_or_expression : conditional_and_expression conditional_or_expression_ {printf("OR: %s, %s\n",$1,$2);$$ = checkConditionalAndOrOperator($1,$2);}
 		|	conditional_and_expression OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = checkConditionalAndOrOperator($1,$3);};
 
-conditional_or_expression_ : OR_LOGIC conditional_and_expression conditional_or_expression_ {$$ = checkConditionalAndOrOperator($2,$3);}
+conditional_or_expression_ : OR_LOGIC conditional_and_expression conditional_or_expression_ {printf("OR_: %s, %s\n",$2,$3);$$ = checkConditionalAndOrOperator($2,$3);}
                         | /** empty **/ {$$ = "t_empty";};
 
-conditional_and_expression : inclusive_or_expression conditional_and_expression_ {$$ = checkConditionalAndOrOperator($1,$2);}
+conditional_and_expression : inclusive_or_expression conditional_and_expression_ {printf("AND: %s, %s\n",$1,$2);$$ = checkConditionalAndOrOperator($1,$2);}
 		|	inclusive_or_expression OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = checkConditionalAndOrOperator($1,$3);};
 
-conditional_and_expression_ : AND_LOGIC inclusive_or_expression conditional_and_expression_ {$$ = checkConditionalAndOrOperator($2,$3);}
+conditional_and_expression_ : AND_LOGIC inclusive_or_expression conditional_and_expression_ {printf("AND_: %s, %s\n",$2,$3);$$ = checkConditionalAndOrOperator($2,$3);}
 			| /** empty **/ {$$ = "t_empty";};
 
-inclusive_or_expression : exclusive_or_expression  inclusive_or_expression_ {$$ = checkBitwiseLogicalOperator($1,$2);}
+inclusive_or_expression : exclusive_or_expression  inclusive_or_expression_ {printf("INC: %s, %s\n",$1,$2);$$ = checkBitwiseLogicalOperator($1,$2);}
 		|	exclusive_or_expression  OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = checkBitwiseLogicalOperator($1,$3);};
 
-inclusive_or_expression_ : OR exclusive_or_expression inclusive_or_expression_ {$$ = checkBitwiseLogicalOperator($2,$3);}
+inclusive_or_expression_ : OR exclusive_or_expression inclusive_or_expression_ {printf("INC_: %s, %s\n",$2,$3);$$ = checkBitwiseLogicalOperator($2,$3);}
                         | /** empty **/ {$$ = "t_empty";};
 
-exclusive_or_expression : and_expression exclusive_or_expression_ {$$ = checkBitwiseLogicalOperator($1,$2);}
+exclusive_or_expression : and_expression exclusive_or_expression_ {printf("OR_EXC: %s, %s\n",$1,$2);$$ = checkBitwiseLogicalOperator($1,$2);}
 		|	and_expression OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = checkBitwiseLogicalOperator($1,$3);};
 
-exclusive_or_expression_ : OR_EXC and_expression exclusive_or_expression_ {$$ = checkBitwiseLogicalOperator($2,$3);}
+exclusive_or_expression_ : OR_EXC and_expression exclusive_or_expression_ {printf("OR_EXC_: %s, %s\n",$2,$3);$$ = checkBitwiseLogicalOperator($2,$3);}
                         | /** empty **/ {$$ = "t_empty";};
 
-and_expression : equality_expression and_expression_ {$$ = checkBitwiseLogicalOperator($1,$2);}
+and_expression : equality_expression and_expression_ {printf("AND_BIT: %s, %s\n",$1,$2);$$ = checkBitwiseLogicalOperator($1,$2);}
 		|	equality_expression OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = checkBitwiseLogicalOperator($1,$3);};
 
-and_expression_ : AND equality_expression and_expression_ {$$ = checkBitwiseLogicalOperator($2,$3);}
+and_expression_ : AND equality_expression and_expression_ {printf("AND_BIT_: %s, %s\n",$2,$3);$$ = checkBitwiseLogicalOperator($2,$3);}
                         | /** empty **/ {$$ = "t_empty";};
 
-equality_expression : relational_expression equality_expression_ {$$ = checkEqualityOperator($1,$2);}
+equality_expression : relational_expression equality_expression_ {printf("EQUALOP: %s, %s\n",$1,$2);$$ = checkEqualityOperator($1,$2);}
 		|	relational_expression OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = checkEqualityOperator($1,$3);};
 
-equality_expression_ : EQUALOP relational_expression equality_expression_ {$$ = checkEqualityOperator($1,$2);}
+equality_expression_ : EQUALOP relational_expression equality_expression_ {printf("EQUALOP_: %s, %s\n",$2,$3);$$ = checkEqualityOperator($2,$3);}
                         |       /** empty **/ {$$ = "t_empty";};
 
-relational_expression : shift_expression relational_expression_ {$$ = checkRelationalOperator($1,$2);}
+relational_expression : shift_expression relational_expression_ {printf("RELOP: %s, %s\n",$1,$2);$$ = checkRelationalOperator($1,$2);}
 		|	shift_expression OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = checkRelationalOperator($1,$3);};
 
-relational_expression_ : RELOP shift_expression relational_expression_ {$$ = checkRelationalOperator($1,$2);}
+relational_expression_ : RELOP shift_expression relational_expression_ {printf("RELOP_: %s, %s\n",$1,$2);$$ = checkRelationalOperator($2,$3);}
                         | /** empty **/ {$$ = "t_empty";};
 
-shift_expression : additive_expression shift_expression_ {$$ = checkShiftOperator($1,$2);}
+shift_expression : additive_expression shift_expression_ {printf("SHIFT: %s, %s\n",$1,$2);$$ = checkShiftOperator($1,$2);}
 		|	additive_expression OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = checkShiftOperator($1,$3);};
 
-shift_expression_ : SHIFTS additive_expression shift_expression_ {$$ = checkShiftOperator($2,$3);} 
+shift_expression_ : SHIFTS additive_expression shift_expression_ {printf("SHIFT_: %s, %s\n",$1,$2);$$ = checkShiftOperator($2,$3);} 
                         | /** empty **/ {$$ = "t_empty";};
 
-additive_expression : multiplicative_expression additive_expression_ {$$ = checkBinaryExpressionResultType($1,$2);} 
+additive_expression : multiplicative_expression additive_expression_ {printf("ADD: %s, %s\n",$1,$2);$$ = checkBinaryExpressionResultType($1,$2);} 
 		|	multiplicative_expression OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = checkBinaryExpressionResultType($1,$3);};
 
-additive_expression_ : PLUS multiplicative_expression additive_expression_ {$$ = checkBinaryExpressionResultType($2,$3);}
+additive_expression_ : PLUS multiplicative_expression additive_expression_ {printf("ADD_: %s, %s\n",$2,$3);$$ = checkBinaryExpressionResultType($2,$3);}
                         | MINUS multiplicative_expression additive_expression_ {$$ = checkBinaryExpressionResultType($2,$3);}
 			| /** empty **/ {$$ = "t_empty";};
 
-multiplicative_expression :  unary_expression multiplicative_expression_ {$$ = checkBinaryExpressionResultType($1,$2);};
+multiplicative_expression :  unary_expression multiplicative_expression_ {printf("MULT: %s, %s\n",$1,$2);$$ = checkBinaryExpressionResultType($1,$2);};
 
 multiplicative_expression_ : MULT unary_expression multiplicative_expression_ {$$ = checkBinaryExpressionResultType($2,$3);}
                         | DIV unary_expression multiplicative_expression_ {$$ = checkBinaryExpressionResultType($2,$3);}
@@ -334,7 +334,7 @@ unary_expression : 	INCREMENT unary_expression {checkNumericalType($2);$$ = $2;}
 		|	DECREMENT unary_expression  {checkNumericalType($2);$$ = $2;}
 		|	PLUS unary_expression  {checkNumericalType($2);$$ = $2;}
 		|	MINUS unary_expression  {checkNumericalType($2);$$ = $2;}
-		|	postfix_expression {$$ = $1;}
+		|	postfix_expression {printf("POST: %s",$1);$$ = $1;}
 		|	NOT unary_expression {checkIsBoolean($2);$$ = $2;}
 		|	NOT_BIT unary_expression {checkNumericalType($2);$$ = $2;}
 		|	cast_expression {$$ = $1;}
@@ -352,7 +352,7 @@ statement :	statement_without_trailing_substatement
 	|       identifier {addLabel($1);} TWO_POINTS statement
 	|       IF OPEN_PAREN expression {checkIsBoolean($3);} CLOSE_PAREN optional_else
 	|       WHILE OPEN_PAREN expression {checkIsBoolean($3);} CLOSE_PAREN statement 
-	|       FOR OPEN_PAREN for_init PT_VIRGULA expression_opt {checkIsEmptyOrBool($5);} PT_VIRGULA for_update_opt CLOSE_PAREN  statement;
+	|       FOR OPEN_PAREN for_init PT_VIRGULA expression_opt {printf("type FOR: %s\n",$5);printf("result:%d\n",strcmp($5,"t_boolean"));checkIsEmptyOrBool($5);} PT_VIRGULA for_update_opt CLOSE_PAREN  statement;
 
 optional_else : statement
 	|	statement_no_short_if ELSE statement;
@@ -366,7 +366,7 @@ statement_expression_list : statement_expression statement_expression_list_     
 statement_expression_list_ : VIRGULA statement_expression statement_expression_list_    
                         |	/** empty **/;
 
-statement_expression :          primary_no_new_array assignment_operator assignment_expression 
+statement_expression :          primary_no_new_array assignment_operator assignment_expression {printf("FINAL %s, %d\n",$1, final_update);checkIncrementDecrement($1, "t_update", final_update);}
                         |       preincrement_expression 
                         |       post_incr_decrement_expression 
                         |       predecrement_expression;
@@ -378,7 +378,7 @@ post_incr_decrement_expression : postfix_expression;
 predecrement_expression : DECREMENT unary_expression {checkIncrementDecrement($2, "t_dec", final_update);} ;
 
 
-method_invocation : 	identifier {addCalledMethod($1);} OPEN_PAREN argument_list CLOSE_PAREN {$$ = checkMethodConversion();}
+method_invocation : 	identifier {printf("MET: %s\n",$1);addCalledMethod($1);} OPEN_PAREN argument_list CLOSE_PAREN {$$ = checkMethodConversion();}
 		|	field_access OPEN_PAREN {addCalledMethod($1);} argument_list CLOSE_PAREN {$$ = checkMethodConversion();} ;
 
 expression_opt : expression {$$ = $1;}
@@ -428,7 +428,7 @@ switch_label : CASE expression {checkEqualsTypeval($2,switch_type);} TWO_POINTS
 
 do_statement : DO statement WHILE OPEN_PAREN expression {checkIsBoolean($5);} CLOSE_PAREN PT_VIRGULA;
 
-break_statement : BREAK identifier_opt {checkLabelInCurrMethod($2);} PT_VIRGULA;
+break_statement : BREAK identifier_opt {printf("BREAK %s",$2);checkLabelInCurrMethod($2);} PT_VIRGULA;
 
 continue_statement : CONTINUE identifier_opt {checkLabelInCurrMethod($2);} PT_VIRGULA;
 

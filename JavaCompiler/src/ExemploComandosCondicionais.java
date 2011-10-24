@@ -5,11 +5,11 @@ class ExemploComandosCondicionais {
 	/* If-Else */
 	static int mediaAprovados() {
 		int media = 0;
-		for (int y = 0; y < notas.length; y++) {
-			if (notas[y] >= 7) {
-				media += notas[y];
+		for (int y = 0; y < 6; y++) {
+			if (media >= 7) {
+				media += 1;
 			} else {
-				media += (notas[y] * (60 / 100));
+				media += (5 * (60 / 100));
 			}
 		}
 		return media;
@@ -17,9 +17,9 @@ class ExemploComandosCondicionais {
 	
 	/* If-Elseif-Else */
 	static String aprovado(int aluno) {
-		if (notas[aluno] >= 7) {
+		if (aluno >= 7) {
 			return "Aprovado";
-		} else if (notas[aluno] >= 5) {
+		} else if (aluno >= 5) {
 			return "Final";
 		} else {
 			return "Reprovado";

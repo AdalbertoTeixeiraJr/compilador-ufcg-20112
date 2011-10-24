@@ -18,20 +18,18 @@ class ExemploExpressoesAritmeticasBooleanas {
 	static void expBooleanas() {
 		boolean a = true;
 		boolean b = false;
-		boolean c = (a | b);
-		boolean d = c & true;
-		d = a && !b;
-		boolean e = d || (b & c);
+		boolean c = (a || b);
+		boolean d = c && true;
+		boolean e = d || (b&& c);
 	}
 
 	/* &, |, ^, ~ */
 	static void expBooleanasBitWise() {
 		int a = 10;
-		int b = 2;
-		int c = a & b;
-		int d = a | b;
-		int e = a ^ b;
-		int f = ~e;
+		int c = a & a;
+		int d = a | c;
+		int e = a ^ d;
+		a = ~a;
 	}
 
 	public static void main(String[] args) {

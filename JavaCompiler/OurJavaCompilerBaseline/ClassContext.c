@@ -729,7 +729,7 @@ void checkIsBoolean(char * type){
 
 void checkIncrementDecrement(char * varType, char * operType, int isFinal){
 	int result = OK;
-	if (translateTypevalToInt(operType) != OUR_EMPTY ){
+	if (strcmp("t_empty",operType) != 0 ){
 		if (isFinal == YES){
 			result = WRONG_FINAL_UPDATE;
 		}else{
