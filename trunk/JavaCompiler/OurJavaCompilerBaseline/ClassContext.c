@@ -723,18 +723,14 @@ char * checkMethodConversion(){
 char * checkBinaryExpressionResultType(char * leftType, char * rightType){
 	int result = OK;
 	char * resultType;
-	if (checkNumericalType(leftType) == OK){
-		if(translateTypevalToInt(rightType) == OUR_EMPTY){
+	if (translateTypevalToInt(rightType) == OUR_EMPTY){
+		resultType = leftType;
+	}
+	else if (checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK){
+		if (checkImplicitConversion(leftType, rightType) == OK){
+			resultType = rightType;
+		}else if(checkImplicitConversion(rightType, leftType) == OK){
 			resultType = leftType;
-		}
-		else if (checkNumericalType(rightType) == OK ){
-			if (checkImplicitConversion(leftType, rightType) == OK){
-				resultType = rightType;
-			}else if(checkImplicitConversion(rightType, leftType) == OK){
-				resultType = leftType;
-			}else{
-				result = WRONG_BINARY_NUMERIC_EXPRESSION;
-			}
 		}else{
 			result = WRONG_BINARY_NUMERIC_EXPRESSION;
 		}
