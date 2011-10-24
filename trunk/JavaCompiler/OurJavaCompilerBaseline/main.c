@@ -16,10 +16,10 @@ int main(){
 
 	insertVarListInGlobalContext("STRING", NO, 0);
 
-	insertMethod("MethodA", "INT", 0);
-	addParamInCurrMethod("Param1", "LONG", 0);
-	addParamInCurrMethod("Param2", "LONG", 0);
-	addParamInCurrMethod("Param3", "LONG", 0);
+	insertMethod("MethodA", "t_long", 0);
+	addParamInCurrMethod("Param1", "t_long", 0);
+	addParamInCurrMethod("Param2", "t_long", 0);
+	addParamInCurrMethod("Param3", "t_long", 0);
 
 	checkRepeatedCurrentMethodSignature();
 
@@ -47,9 +47,8 @@ int main(){
 
 	insertMethod("MethodC", "INT", 0);
 
-	addParamInCurrMethod("Param1", "LONG", 0);
-	addParamInCurrMethod("Param2", "LONG", 0);
-	addParamInCurrMethod("Param3", "LONG", 0);
+	addParamInCurrMethod("Param1", "t_int", 0);
+	addParamInCurrMethod("Param2", "t_int", 0);
 
 	checkRepeatedCurrentMethodSignature();
 
@@ -73,10 +72,10 @@ int main(){
 	printf("Tipo de A na Classe: %s\n", getVarTypevalInGlobalContext ("a"));
 	printf("ArrayLevel de A na Classe: %d\n", getVarArrayLevelInGlobalContext("a"));
 
-	addCalledMethod("MethodB");
-	addArgsToCalledMethod("LONG", 0);
-	addArgsToCalledMethod("LONG", 0);
-	addArgsToCalledMethod("INT", 0);
+	addCalledMethod("MethodA");
+	addArgsToCalledMethod("t_int", 0);
+	addArgsToCalledMethod("t_int", 0);
+	addArgsToCalledMethod("t_int", 0);
 	checkMethodConversion();
 
 	checkIsBoolean(NULL);

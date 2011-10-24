@@ -43,7 +43,7 @@ int translateTypevalToInt(char * typeval){
 		return OUR_SHORT;
 	}else if(strcmp(typeval, "t_void") == 0){
 		return OUR_VOID;
-	}else{translateTypevalToInt
+	}else{
 		return OUR_EMPTY;
 	}
 }

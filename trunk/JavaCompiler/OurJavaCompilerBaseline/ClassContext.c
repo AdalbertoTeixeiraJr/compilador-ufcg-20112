@@ -769,14 +769,16 @@ char * checkMethodConversion(){
 	char * returnType;
 
 	MethodNode * methodTo = classContext->methodContext;
-	VarNode * paramsTo = methodTo->params;
+	VarNode * paramsTo;
 	VarNode * paramsFrom = calledMethod->params;
 
 	if(calledMethod != NULL){
 
 		// AT FIRST IT TRIES AN IDENTITY CONVERSION
 		while(methodTo != NULL){
+			result = YES;
 			if(strcmp(calledMethod->idName, methodTo->idName) == 0){
+				paramsTo = methodTo->params;
 				while(paramsFrom != NULL){
 					if (paramsTo != NULL){
 						if(checkIdentityConversion(paramsFrom->typeval, paramsTo->typeval) != YES){
@@ -790,13 +792,14 @@ char * checkMethodConversion(){
 					paramsFrom = paramsFrom->nextNode;
 					paramsTo = paramsTo->nextNode;
 				}
-				if (result == YES && paramsTo != NULL){
-					result = NO;
+				if (result == YES){
+					if(paramsTo != NULL){
+						result = NO;
+					}else{
+						break;
+					}
 				}
-			}else{
-				result = NO;
 			}
-
 			methodTo = methodTo->next;
 		}
 
@@ -804,11 +807,12 @@ char * checkMethodConversion(){
 			// AT SECOND checkNumericalTypeIT TRIES AN WIDENING CONVERSION
 
 			methodTo = classContext->methodContext;
-			paramsTo = methodTo->params;
 			paramsFrom = calledMethod->params;
 
 			while(methodTo != NULL){
+				result = YES;
 				if(strcmp(calledMethod->idName, methodTo->idName) == 0){
+					paramsTo = methodTo->params;
 					while(paramsFrom != NULL){
 						if (paramsTo != NULL){
 							if(checkWideningConversion(paramsFrom->typeval, paramsTo->typeval) != YES){
@@ -822,11 +826,13 @@ char * checkMethodConversion(){
 						paramsFrom = paramsFrom->nextNode;
 						paramsTo = paramsTo->nextNode;
 					}
-					if (result == YES && paramsTo != NULL){
-						result = NO;
+					if (result == YES){
+						if (paramsTo != NULL){
+							result = NO;
+						}else{
+							break;
+						}
 					}
-				}else{
-					result = NO;
 				}
 				methodTo = methodTo->next;
 			}
