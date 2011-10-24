@@ -119,11 +119,11 @@ void treatErrorResults(int val){
 		case(WRONG_BINARY_NUMERIC_EXPRESSION):
 			yyerror("Semantical Error: the binary expression is not allowed");
 			break;
-		case(WRONG_SHIFT_EXPRESSION):
-			yyerror("Semantical Error: the shift expression is not allowed");
+		case(WRONG_SHIFT_OPERATION):
+			yyerror("Semantical Error: the shift operation is not allowed");
 			break;
-		case(WRONG_EQUALITY_EXPRESSION):
-			yyerror("Semantical Error: the equality expression is not allowed");
+		case(WRONG_EQUALITY_OPERATION):
+			yyerror("Semantical Error: the equality operation is not allowed");
 			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT (%d)", val);
