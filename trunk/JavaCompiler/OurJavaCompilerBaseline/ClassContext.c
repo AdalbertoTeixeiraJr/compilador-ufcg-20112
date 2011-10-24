@@ -431,6 +431,25 @@ void addLabel(char * name){
 	CHECK_RESULT(result);
 }
 
+void checkLabelInCurrMethod(char * name){
+	int result = NO_LABEL_FOUND;
+
+	if (translateTypevalToInt(name) != OUR_EMPTY ){
+		result = OK;
+	}else{
+		LabelStruct * labels = getCurrentMethod()->labels;
+
+		while(labels != NULL){
+			if (strcmp(labels->name, name) == 0){
+				result = OK;
+				break;
+			}
+			labels = labels->next;
+		}
+	}
+	CHECK_RESULT(result);
+}
+
 
 /*************** SEMANTIC CHECK FUNCTIONS ***************/
 
@@ -904,6 +923,16 @@ void checkArrayCreationExpression(char * type){
 	CHECK_RESULT(result);
 }
 
+void checkIsEmptyOrBool(char* typeval){
+      int result = NOT_BOOL_OR_EMPTY;
+      if(strcmp(typeval, "t_empty") == 0 || strcmp(typeval, "t_boolean") == OK ){
+    	  result = OK;
+      }
+      CHECK_RESULT(result);
+}
+
+
+
 // AUXILIAR OPERATOR CHOOSER
 char * chooseBinaryOperation(char * leftType, char * rightType, char * oper){
 	int result = OK;
@@ -931,12 +960,4 @@ char * chooseBinaryOperation(char * leftType, char * rightType, char * oper){
 
 	CHECK_RESULT(result);
 	return resultType;
-}
-
-void checkIsEmptyOrBool(char* typeval){
-      int result = NOT_BOOL_OR_EMPTY;
-      if(strcmp(typeval, "t_empty") == 0 || strcmp(typeval, "t_boolean") == OK ){
-    	  result = OK;
-      }
-      CHECK_RESULT(result);
 }

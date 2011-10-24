@@ -63,6 +63,7 @@ void addArgsToCalledMethod(char * typeval, int arrayLevels);
 
 /*************** LABEL FUNCTIONS ***************/
 void addLabel(char * name);
+void checkLabelInCurrMethod(char * name);
 
 /*************** SEMANTIC CHECK FUNCTIONS ***************/
 void checkStaticClassId(char * id);

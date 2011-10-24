@@ -85,8 +85,7 @@
 #define NO_VAR_FOUND_IN_BOTH_CONTEXTS						-30
 #define REPEATED_LABEL_IN_SAME_METHOD						-31
 #define NOT_BOOL_OR_EMPTY									-32
-
-
+#define NO_LABEL_FOUND										-33
 
 /*********** PUBLIC FUNCTION DECLARATIONS ************/
 void treatErrorResults(int val);
