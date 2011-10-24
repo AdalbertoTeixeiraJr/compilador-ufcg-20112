@@ -77,5 +77,6 @@ char * checkMethodConversion();
 char * checkBinaryExpressionResultType(char * leftType, char * rightType);
 char * checkShiftOperator(char * leftType, char * shiftDistanceType);
 void checkEqualityOperator(char * leftType, char * rightType);
+void checkBitwiseLogicalOperator(char * leftType, char * rightType);
 
 #endif /* CLASSCONTEXT_H_ */
