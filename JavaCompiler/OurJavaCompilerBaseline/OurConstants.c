@@ -144,7 +144,10 @@ void treatErrorResults(int val){
 			yyerror("Semantical Error: repeated label in the same method");
 			break;
 		case(NOT_BOOL_OR_EMPTY):
-			yyerror("Semantical Error: the type is neither boolean nor empty type");
+			yyerror("Semantical Error: the type is neither boolean nor empty expression");
+			break;
+		case(NO_LABEL_FOUND):
+			yyerror("Semantical Error: there is no label with this name");
 			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT (%d)", val);
