@@ -662,7 +662,7 @@ static int checkImplicitConversion(char * typeFrom, char * typeTo){
 static int checkIntegralType(char * type){
 	int result = NO;
 	int ourType = translateTypevalToInt(type);
-	if (ourType == OUR_BYTE || ourType == OUR_SHORT || (strcmp(type, "t_int") == 0) || ourType == OUR_LONG || ourType == OUR_CHAR){
+	if (ourType == OUR_BYTE || ourType == OUR_SHORT || ourType == OUR_INT || ourType == OUR_LONG || ourType == OUR_CHAR){
 		result = OK;
 	}
 	return result;
@@ -988,9 +988,9 @@ void checkArrayCreationExpression(char * type){
 }
 
 void checkIsEmptyOrBool(char* typeval){
-      int result = NOT_BOOL_OR_EMPTY;
-      if(strcmp(typeval, "t_empty") == 0 || strcmp(typeval, "t_boolean") == OK ){
-    	  result = OK;
+      int result = OK;
+      if((strcmp(typeval, "t_empty") != 0) && (strcmp(typeval, "t_boolean") != OK)){
+    	  result = NOT_BOOL_OR_EMPTY;
       }
       CHECK_RESULT(result);
 }
