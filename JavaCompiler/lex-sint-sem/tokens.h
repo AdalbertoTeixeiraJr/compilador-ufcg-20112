@@ -177,18 +177,17 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 35 "sintatico.y"
+#line 37 "sintatico.y"
 
         char* strval;
 	char* typeval;
 	int isFinal;
-	int field_or_method; //field = 0, method = 1
 	int levels;
 
 
 
 /* Line 1676 of yacc.c  */
-#line 192 "tokens.h"
+#line 191 "tokens.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
