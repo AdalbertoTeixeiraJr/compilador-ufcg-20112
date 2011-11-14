@@ -189,7 +189,8 @@ int isMethodEqual(MethodNode * method1, MethodNode * method2){
 	if(strcmp(method1->idName, method2->idName) == 0){
 		while(params != NULL){
 			if (newParams != NULL){
-				if(strcmp(params->typeval, newParams->typeval) != 0){
+				if(strcmp(params->typeval, newParams->typeval) != 0
+						|| params->arrayLevels != newParams->arrayLevels){
 					result = NO;
 					break;
 				}
