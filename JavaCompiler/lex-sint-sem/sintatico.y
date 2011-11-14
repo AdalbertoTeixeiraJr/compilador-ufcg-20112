@@ -44,7 +44,7 @@ int method_return_level;
 %token CLASS BEG END STATIC PT_VIRGULA OPEN_COLC CLOSE_COLC EQUAL VIRGULA POINT
 %token QUESTION_MARK TWO_POINTS OR_LOGIC AND_LOGIC OPEN_PAREN CLOSE_PAREN NEW
 %token OR OR_EXC AND PLUS MINUS MULT DIV MOD INCREMENT DECREMENT NOT NOT_BIT 
-%token FOR IF ELSE WHILE CASE SWITCH DEFAULT DO BREAK CONTINUE GOTO RETURN VOID
+%token FOR IF ELSE WHILE CASE SWITCH DEFAULT DO BREAK CONTINUE GOTO RETURN 
 %token MAIN ARGS PUBLIC
 %token FINAL
 
@@ -57,7 +57,7 @@ int method_return_level;
 %token <strval> ID
 
 %token <typeval> TYPE_INT TYPE_SHORT TYPE_LONG TYPE_BYTE TYPE_BOOL 
-%token <typeval> TYPE_FLOAT TYPE_DOUBLE TYPE_CHAR TYPE_STRING
+%token <typeval> TYPE_FLOAT TYPE_DOUBLE TYPE_CHAR TYPE_STRING VOID
 
 
 %token <strval, typeval> LITERAL
@@ -112,7 +112,6 @@ int method_return_level;
 %type <typeval> primary_no_new_array
 %type <typeval> primary_no_array
 %type <typeval> lit
-//%type <typeval> conditional_opt
 %type <typeval> postfix_expression_
 %type <typeval> expression_opt
 %type <typeval> method_invocation
@@ -161,7 +160,7 @@ method_declaration :	method_header method_body {$$ = $1;};
 method_header :	identifier {insertMethod($1, method_or_field_type, array_level_def);method_return_type = method_or_field_type;method_return_level = array_level_def;array_level_def = 0;}
 					method_declarator;
 
-void_method_declaration: VOID identifier {insertMethod($2, "t_void", 0);array_level_def = 0;} method_declarator method_body ;
+void_method_declaration: VOID identifier {array_level_def = 0; insertMethod($2, $1, array_level_def);} method_declarator method_body ;
 
 method_declarator :	OPEN_PAREN { }
 			formal_parameter_list CLOSE_PAREN {checkRepeatedCurrentMethodSignature();};
@@ -208,7 +207,7 @@ variable_declarator_ :          EQUAL variable_initializer
 variable_declarator_id :        identifier {$$ = $1;}; 
 
 static_initializer :	PUBLIC STATIC VOID MAIN OPEN_PAREN TYPE_STRING OPEN_COLC CLOSE_COLC 
-			ARGS CLOSE_PAREN {insertMethod("main", "t_void",0);array_level_def = 0;} block 
+			ARGS CLOSE_PAREN {insertMethod("main", $3,0);array_level_def = 0;} block 
 			{checkRepeatedCurrentMethodSignature();}
 		|	/** empty **/;
 
@@ -272,7 +271,7 @@ relational_expression : shift_expression relational_expression_ {$$ = checkRelat
 relational_expression_ : RELOP  shift_expression relational_expression_ {$$ = checkRelationalOperator($2,$3);}
                         | /** empty **/ {$$ = "t_empty";};
 
-shift_expression : additive_expression shift_expression_ {$$ = checkShiftOperator($1,$2);};
+shift_expression : additive_expression shift_expression_ {printf("TIPOS: %s %s", $1,$2);$$ = checkShiftOperator($1,$2);};
 
 shift_expression_ : SHIFTS  additive_expression shift_expression_ {$$ = checkShiftOperator($2,$3);} 
                         | /** empty **/ {$$ = "t_empty";};
@@ -465,7 +464,10 @@ identifier_opt: identifier {$$ = $1;}
 %%
 
 int main(void) {
-	yydebug=0;
+	switch_type = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
+	method_return_type = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
+	method_or_field_type = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
+	yydebug=1;
 	return yyparse();
 }
 
