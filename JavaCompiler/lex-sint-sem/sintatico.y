@@ -30,8 +30,6 @@ int local_level;
 int final_update; //0 = not isFinal, 1 = isFinal
 int level_access;
 char* switch_type;
-char* method_return_type;
-int method_return_level;
 %}
 
 %union {
@@ -157,7 +155,7 @@ colc_opt_ : OPEN_COLC CLOSE_COLC colc_opt_ {$$ = $3+1;}
 
 method_declaration :	method_header method_body {$$ = $1;};
 
-method_header :	identifier {insertMethod($1, method_or_field_type, array_level_def);method_return_type = method_or_field_type;method_return_level = array_level_def;array_level_def = 0;}
+method_header :	identifier {insertMethod($1, method_or_field_type, array_level_def);array_level_def = 0;}
 					method_declarator;
 
 void_method_declaration: VOID identifier {array_level_def = 0; insertMethod($2, $1, array_level_def);} method_declarator method_body ;
@@ -456,7 +454,7 @@ continue_statement : CONTINUE identifier_opt {checkLabelInCurrMethod($2);} PT_VI
 
 goto_statement : GOTO identifier {checkLabelInCurrMethod($2);} PT_VIRGULA;
 
-return_statement : RETURN expression_opt {checkReturnTypeInCurrMethod(method_return_type , $2); checkEqualsArrayLevel(method_return_level, level_access+local_level);} PT_VIRGULA;
+return_statement : RETURN expression_opt {checkReturnTypeAndLevelInCurrMethod($2, level_access+local_level);} PT_VIRGULA;
 
 identifier_opt: identifier {$$ = $1;}
 	|	/** empty **/ {$$ = "id_empty";};
@@ -465,9 +463,8 @@ identifier_opt: identifier {$$ = $1;}
 
 int main(void) {
 	switch_type = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
-	method_return_type = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
 	method_or_field_type = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
-	yydebug=1;
+	yydebug=0;
 	return yyparse();
 }
 
