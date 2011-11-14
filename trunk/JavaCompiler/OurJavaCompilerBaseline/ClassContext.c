@@ -1036,7 +1036,7 @@ void checkReturnTypeAndLevelInCurrMethod(char * returnedType, int returnedLevel)
 	CHECK_RESULT(result);
 }
 
-void checkHasReturnType(int hasReturn){
+void checkHasReturn(int hasReturn){
 	int result = (hasReturn == YES)? OK: NO_RETURN_DECLARATION;
 	CHECK_RESULT(result);
 }
