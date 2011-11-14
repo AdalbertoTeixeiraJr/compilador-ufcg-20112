@@ -157,7 +157,10 @@ void treatErrorResults(int val){
 			yyerror("Semantical Error: this is not a switch expression allowed type");
 			break;
 		case(WRONG_RETURN_TYPE_IN_CURR_METHOD):
-			yyerror("Semantical Error: wrong return type");
+			yyerror("Semantical Error: the type returned does not correspond to the method declaration");
+			break;
+		case(DIFFERENT_RETURNED_ARRAY_LEVEL_IN_CURR_METHOD):
+			yyerror("Semantical Error: the returned array level does not correspond to the method declaration");
 			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT (%d)", val);
