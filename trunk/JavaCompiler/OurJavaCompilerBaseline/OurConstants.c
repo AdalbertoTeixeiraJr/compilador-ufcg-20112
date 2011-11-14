@@ -162,6 +162,9 @@ void treatErrorResults(int val){
 		case(DIFFERENT_RETURNED_ARRAY_LEVEL_IN_CURR_METHOD):
 			yyerror("Semantical Error: the returned array level does not correspond to the method declaration");
 			break;
+		case(NO_RETURN_DECLARATION):
+			yyerror("Semantical Error: this method must return a value");
+			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT (%d)", val);
 			break;

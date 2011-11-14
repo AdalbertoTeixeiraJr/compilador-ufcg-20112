@@ -1036,6 +1036,11 @@ void checkReturnTypeAndLevelInCurrMethod(char * returnedType, int returnedLevel)
 	CHECK_RESULT(result);
 }
 
+void checkHasReturnType(int hasReturn){
+	int result = (hasReturn == YES)? OK: NO_RETURN_DECLARATION;
+	CHECK_RESULT(result);
+}
+
 // AUXILIAR OPERATOR CHOOSER
 char * chooseBinaryOperation(char * leftType, char * rightType, char * oper){
 	int result = OK;
