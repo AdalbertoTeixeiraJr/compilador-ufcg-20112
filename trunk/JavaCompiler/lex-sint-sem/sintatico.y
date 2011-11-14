@@ -269,7 +269,7 @@ relational_expression : shift_expression relational_expression_ {$$ = checkRelat
 relational_expression_ : RELOP  shift_expression relational_expression_ {$$ = checkRelationalOperator($2,$3);}
                         | /** empty **/ {$$ = "t_empty";};
 
-shift_expression : additive_expression shift_expression_ {printf("TIPOS: %s %s", $1,$2);$$ = checkShiftOperator($1,$2);};
+shift_expression : additive_expression shift_expression_ {$$ = checkShiftOperator($1,$2);};
 
 shift_expression_ : SHIFTS  additive_expression shift_expression_ {$$ = checkShiftOperator($2,$3);} 
                         | /** empty **/ {$$ = "t_empty";};
@@ -464,7 +464,7 @@ identifier_opt: identifier {$$ = $1;}
 int main(void) {
 	switch_type = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
 	method_or_field_type = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
-	yydebug=0;
+	yydebug=1;
 	return yyparse();
 }
 
