@@ -81,6 +81,8 @@ int main(){
 	checkReturnTypeAndLevelInCurrMethod("t_int", 1);
 	checkReturnTypeAndLevelInCurrMethod("t_long", 0);
 
+	checkHasReturnType(NO);
+
 	displayClassContext();
 
 	printf("Tipo de A na Classe: %s\n", getVarTypevalInGlobalContext ("a"));

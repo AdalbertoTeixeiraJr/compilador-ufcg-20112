@@ -90,6 +90,7 @@
 #define WRONG_SWITCH_EXPRESSION								-34
 #define WRONG_RETURN_TYPE_IN_CURR_METHOD					-35
 #define DIFFERENT_RETURNED_ARRAY_LEVEL_IN_CURR_METHOD		-36
+#define NO_RETURN_DECLARATION								-37
 
 /*********** PUBLIC FUNCTION DECLARATIONS ************/
 void treatErrorResults(int val);
