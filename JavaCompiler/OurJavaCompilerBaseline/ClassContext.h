@@ -85,6 +85,7 @@ int checkMethodLevelsAfterConversion();
 void checkArrayCreationExpression(char * type);
 void checkIsEmptyOrBool(char* typeval);
 void checkIsSwitchExpression(char* typeval);
+void checkReturnTypeInCurrMethod(char * returnType);
 
 // BINARY COMPARISONS
 char * checkBinaryExpressionResultType(char * leftType, char * rightType);
