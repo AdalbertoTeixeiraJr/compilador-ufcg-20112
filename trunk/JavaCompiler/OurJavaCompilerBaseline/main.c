@@ -53,7 +53,7 @@ int main(){
 	insertMethod("MethodB", "INT", 0);
 	checkRepeatedCurrentMethodSignature();
 
-	insertMethod("MethodC", "INT", 0);
+	insertMethod("MethodC", "t_int", 0);
 
 	addParamInCurrMethod("Param1", "t_int", 0);
 	addParamInCurrMethod("Param2", "t_int", 0);
@@ -74,6 +74,12 @@ int main(){
 
 		checkEqualsArrayLevel(1, 2);
 		checkEqualsTypeval("CHAR", "CHAR");
+
+	checkReturnTypeAndLevelInCurrMethod("t_string", 0);
+	checkReturnTypeAndLevelInCurrMethod("t_double", 0);
+	checkReturnTypeAndLevelInCurrMethod("t_short", 0);
+	checkReturnTypeAndLevelInCurrMethod("t_int", 1);
+	checkReturnTypeAndLevelInCurrMethod("t_long", 0);
 
 	displayClassContext();
 

@@ -1017,15 +1017,20 @@ void checkIsSwitchExpression(char* typeval){
 	CHECK_RESULT(result);
 }
 
-void checkReturnTypeInCurrMethod(char * returnType){
+void checkReturnTypeAndLevelInCurrMethod(char * returnedType, int returnedLevel){
 	int result = WRONG_RETURN_TYPE_IN_CURR_METHOD;
 
 	char * methodReturnType = getCurrentMethod()->returnType;
+	int methodReturnArrayLevel = getCurrentMethod()->arrayLevels;
 
-	if (translateTypevalToInt(returnType) == OUR_EMPTY && translateTypevalToInt(methodReturnType) == OUR_VOID){
+	if (translateTypevalToInt(returnedType) == OUR_EMPTY && translateTypevalToInt(methodReturnType) == OUR_VOID){
 		result = OK;
-	} else if (checkImplicitConversion(returnType, methodReturnType) == OK){
+	} else if (checkImplicitConversion(returnedType, methodReturnType) == OK){
 		result = OK;
+	}
+
+	if (result == OK){
+		result = (returnedLevel == methodReturnArrayLevel)? OK: DIFFERENT_RETURNED_ARRAY_LEVEL_IN_CURR_METHOD;
 	}
 
 	CHECK_RESULT(result);
