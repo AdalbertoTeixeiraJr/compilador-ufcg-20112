@@ -14,7 +14,7 @@
 /**************** CONSTANT DEFINITIONS ***************/
 
 #define MAX_ID_SIZE 128
-#define MAX_TYPEVAL_SIZE 20
+#define MAX_TYPEVAL_SIZE 64
 #define ERROR_MSG_MAX_SIZE 256
 
 #define OK	1

@@ -30,12 +30,12 @@ VarNode * createVarNode(char * id, char * typeval, int isFinal, int arrayLevels)
 		// Allocate and copy the id char value
 		node->id = (char *) malloc(sizeof(char) * MAX_ID_SIZE);
 		if(node->id != NULL){
-			strcpy(node->id, id);
+			strncpy(node->id, id, MAX_ID_SIZE);
 
 			// Allocate and copy the typeval char value
 			node->typeval = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
 			if (node->typeval != NULL){
-				strcpy(node->typeval, typeval);
+				strncpy(node->typeval, typeval, MAX_TYPEVAL_SIZE);
 			}else{
 				node = NULL;
 			}
@@ -113,12 +113,12 @@ MethodNode * createMethodNode(char * idName, char * typeReturn, int arrayLevels)
 		// Allocate and copy the id char value
 		node->idName = (char *) malloc(sizeof(char) * MAX_ID_SIZE);
 		if(node->idName != NULL){
-			strcpy(node->idName, idName);
+			strncpy(node->idName, idName, MAX_ID_SIZE);
 
 			// Allocate and copy the typeval char value
 			node->returnType = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
 			if (node->returnType != NULL){
-				strcpy(node->returnType, typeReturn);
+				strncpy(node->returnType, typeReturn, MAX_TYPEVAL_SIZE);
 			}else{
 				node = NULL;
 			}
@@ -227,7 +227,7 @@ LabelStruct * createLabel(char * name){
 
 	if (label != NULL){
 		label->name = (char *) malloc(MAX_ID_SIZE);
-		strcpy(label->name, name);
+		strncpy(label->name, name, MAX_ID_SIZE);
 		label->next = NULL;
 	}
 	return label;

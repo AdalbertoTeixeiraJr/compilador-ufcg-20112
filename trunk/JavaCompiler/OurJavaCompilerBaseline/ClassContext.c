@@ -76,7 +76,7 @@ void createClassContext(char * className){
 	if (classContext != NULL){
 		classContext->name = (char *) malloc(sizeof(char) * MAX_ID_SIZE);
 		if (classContext->name != NULL){
-			strcpy(classContext->name, className);
+			strncpy(classContext->name, className, MAX_ID_SIZE);
 		}else{
 			result = CLASSCONTEX_CREATION_MALLOC_ERROR;
 		}
@@ -348,7 +348,7 @@ static StrNode * createStrNode(char * str){
 	if (node != NULL){
 		node->str = (char *) malloc(sizeof(char) * MAX_ID_SIZE);
 		if (node->str != NULL){
-			strcpy(node->str, str);
+			strncpy(node->str, str, MAX_ID_SIZE);
 		}else{
 			node = NULL;
 		}
@@ -433,7 +433,7 @@ void addCalledMethod(char * idName){
 
 	if (getFirstMethodWithId(idName) != NULL){
 
-		newMethod = createMethodNode(idName, "NULL", 0);
+		newMethod = createMethodNode(idName, "ALWAYS_NULL", 0);
 
 		if (newMethod != NULL){
 			calledMethod = newMethod;
@@ -719,6 +719,7 @@ void checkEqualsArrayLevel(int declarationLevel, int definitionLevel){
 
 void checkEqualsTypeval(char * declarationLevel, char * definitionLevel){
 	int result = (strcmp(declarationLevel,definitionLevel)== 0)? OK: DIFFERENT_TYPES;
+//	printf("t1: %s, t2: %s\n", declarationLevel, definitionLevel);
 	CHECK_RESULT(result);
 }
 
@@ -729,7 +730,7 @@ void checkIsBoolean(char * type){
 
 void checkIncrementDecrement(char * varType, char * operType, int isFinal){
 	int result = OK;
-	if (strcmp("t_empty",operType) != 0 ){
+	if (translateTypevalToInt(operType) != OUR_EMPTY ){
 		if (isFinal == YES){
 			result = WRONG_FINAL_UPDATE;
 		}else{
