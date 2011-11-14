@@ -80,27 +80,27 @@
      CONTINUE = 296,
      GOTO = 297,
      RETURN = 298,
-     VOID = 299,
-     MAIN = 300,
-     ARGS = 301,
-     PUBLIC = 302,
-     FINAL = 303,
-     EQUALOP = 304,
-     RELOP = 305,
-     SHIFTS = 306,
-     SHIFT_ASSIGN = 307,
-     ARITH_ASSIGN = 308,
-     LOGIC_ASSIGN = 309,
-     ID = 310,
-     TYPE_INT = 311,
-     TYPE_SHORT = 312,
-     TYPE_LONG = 313,
-     TYPE_BYTE = 314,
-     TYPE_BOOL = 315,
-     TYPE_FLOAT = 316,
-     TYPE_DOUBLE = 317,
-     TYPE_CHAR = 318,
-     TYPE_STRING = 319,
+     MAIN = 299,
+     ARGS = 300,
+     PUBLIC = 301,
+     FINAL = 302,
+     EQUALOP = 303,
+     RELOP = 304,
+     SHIFTS = 305,
+     SHIFT_ASSIGN = 306,
+     ARITH_ASSIGN = 307,
+     LOGIC_ASSIGN = 308,
+     ID = 309,
+     TYPE_INT = 310,
+     TYPE_SHORT = 311,
+     TYPE_LONG = 312,
+     TYPE_BYTE = 313,
+     TYPE_BOOL = 314,
+     TYPE_FLOAT = 315,
+     TYPE_DOUBLE = 316,
+     TYPE_CHAR = 317,
+     TYPE_STRING = 318,
+     VOID = 319,
      LITERAL = 320
    };
 #endif
@@ -146,27 +146,27 @@
 #define CONTINUE 296
 #define GOTO 297
 #define RETURN 298
-#define VOID 299
-#define MAIN 300
-#define ARGS 301
-#define PUBLIC 302
-#define FINAL 303
-#define EQUALOP 304
-#define RELOP 305
-#define SHIFTS 306
-#define SHIFT_ASSIGN 307
-#define ARITH_ASSIGN 308
-#define LOGIC_ASSIGN 309
-#define ID 310
-#define TYPE_INT 311
-#define TYPE_SHORT 312
-#define TYPE_LONG 313
-#define TYPE_BYTE 314
-#define TYPE_BOOL 315
-#define TYPE_FLOAT 316
-#define TYPE_DOUBLE 317
-#define TYPE_CHAR 318
-#define TYPE_STRING 319
+#define MAIN 299
+#define ARGS 300
+#define PUBLIC 301
+#define FINAL 302
+#define EQUALOP 303
+#define RELOP 304
+#define SHIFTS 305
+#define SHIFT_ASSIGN 306
+#define ARITH_ASSIGN 307
+#define LOGIC_ASSIGN 308
+#define ID 309
+#define TYPE_INT 310
+#define TYPE_SHORT 311
+#define TYPE_LONG 312
+#define TYPE_BYTE 313
+#define TYPE_BOOL 314
+#define TYPE_FLOAT 315
+#define TYPE_DOUBLE 316
+#define TYPE_CHAR 317
+#define TYPE_STRING 318
+#define VOID 319
 #define LITERAL 320
 
 

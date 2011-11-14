@@ -105,7 +105,7 @@ string_literal	["][^"]*["]
 "final"				{moveCol();return FINAL;}
 "class"				{moveCol();return CLASS;}
 "static"        		{moveCol();return STATIC;}
-"void"				{moveCol();return VOID;}
+"void"				{moveCol();return VOID;yylval.typeval ="t_void";}
 "public"			{moveCol();return PUBLIC;}
 "main"				{moveCol();return MAIN;}
 "args"				{moveCol();return ARGS;}
