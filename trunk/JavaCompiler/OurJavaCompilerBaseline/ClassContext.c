@@ -237,7 +237,7 @@ int isVarFinalInCurrMethodContext(char * id){
 }
 
 int isVarFinalInBothContexts(char * id){
-	return (isVarFinalInCurrMethodContext(id) == OK || isVarFinalInGlobalContext(id) == OK)? YES : NO;
+	return (isVarFinalInCurrMethodContext(id) == YES || isVarFinalInGlobalContext(id) == YES)? YES : NO;
 }
 
 
@@ -1042,7 +1042,7 @@ void checkHasReturn(int hasReturn){
 }
 
 void checkFinalUpdate(int isFinal){
-	int result = (isFinal == YES)? OK: WRONG_UPDATE_OF_FINAL_VAR;
+	int result = (isFinal == NO)? OK: WRONG_UPDATE_OF_FINAL_VAR;
 	CHECK_RESULT(result);
 }
 
