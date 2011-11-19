@@ -1041,6 +1041,12 @@ void checkHasReturn(int hasReturn){
 	CHECK_RESULT(result);
 }
 
+void checkFinalUpdate(int isFinal){
+	int result = (isFinal == YES)? OK: WRONG_UPDATE_OF_FINAL_VAR;
+	CHECK_RESULT(result);
+}
+
+
 // AUXILIAR OPERATOR CHOOSER
 char * chooseBinaryOperation(char * leftType, char * rightType, char * oper){
 	int result = OK;

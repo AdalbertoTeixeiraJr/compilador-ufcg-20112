@@ -165,6 +165,9 @@ void treatErrorResults(int val){
 		case(NO_RETURN_DECLARATION):
 			yyerror("Semantical Error: this method must return a value");
 			break;
+		case(WRONG_UPDATE_OF_FINAL_VAR):
+			yyerror("Semantical Error: wrong update of final variable");
+			break;
 		default:
 			printf("INTERNAL ERROR, TRY DEBUGGING IT (%d)", val);
 			break;
