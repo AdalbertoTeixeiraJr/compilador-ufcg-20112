@@ -908,9 +908,9 @@ char * checkEqualityOperator(char * leftType, char * rightType){
 
 	if (translateTypevalToInt(rightType) == OUR_EMPTY){
 		resultType = leftType;
-	}else if ((checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK) ||
-		(ourLeftType == OUR_BOOLEAN && ourRightType == OUR_BOOLEAN)	||
-		(ourLeftType == OUR_NULL && ourRightType == OUR_NULL)){
+	}else if ((ourLeftType == OUR_BOOLEAN && ourRightType == OUR_BOOLEAN)	||
+		(ourLeftType == OUR_NULL && ourRightType == OUR_NULL) ||
+		(checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK)){
 		resultType = "t_boolean";
 	}else{
 		result = WRONG_EQUALITY_OPERATION;

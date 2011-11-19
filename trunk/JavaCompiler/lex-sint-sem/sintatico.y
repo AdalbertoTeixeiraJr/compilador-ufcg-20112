@@ -36,6 +36,11 @@ int store_flag; //0 = nao faz store, 1 = faz store
 int inside_expr; //1 = esta dentro de uma expressao, entao faz load das variaveis, 0 = nao faz load
 int reg;
 int label;
+char* relop;
+char* equalop;
+char* shift;
+int i;
+char* var_atrib;
 %}
 
 %union {
@@ -237,60 +242,140 @@ variable_initializer : assignment_expression {checkEqualsArrayLevel(array_level_
 							checkEqualsTypeval(method_or_field_type,$1);}
 			| array_initializer;
 
-assignment_expression : conditional_expression;
+assignment_expression : conditional_expression {printf("TIPO FINAL:%s",$1);};
 
 conditional_expression : conditional_or_expression  {$$ = $1;}
 			| conditional_or_expression {checkIsBoolean($1);} QUESTION_MARK conditional_expression TWO_POINTS conditional_expression {$$ = checkQuestionMarkOperator($4,$6);};
 	
 conditional_or_expression : conditional_and_expression conditional_or_expression_ {$$ = checkConditionalAndOrOperator($1,$2);};
 
-conditional_or_expression_ : OR_LOGIC  conditional_and_expression conditional_or_expression_ {$$ = checkConditionalAndOrOperator($2,$3);}
+conditional_or_expression_ : {reg++;} OR_LOGIC  conditional_and_expression {reg--;
+				sprintf(ass_code,"%sADD R%d, R%d, R%d\n", ass_code, reg, reg, reg+1);
+				sprintf(ass_code,"%sJNZ label%d\n", ass_code, label);
+				sprintf(ass_code,"%sMOV R%d, #0\n", ass_code, reg);
+				sprintf(ass_code,"%sMOV label%d\n", ass_code, label+1);
+				sprintf(ass_code,"%slabel%d: MOV R%d, #1\nlabel%d: ", ass_code, label, label+1);
+				label++;
+				} conditional_or_expression_ {$$ = checkConditionalAndOrOperator($3,$5);}
                         | /** empty **/ {$$ = "t_empty";};
 
 conditional_and_expression : inclusive_or_expression conditional_and_expression_ {$$ = checkConditionalAndOrOperator($1,$2);};
 
-conditional_and_expression_ : AND_LOGIC  inclusive_or_expression conditional_and_expression_ {$$ = checkConditionalAndOrOperator($2,$3);}
+conditional_and_expression_ : {reg++;} AND_LOGIC  inclusive_or_expression {reg--;
+				sprintf(ass_code,"%sSUB R%d, R%d, R%d\n", ass_code, reg, reg, reg+1);
+				sprintf(ass_code,"%sJNZ label%d\n", ass_code, label);
+				sprintf(ass_code,"%sMOV R%d, #1\n", ass_code, reg);
+				sprintf(ass_code,"%sMOV label%d\n", ass_code, label+1);
+				sprintf(ass_code,"%slabel%d: MOV R%d, #0\nlabel%d: ", ass_code, label, label+1);
+				label++;
+				}
+				conditional_and_expression_ {$$ = checkConditionalAndOrOperator($3,$5);}
 			| /** empty **/ {$$ = "t_empty";};
 
 inclusive_or_expression : exclusive_or_expression  inclusive_or_expression_ {$$ = checkBitwiseLogicalOperator($1,$2);};
 
-inclusive_or_expression_ : OR  exclusive_or_expression inclusive_or_expression_ {$$ = checkBitwiseLogicalOperator($2,$3);}
+inclusive_or_expression_ : OR  exclusive_or_expression { reg--;
+				sprintf(ass_code,"%sOR R%d, R%d, R%d\n", ass_code, reg, reg, reg+1);
+				} inclusive_or_expression_ {$$ = checkBitwiseLogicalOperator($2,$4);}
                         | /** empty **/ {$$ = "t_empty";};
 
 exclusive_or_expression : and_expression exclusive_or_expression_ {$$ = checkBitwiseLogicalOperator($1,$2);};
 
-exclusive_or_expression_ : OR_EXC  and_expression exclusive_or_expression_ {$$ = checkBitwiseLogicalOperator($2,$3);}
+exclusive_or_expression_ :{reg++;} OR_EXC  and_expression { reg--;
+				sprintf(ass_code,"%sXOR R%d, R%d, R%d\n", ass_code, reg, reg, reg+1);
+				}
+				exclusive_or_expression_ {$$ = checkBitwiseLogicalOperator($3,$5);}
                         | /** empty **/ {$$ = "t_empty";};
 
 and_expression : equality_expression and_expression_ {$$ = checkBitwiseLogicalOperator($1,$2);};
 
-and_expression_ : AND  equality_expression and_expression_ {$$ = checkBitwiseLogicalOperator($2,$3);}
+and_expression_ : {reg++;} AND equality_expression { reg--;
+				sprintf(ass_code,"%sAND R%d, R%d, R%d\n", ass_code, reg, reg, reg+1);
+			} and_expression_ {$$ = checkBitwiseLogicalOperator($3,$5);}
                         | /** empty **/ {$$ = "t_empty";};
 
 equality_expression : relational_expression equality_expression_ {$$ = checkEqualityOperator($1,$2);};
 
-equality_expression_ : EQUALOP  relational_expression equality_expression_ {$$ = checkEqualityOperator($2,$3);}
+equality_expression_ : {reg++;} EQUALOP {strcpy(equalop,yytext);}  relational_expression {reg--;
+				if(strcmp(equalop,"==")==0){
+					sprintf(ass_code,"%sSUB R%d, R%d\n",ass_code, reg, reg, reg+1);
+					sprintf(ass_code,"%sJNZ lab%d, R%d\n",ass_code, label, reg);
+					sprintf(ass_code,"%sMOV R%d, #1\n",ass_code,reg);
+					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
+					sprintf(ass_code,"%slab%d: MOV R%d, #0\nlab%d:",ass_code,reg, label, label+1);
+					label++;		
+					}
+				else{
+					sprintf(ass_code,"%sSUB R%d, R%d\n",ass_code, reg, reg, reg+1);
+					sprintf(ass_code,"%sJNZ lab%d, R%d\n",ass_code, label,reg);
+					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
+					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
+					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
+					label++;		
+					}
+				}
+				equality_expression_ {$$ = checkEqualityOperator($4,$6);}
                         | /** empty **/ {$$ = "t_empty";};
 
 relational_expression : shift_expression relational_expression_ {$$ = checkRelationalOperator($1,$2);};
 
-relational_expression_ : {reg++;} RELOP {reg--;
-				if(strcmp(yytext,"==")==0){
+relational_expression_ : {reg++;} RELOP {strcpy(relop,yytext);} shift_expression {reg--;
+				if(strcmp(relop,">=")==0){
 					sprintf(ass_code,"%sSUB R%d, R%d\n",ass_code, reg, reg, reg+1);
-					sprintf(ass_code,"%sJNZ label%d\n",ass_code, label);
-					sprintf(ass_code,"%sMOV R%d, #1\n",ass_code,reg, label);
-					sprintf(ass_code,"%slabel%d: MOV R%d, #0\n",ass_code,reg, label);
+					sprintf(ass_code,"%sJGE lab%d, R%d\n",ass_code, label,reg);
+					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
+					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
+					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
+					label++;		
+					}
+				else if(strcmp(relop,">")==0){
+					sprintf(ass_code,"%sSUB R%d, R%d\n",ass_code, reg, reg, reg+1);
+					sprintf(ass_code,"%sJG lab%d, R%d\n",ass_code, label,reg);
+					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
+					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
+					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
+					label++;		
+					}
+				else if(strcmp(relop,"<=")==0){
+					sprintf(ass_code,"%sSUB R%d, R%d\n",ass_code, reg, reg, reg+1);
+					sprintf(ass_code,"%sJLE lab%d, R%d\n",ass_code, label,reg);
+					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
+					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
+					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
+					label++;		
+					}
+				else {
+					sprintf(ass_code,"%sSUB R%d, R%d\n",ass_code, reg, reg, reg+1);
+					sprintf(ass_code,"%sJL lab%d, R%d\n",ass_code, label,reg);
+					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
+					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
+					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
 					label++;		
 					}
 				}
-				shift_expression relational_expression_ {$$ = checkRelationalOperator($4,$5);}
+				relational_expression_ {$$ = checkRelationalOperator($4,$6);}
                         | /** empty **/ {$$ = "t_empty";};
 
 shift_expression : additive_expression shift_expression_ {$$ = checkShiftOperator($1,$2);};
 
-shift_expression_ : SHIFTS additive_expression shift_expression_ {
-				$$ = checkShiftOperator($2,$3);
+shift_expression_ : {reg++;} SHIFTS {strcpy(shift,yytext);} additive_expression {reg--;
+				//printf("TEXT: %s",last_literal);
+				if(strcmp(shift,"<<")==0){
+					for(i = 0; i<atoi(yytext); i++){
+						sprintf(ass_code, "%sMUL R%d, R%d, #2\n", ass_code, reg, reg);
+					}
+					}
+				else if (strcmp(shift,">>")==0){
+					for(i = 0; i<atoi(yytext); i++){
+						sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg, reg);
+					}
+					}
+				else {
+					sprintf(ass_code, "%sNAO SEI DESLOCAMENTO NUMERICO\n", ass_code);
+				}			
 				} 
+				shift_expression_ 
+				{$$ = checkShiftOperator($4,$6);} 
                         | /** empty **/ {$$ = "t_empty";};
 
 additive_expression : multiplicative_expression additive_expression_ {$$ = checkBinaryExpressionResultType($1,$2);};
@@ -388,9 +473,9 @@ primary_no_array : lit {$$ = $1; level_access = 0; final_update = 0;
 				level_access = getVarArrayLevelInGlobalContext($1), 
 				final_update = isVarFinalInGlobalContext($1); checkEqualsArrayLevel(0, level_access);
 				/* mudar depois o erro que imprime!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
-				if(inside_expr){
+				//if(inside_expr){
 					sprintf(ass_code,"%sLD R%d, %s\n", ass_code, reg, yytext);
-				}
+				//}
 				store_flag = 1;
 				local_var = yytext;} 
 		|	method_invocation {$$ = $1;
@@ -399,9 +484,9 @@ primary_no_array : lit {$$ = $1; level_access = 0; final_update = 0;
 		|	identifier {$$ = getVarTypevalInBothContexts($1);
 				level_access = getVarArrayLevelInBothContexts($1);
 				final_update = isVarFinalInBothContexts($1);
-				if(inside_expr){
+				//if(inside_expr){
 					sprintf(ass_code,"%sLD R%d, %s\n", ass_code, reg, $1);
-				}
+				//}
 				store_flag = 1;
 				local_var = $1;};
 
@@ -473,7 +558,7 @@ statement_expression_list_ : VIRGULA statement_expression statement_expression_l
                         |	/** empty **/;
 
 statement_expression :          primary_no_new_array assignment_operator {inside_expr = 1;} assignment_expression {
-					checkIncrementDecrement($1, "t_update", final_update);
+					checkFinalUpdate(final_update);
 					inside_expr = 0;}
                         |       preincrement_expression 
                         |       post_incr_decrement_expression 
@@ -562,7 +647,8 @@ continue_statement : CONTINUE identifier_opt {checkLabelInCurrMethod($2);} PT_VI
 
 goto_statement : GOTO identifier {checkLabelInCurrMethod($2);} PT_VIRGULA;
 
-return_statement : RETURN expression_opt {checkReturnTypeAndLevelInCurrMethod($2, level_access+local_level);} PT_VIRGULA;
+return_statement : RETURN expression_opt {checkReturnTypeAndLevelInCurrMethod($2, level_access+local_level);
+	} PT_VIRGULA;
 
 identifier_opt: identifier {$$ = $1;}
 	|	/** empty **/ {$$ = "id_empty";};
@@ -573,7 +659,11 @@ int main(void) {
 	switch_type = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
 	method_or_field_type = (char *) malloc(sizeof(char) * MAX_TYPEVAL_SIZE);
 	ass_code = (char *) malloc(4096);
-	local_var = (char *) malloc(4096);
+	local_var = (char *) malloc(100);
+	relop = (char *) malloc(3);
+	equalop = (char *) malloc(3);
+	shift = (char *) malloc(6);
+	var_atrib = (char *) malloc(100);
 	reg = 0; label = 0;
 	yydebug=0;
 	return yyparse();
