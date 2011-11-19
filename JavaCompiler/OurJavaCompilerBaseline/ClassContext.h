@@ -87,6 +87,7 @@ void checkIsEmptyOrBool(char* typeval);
 void checkIsSwitchExpression(char* typeval);
 void checkReturnTypeAndLevelInCurrMethod(char * returnedType, int returnedLevel);
 void checkHasReturn(int hasReturn);
+void checkFinalUpdate(int finalUpdate);
 
 // BINARY COMPARISONS
 char * checkBinaryExpressionResultType(char * leftType, char * rightType);
