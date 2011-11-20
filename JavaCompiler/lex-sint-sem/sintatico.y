@@ -660,7 +660,7 @@ break_statement : BREAK identifier_opt {checkLabelInCurrMethod($2);} PT_VIRGULA;
 continue_statement : CONTINUE identifier_opt {checkLabelInCurrMethod($2);} PT_VIRGULA;
 
 goto_statement : GOTO identifier {checkLabelInCurrMethod($2);
-			sprintf(ass_code,"%sMOV %s\n",ass_code, $2);} PT_VIRGULA;
+			sprintf(ass_code,"%sJMP %s\n",ass_code, $2);} PT_VIRGULA;
 
 return_statement : RETURN expression_opt {checkReturnTypeAndLevelInCurrMethod($2, level_access+local_level);
 	} PT_VIRGULA;
