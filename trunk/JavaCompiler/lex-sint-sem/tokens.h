@@ -46,45 +46,45 @@
      PT_VIRGULA = 262,
      OPEN_COLC = 263,
      CLOSE_COLC = 264,
-     EQUAL = 265,
-     VIRGULA = 266,
-     POINT = 267,
-     QUESTION_MARK = 268,
-     TWO_POINTS = 269,
-     OR_LOGIC = 270,
-     AND_LOGIC = 271,
-     OPEN_PAREN = 272,
-     CLOSE_PAREN = 273,
-     NEW = 274,
-     OR = 275,
-     OR_EXC = 276,
-     AND = 277,
-     PLUS = 278,
-     MINUS = 279,
-     MULT = 280,
-     DIV = 281,
-     MOD = 282,
-     INCREMENT = 283,
-     DECREMENT = 284,
-     NOT = 285,
-     NOT_BIT = 286,
-     FOR = 287,
-     IF = 288,
-     ELSE = 289,
-     WHILE = 290,
-     CASE = 291,
-     SWITCH = 292,
-     DEFAULT = 293,
-     DO = 294,
-     BREAK = 295,
-     CONTINUE = 296,
-     GOTO = 297,
-     RETURN = 298,
-     MAIN = 299,
-     ARGS = 300,
-     PUBLIC = 301,
-     FINAL = 302,
-     EQUALOP = 303,
+     VIRGULA = 265,
+     POINT = 266,
+     QUESTION_MARK = 267,
+     TWO_POINTS = 268,
+     OR_LOGIC = 269,
+     AND_LOGIC = 270,
+     OPEN_PAREN = 271,
+     CLOSE_PAREN = 272,
+     NEW = 273,
+     OR = 274,
+     OR_EXC = 275,
+     AND = 276,
+     PLUS = 277,
+     MINUS = 278,
+     MULT = 279,
+     DIV = 280,
+     MOD = 281,
+     INCREMENT = 282,
+     DECREMENT = 283,
+     NOT = 284,
+     NOT_BIT = 285,
+     FOR = 286,
+     IF = 287,
+     ELSE = 288,
+     WHILE = 289,
+     CASE = 290,
+     SWITCH = 291,
+     DEFAULT = 292,
+     DO = 293,
+     BREAK = 294,
+     CONTINUE = 295,
+     GOTO = 296,
+     RETURN = 297,
+     MAIN = 298,
+     ARGS = 299,
+     PUBLIC = 300,
+     FINAL = 301,
+     EQUALOP = 302,
+     EQUAL = 303,
      RELOP = 304,
      SHIFTS = 305,
      SHIFT_ASSIGN = 306,
@@ -112,45 +112,45 @@
 #define PT_VIRGULA 262
 #define OPEN_COLC 263
 #define CLOSE_COLC 264
-#define EQUAL 265
-#define VIRGULA 266
-#define POINT 267
-#define QUESTION_MARK 268
-#define TWO_POINTS 269
-#define OR_LOGIC 270
-#define AND_LOGIC 271
-#define OPEN_PAREN 272
-#define CLOSE_PAREN 273
-#define NEW 274
-#define OR 275
-#define OR_EXC 276
-#define AND 277
-#define PLUS 278
-#define MINUS 279
-#define MULT 280
-#define DIV 281
-#define MOD 282
-#define INCREMENT 283
-#define DECREMENT 284
-#define NOT 285
-#define NOT_BIT 286
-#define FOR 287
-#define IF 288
-#define ELSE 289
-#define WHILE 290
-#define CASE 291
-#define SWITCH 292
-#define DEFAULT 293
-#define DO 294
-#define BREAK 295
-#define CONTINUE 296
-#define GOTO 297
-#define RETURN 298
-#define MAIN 299
-#define ARGS 300
-#define PUBLIC 301
-#define FINAL 302
-#define EQUALOP 303
+#define VIRGULA 265
+#define POINT 266
+#define QUESTION_MARK 267
+#define TWO_POINTS 268
+#define OR_LOGIC 269
+#define AND_LOGIC 270
+#define OPEN_PAREN 271
+#define CLOSE_PAREN 272
+#define NEW 273
+#define OR 274
+#define OR_EXC 275
+#define AND 276
+#define PLUS 277
+#define MINUS 278
+#define MULT 279
+#define DIV 280
+#define MOD 281
+#define INCREMENT 282
+#define DECREMENT 283
+#define NOT 284
+#define NOT_BIT 285
+#define FOR 286
+#define IF 287
+#define ELSE 288
+#define WHILE 289
+#define CASE 290
+#define SWITCH 291
+#define DEFAULT 292
+#define DO 293
+#define BREAK 294
+#define CONTINUE 295
+#define GOTO 296
+#define RETURN 297
+#define MAIN 298
+#define ARGS 299
+#define PUBLIC 300
+#define FINAL 301
+#define EQUALOP 302
+#define EQUAL 303
 #define RELOP 304
 #define SHIFTS 305
 #define SHIFT_ASSIGN 306

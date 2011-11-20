@@ -53,7 +53,7 @@ char* method_name;
 	int levels;
 }
 
-%token CLASS BEG END STATIC PT_VIRGULA OPEN_COLC CLOSE_COLC EQUAL VIRGULA POINT
+%token CLASS BEG END STATIC PT_VIRGULA OPEN_COLC CLOSE_COLC  VIRGULA POINT
 %token QUESTION_MARK TWO_POINTS OR_LOGIC AND_LOGIC OPEN_PAREN CLOSE_PAREN NEW
 %token OR OR_EXC AND PLUS MINUS MULT DIV MOD INCREMENT DECREMENT NOT NOT_BIT 
 %token FOR IF ELSE WHILE CASE SWITCH DEFAULT DO BREAK CONTINUE GOTO RETURN 
@@ -61,6 +61,7 @@ char* method_name;
 %token FINAL
 
 %token <strval> EQUALOP
+%token <strval> EQUAL
 %token <strval> RELOP
 %token <strval> SHIFTS
 %token <strval> SHIFT_ASSIGN
@@ -92,6 +93,7 @@ char* method_name;
 %type <levels> colc_opt_
 %type <levels> dim_exprs
 %type <levels> dim_expr_opt
+%type <strval> assignment_operator
 
 /** Expressions **/
 %type <typeval> assignment_expression
@@ -358,7 +360,6 @@ relational_expression_ : {reg++;} RELOP {strcpy(relop,yytext);} shift_expression
 shift_expression : additive_expression shift_expression_ {$$ = checkShiftOperator($1,$2);};
 
 shift_expression_ : {reg++;} SHIFTS {strcpy(shift,yytext);} additive_expression {reg--;
-				//printf("TEXT: %s",last_literal);
 				if(strcmp(shift,"<<")==0){
 					for(i = 0; i<atoi(yytext); i++){
 						sprintf(ass_code, "%sMUL R%d, R%d, #2\n", ass_code, reg, reg);
@@ -470,7 +471,7 @@ primary_no_array : lit {$$ = $1; level_access = 0; final_update = 0;
 				} else if(strcmp(yytext,"false") == 0){
 					sprintf(ass_code, "%sLD R%d, #0\n", ass_code, reg);
 				} else {
-					sprintf(ass_code, "%sLD R%d, %s\n", ass_code, reg, yytext);
+					sprintf(ass_code, "%sLD R%d, #%s\n", ass_code, reg, yytext);
 				}
 				store_flag = 0;}
 		| 	field_access {$$ = getVarTypevalInGlobalContext($1); 
@@ -574,8 +575,17 @@ statement_expression_list_ : VIRGULA statement_expression statement_expression_l
 
 statement_expression :          incr_decrement_expression {inside_expr = 0;}
                         |       primary_no_new_array assignment_operator {inside_expr = 1;} assignment_expression {
-					checkFinalUpdate(final_update);
-					inside_expr = 0;	
+				checkFinalUpdate(final_update);
+				inside_expr = 0;
+				if(strcmp($2,"+=")==0)
+						 sprintf(ass_code,"%sLD R%d, %s\nADD R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	else if(strcmp($2,"-=")==0)
+						 sprintf(ass_code,"%sLD R%d, %s\nSUB R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	else if(strcmp($2,"/=")==0)
+						 sprintf(ass_code,"%sLD R%d, %s\nDIV R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	else if(strcmp($2,"*=")==0)
+						 sprintf(ass_code,"%sLD R%d, %s\nMUL R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	else if(strcmp($2,"%=")==0)
+						 sprintf(ass_code,"%sLD R%d, %s\nMOD R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	else if(strcmp($2,"&=")==0)
+						 sprintf(ass_code,"%sLD R%d, %s\nAND R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	else if(strcmp($2,"|=")==0)
+						 sprintf(ass_code,"%sLD R%d, %s\nOR R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	else if(strcmp($2,"^=")==0)
+						 sprintf(ass_code,"%sLD R%d, %s\nXOR R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);
 				};
 
 incr_decrement_expression : preincrement_expression 
