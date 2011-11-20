@@ -258,10 +258,10 @@ conditional_or_expression : conditional_and_expression conditional_or_expression
 
 conditional_or_expression_ : {reg++;} OR_LOGIC  conditional_and_expression {reg--;
 				sprintf(ass_code,"%sADD R%d, R%d, R%d\n", ass_code, reg, reg, reg+1);
-				sprintf(ass_code,"%sJNZ label%d\n", ass_code, label);
+				sprintf(ass_code,"%sJNZ lab%d, R%d\n", ass_code, label);
 				sprintf(ass_code,"%sMOV R%d, #0\n", ass_code, reg);
-				sprintf(ass_code,"%sJMP label%d\n", ass_code, label+1);
-				sprintf(ass_code,"%slabel%d: MOV R%d, #1\nlabel%d: ", ass_code, label, label+1);
+				sprintf(ass_code,"%sJMP lab%d\n", ass_code, label+1);
+				sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d: ", ass_code, label, label+1);
 				label++;
 				} conditional_or_expression_ {$$ = checkConditionalAndOrOperator($3,$5);}
                         | /** empty **/ {$$ = "t_empty";};
@@ -270,10 +270,10 @@ conditional_and_expression : inclusive_or_expression conditional_and_expression_
 
 conditional_and_expression_ : {reg++;} AND_LOGIC  inclusive_or_expression {reg--;
 				sprintf(ass_code,"%sSUB R%d, R%d, R%d\n", ass_code, reg, reg, reg+1);
-				sprintf(ass_code,"%sJNZ label%d\n", ass_code, label);
+				sprintf(ass_code,"%sJNZ lab%d, R%d\n", ass_code, label);
 				sprintf(ass_code,"%sMOV R%d, #1\n", ass_code, reg);
-				sprintf(ass_code,"%sJMP label%d\n", ass_code, label+1);
-				sprintf(ass_code,"%slabel%d: MOV R%d, #0\nlabel%d: ", ass_code, label, label+1);
+				sprintf(ass_code,"%sJMP lab%d\n", ass_code, label+1);
+				sprintf(ass_code,"%slab%d: MOV R%d, #0\nlab%d: ", ass_code, label, label+1);
 				label++;
 				}
 				conditional_and_expression_ {$$ = checkConditionalAndOrOperator($3,$5);}
