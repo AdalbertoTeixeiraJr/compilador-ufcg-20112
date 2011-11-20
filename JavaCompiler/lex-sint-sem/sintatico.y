@@ -565,15 +565,23 @@ statement_expression :          incr_decrement_expression {inside_expr = 0;}
                         |       primary_no_new_array assignment_operator {inside_expr = 1;} assignment_expression {
 				checkFinalUpdate(final_update);
 				inside_expr = 0;
-				if(strcmp($2,"+=")==0)
-						 sprintf(ass_code,"%sLD R%d, %s\nADD R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	else if(strcmp($2,"-=")==0)
-						 sprintf(ass_code,"%sLD R%d, %s\nSUB R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	else if(strcmp($2,"/=")==0)
-						 sprintf(ass_code,"%sLD R%d, %s\nDIV R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	else if(strcmp($2,"*=")==0)
-						 sprintf(ass_code,"%sLD R%d, %s\nMUL R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	else if(strcmp($2,"%=")==0)
-						 sprintf(ass_code,"%sLD R%d, %s\nMOD R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	else if(strcmp($2,"&=")==0)
-						 sprintf(ass_code,"%sLD R%d, %s\nAND R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	else if(strcmp($2,"|=")==0)
-						 sprintf(ass_code,"%sLD R%d, %s\nOR R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	else if(strcmp($2,"^=")==0)
+				if(strcmp($2,"+=")==0){
+						 sprintf(ass_code,"%sLD R%d, %s\nADD R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
+				}else if(strcmp($2,"-=")==0){
+						 sprintf(ass_code,"%sLD R%d, %s\nSUB R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
+				}else if(strcmp($2,"/=")==0){
+						 sprintf(ass_code,"%sLD R%d, %s\nDIV R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
+				}else if(strcmp($2,"*=")==0){
+						 sprintf(ass_code,"%sLD R%d, %s\nMUL R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
+				}else if(strcmp($2,"%=")==0){
+						 sprintf(ass_code,"%sLD R%d, %s\nMOV R%d, R%d MOD R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
+				}else if(strcmp($2,"&=")==0){
+						 sprintf(ass_code,"%sLD R%d, %s\nAND R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
+				}else if(strcmp($2,"|=")==0){
+						 sprintf(ass_code,"%sLD R%d, %s\nOR R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
+				}else if(strcmp($2,"^=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nXOR R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);
+				}
 				};
 
 incr_decrement_expression : preincrement_expression 
