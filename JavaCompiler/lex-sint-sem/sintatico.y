@@ -328,33 +328,19 @@ relational_expression : shift_expression relational_expression_ {$$ = checkRelat
 
 relational_expression_ : {reg++;} RELOP {strcpy(relop,yytext);} shift_expression {reg--;
 				if(strcmp(relop,">=")==0){
-					sprintf(ass_code,"%sJGE lab%d, R%d, R%d\n",ass_code, label,reg, reg+1);
-					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
-					sprintf(ass_code,"%sJMP lab%d\n", ass_code, label+1);
-					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
-					label++;		
-					}
-				else if(strcmp(relop,">")==0){
+					sprintf(ass_code,"%sJGE lab%d, R%d, R%d\n",ass_code, label,reg, reg+1);	
+				}else if(strcmp(relop,">")==0){
 					sprintf(ass_code,"%sJG lab%d, R%d, R%d\n",ass_code, label,reg, reg+1);
-					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
-					sprintf(ass_code,"%sJMP lab%d\n", ass_code, label+1);
-					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
-					label++;		
-					}
-				else if(strcmp(relop,"<=")==0){
+				}else if(strcmp(relop,"<=")==0){
 					sprintf(ass_code,"%sJLE lab%d, R%d, R%d\n",ass_code, label,reg, reg+1);
-					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
-					sprintf(ass_code,"%sJMP lab%d\n", ass_code, label+1);
-					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
-					label++;		
-					}
-				else {
+				}else {
 					sprintf(ass_code,"%sJL lab%d, R%d, R%d\n",ass_code, label,reg, reg+1);
-					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
-					sprintf(ass_code,"%sJMP lab%d\n", ass_code, label+1);
-					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
-					label++;		
-					}
+				}
+				
+				sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
+				sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
+				sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
+				label++;	
 				}
 				relational_expression_ {$$ = checkRelationalOperator($4,$6);}
                         | /** empty **/ {$$ = "t_empty";};
