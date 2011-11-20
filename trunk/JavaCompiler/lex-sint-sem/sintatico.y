@@ -35,12 +35,15 @@ char* local_var;
 int store_flag; //0 = nao faz store, 1 = faz store 
 int inside_expr; //1 = esta dentro de uma expressao, entao faz load das variaveis, 0 = nao faz load
 int reg;
+int reg_count;
 int label;
 char* relop;
 char* equalop;
 char* shift;
 int i;
 char* var_atrib;
+int atrib;
+char* method_name;
 %}
 
 %union {
@@ -168,7 +171,7 @@ colc_opt_ : OPEN_COLC CLOSE_COLC colc_opt_ {$$ = $3+1;}
 
 method_declaration :	method_header method_body {$$ = $1;};
 
-method_header :	identifier {insertMethod($1, method_or_field_type, array_level_def);array_level_def = 0;}
+method_header :	identifier {insertMethod($1, method_or_field_type, array_level_def);array_level_def = 0; }
 					method_declarator;
 
 void_method_declaration: VOID identifier {array_level_def = 0; insertMethod($2, $1, array_level_def);} method_declarator method_body ;
@@ -242,7 +245,7 @@ variable_initializer : assignment_expression {checkEqualsArrayLevel(array_level_
 							checkEqualsTypeval(method_or_field_type,$1);}
 			| array_initializer;
 
-assignment_expression : conditional_expression {printf("TIPO FINAL:%s",$1);};
+assignment_expression : conditional_expression;
 
 conditional_expression : conditional_or_expression  {$$ = $1;}
 			| conditional_or_expression {checkIsBoolean($1);} QUESTION_MARK conditional_expression TWO_POINTS conditional_expression {$$ = checkQuestionMarkOperator($4,$6);};
@@ -321,32 +324,28 @@ relational_expression : shift_expression relational_expression_ {$$ = checkRelat
 
 relational_expression_ : {reg++;} RELOP {strcpy(relop,yytext);} shift_expression {reg--;
 				if(strcmp(relop,">=")==0){
-					sprintf(ass_code,"%sSUB R%d, R%d\n",ass_code, reg, reg, reg+1);
-					sprintf(ass_code,"%sJGE lab%d, R%d\n",ass_code, label,reg);
+					sprintf(ass_code,"%sJGE lab%d, R%d, R%d\n",ass_code, label,reg, reg+1);
 					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
 					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
 					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
 					label++;		
 					}
 				else if(strcmp(relop,">")==0){
-					sprintf(ass_code,"%sSUB R%d, R%d\n",ass_code, reg, reg, reg+1);
-					sprintf(ass_code,"%sJG lab%d, R%d\n",ass_code, label,reg);
+					sprintf(ass_code,"%sJG lab%d, R%d, R%d\n",ass_code, label,reg, reg+1);
 					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
 					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
 					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
 					label++;		
 					}
 				else if(strcmp(relop,"<=")==0){
-					sprintf(ass_code,"%sSUB R%d, R%d\n",ass_code, reg, reg, reg+1);
-					sprintf(ass_code,"%sJLE lab%d, R%d\n",ass_code, label,reg);
+					sprintf(ass_code,"%sJLE lab%d, R%d, R%d\n",ass_code, label,reg, reg+1);
 					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
 					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
 					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
 					label++;		
 					}
 				else {
-					sprintf(ass_code,"%sSUB R%d, R%d\n",ass_code, reg, reg, reg+1);
-					sprintf(ass_code,"%sJL lab%d, R%d\n",ass_code, label,reg);
+					sprintf(ass_code,"%sJL lab%d, R%d, R%d\n",ass_code, label,reg, reg+1);
 					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
 					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
 					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
@@ -415,50 +414,55 @@ multiplicative_expression_ : { reg++;} MULT  unary_expression {reg--;
 unary_expression : 	INCREMENT unary_expression {
 				checkNumericalType($2);$$ = $2;
 				sprintf(ass_code, "%sINC R%d, R%d\n", ass_code, reg, reg);
-				/*if(store_flag) {
-						strcat(ass_code,"MOV ");
-						strcat(ass_code,local_var);
-						strcat(ass_code,", R8 \n");
-					}*/
 				}
 		|	DECREMENT unary_expression  {
 				checkNumericalType($2);$$ = $2;
 				sprintf(ass_code, "%sDEC R%d, R%d\n", ass_code, reg, reg);
 				/*if(store_flag) {
-						strcat(ass_code,"MOV ");
-						strcat(ass_code,local_var);
-						strcat(ass_code,", R8 \n");
+						sprintf(ass_code,"%sST %s, R%d\n", ass_code, local_var, reg);
 					}*/
 				}
 		|	PLUS unary_expression  {
 				checkNumericalType($2);$$ = $2;
+				if(store_flag) store_flag=0;
 				}
 		|	MINUS unary_expression  {
 				checkNumericalType($2);$$ = $2;
 				sprintf(ass_code, "%sNEG R%d, R%d\n", ass_code, reg, reg);
+				if(store_flag) store_flag=0;
 				}
-		|	postfix_expression {$$ = $1;}
+		|	postfix_expression {$$ = $1;
+					if(store_flag) {
+						sprintf(ass_code,"%sST %s, R%d\n", ass_code, local_var, reg);
+					}
+				}
 		|	NOT unary_expression {
 				checkIsBoolean($2);$$ = $2;
+				if(store_flag) store_flag=0;
 				sprintf(ass_code, "%sXOR R%d, R%d, #1\n",ass_code, reg, reg);				
 				}
 		|	NOT_BIT unary_expression {
 				checkNumericalType($2);$$ = $2;
+				if(store_flag) store_flag=0;
 				sprintf(ass_code, "%sNOT R%d, R%d\n", ass_code, reg, reg);
 				}
-		|	cast_expression {$$ = $1;}
-		|	OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = $2;};
+		|	cast_expression {$$ = $1;if(store_flag) store_flag=0;}
+		|	OPEN_PAREN conditional_expression CLOSE_PAREN {$$ = $2;if(store_flag) store_flag=0;};
 
 cast_expression : OPEN_PAREN primitive_type CLOSE_PAREN unary_expression {checkCastingConversion($4,$2); $$ = $2;};
 
-postfix_expression : primary_no_array postfix_expression_  {$$ = $1;
-				checkIncrementDecrement($1, $2, final_update);};	
+postfix_expression :  primary_no_array {
+				if(!inside_expr) sprintf(ass_code,"%sLD R%d, %s\n",ass_code, reg, var_atrib);
+			}
+			postfix_expression_  {$$ = $1;
+			checkIncrementDecrement($1, $3, final_update);
+			};	
 
 postfix_expression_ : INCREMENT {sprintf(ass_code, "%sINC R%d, R%d\n", ass_code, reg, reg);}
 			postfix_expression_ {$$ = "t_inc_dec";}
 			| DECREMENT {sprintf(ass_code, "%sDEC R%d, R%d\n", ass_code, reg, reg);}
 			postfix_expression_ {$$ = "t_inc_dec";}
-                        | /** empty **/ {$$ = "t_empty";};
+                        | /** empty **/ {$$ = "t_empty"; if(store_flag) store_flag=0;};
 
 primary_no_array : lit {$$ = $1; level_access = 0; final_update = 0;
 				if(strcmp(yytext,"true") == 0){
@@ -473,9 +477,11 @@ primary_no_array : lit {$$ = $1; level_access = 0; final_update = 0;
 				level_access = getVarArrayLevelInGlobalContext($1), 
 				final_update = isVarFinalInGlobalContext($1); checkEqualsArrayLevel(0, level_access);
 				/* mudar depois o erro que imprime!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
-				//if(inside_expr){
+				if(inside_expr){
 					sprintf(ass_code,"%sLD R%d, %s\n", ass_code, reg, yytext);
-				//}
+				} else {
+					strcpy(var_atrib, yytext);
+				}
 				store_flag = 1;
 				local_var = yytext;} 
 		|	method_invocation {$$ = $1;
@@ -484,9 +490,11 @@ primary_no_array : lit {$$ = $1; level_access = 0; final_update = 0;
 		|	identifier {$$ = getVarTypevalInBothContexts($1);
 				level_access = getVarArrayLevelInBothContexts($1);
 				final_update = isVarFinalInBothContexts($1);
-				//if(inside_expr){
+				if(inside_expr){
 					sprintf(ass_code,"%sLD R%d, %s\n", ass_code, reg, $1);
-				//}
+				} else {
+					strcpy(var_atrib, $1);
+				}
 				store_flag = 1;
 				local_var = $1;};
 
@@ -494,14 +502,19 @@ field_access : identifier  {checkStaticClassId($1);} POINT identifier {$$ = $4;}
 
 lit : LITERAL;
 
-method_invocation : 	identifier {addCalledMethod($1);} OPEN_PAREN argument_list CLOSE_PAREN {$$ = checkMethodConversion();}
-		|	field_access OPEN_PAREN {addCalledMethod($1);} argument_list CLOSE_PAREN {$$ = checkMethodConversion();} ;
+method_invocation : 	identifier {addCalledMethod($1);reg_count = reg; method_name = $1;} OPEN_PAREN argument_list CLOSE_PAREN {$$ = checkMethodConversion();}
+		|	field_access OPEN_PAREN {addCalledMethod($1);reg_count = reg; method_name = $1;} argument_list CLOSE_PAREN {$$ = checkMethodConversion();} ;
 
 argument_list : 	assignment_expression {addArgsToCalledMethod($1,level_access);} argument_list_
 		|	argument_list_;
 
-argument_list_ : 	VIRGULA assignment_expression {addArgsToCalledMethod($2,level_access);} argument_list_ 
-                | 	/** empty **/;
+argument_list_ : 	VIRGULA assignment_expression {addArgsToCalledMethod($2,level_access);
+					sprintf(ass_code,"%s, R%d",ass_code, reg); reg++;} argument_list_ 
+                | 	/** empty **/ {sprintf(ass_code,"%sinvoke %s",ass_code, method_name); 
+				for(i = reg_count; i<=reg;i++){
+					sprintf(ass_code,"%s, R%d",ass_code, i);
+				} sprintf(ass_code,"%s\n",ass_code);reg = reg_count;
+			};
 
 array_initializer :	BEG  {local_level++;} variable_initializers  virgula_opt END {local_level--;}
 			|	array_creation_expression ; 
@@ -533,7 +546,8 @@ dim_expr_opt: dim_expr dim_expr_opt {$$ = $2+1;}
 	|	/** empty **/ {$$ = 0;};
 
 statement :	statement_without_trailing_substatement
-	|       identifier {addLabel($1);} TWO_POINTS statement
+	|       identifier {addLabel($1);
+			sprintf(ass_code,"%s%s: ",ass_code, $1);} TWO_POINTS statement
 	|       IF OPEN_PAREN assignment_expression {checkIsBoolean($3);} CLOSE_PAREN optional_else
 	|       WHILE OPEN_PAREN assignment_expression {checkIsBoolean($3);} CLOSE_PAREN statement 
 	|       FOR OPEN_PAREN for_init PT_VIRGULA expression_opt {checkIsEmptyOrBool($5);} PT_VIRGULA for_update_opt CLOSE_PAREN  statement;
@@ -542,7 +556,8 @@ optional_else : statement
 	|	statement_no_short_if ELSE statement;
 
 statement_no_short_if :         statement_without_trailing_substatement 
-                        |       identifier {addLabel($1);} TWO_POINTS statement_no_short_if 
+                        |       identifier {addLabel($1);
+					sprintf(ass_code,"%s%s: ",ass_code, $1);} TWO_POINTS statement_no_short_if 
                         |       IF OPEN_PAREN  assignment_expression {checkIsBoolean($3);} CLOSE_PAREN  statement_no_short_if ELSE statement_no_short_if 
                         |       WHILE OPEN_PAREN assignment_expression {checkIsBoolean($3);} CLOSE_PAREN statement_no_short_if 
                         |       FOR OPEN_PAREN for_init PT_VIRGULA expression_opt {checkIsEmptyOrBool($5);} PT_VIRGULA for_update_opt CLOSE_PAREN statement_no_short_if;
@@ -557,19 +572,19 @@ statement_expression_list : statement_expression statement_expression_list_     
 statement_expression_list_ : VIRGULA statement_expression statement_expression_list_    
                         |	/** empty **/;
 
-statement_expression :          primary_no_new_array assignment_operator {inside_expr = 1;} assignment_expression {
+statement_expression :          incr_decrement_expression {inside_expr = 0;}
+                        |       primary_no_new_array assignment_operator {inside_expr = 1;} assignment_expression {
 					checkFinalUpdate(final_update);
-					inside_expr = 0;}
-                        |       preincrement_expression 
+					inside_expr = 0;	
+				};
+
+incr_decrement_expression : preincrement_expression 
                         |       post_incr_decrement_expression 
                         |       predecrement_expression;
 
 preincrement_expression : INCREMENT unary_expression {
 				checkIncrementDecrement($2, "t_inc", final_update);
 				sprintf(ass_code, "%sINC R%d, R%d\n",ass_code, reg, reg);
-				if(store_flag) {
-						sprintf("%sMOV %s, R%d\n", ass_code, local_var, reg);
-					}
 				};
 				
 
@@ -578,9 +593,6 @@ post_incr_decrement_expression : postfix_expression;
 predecrement_expression : DECREMENT unary_expression {
 				checkIncrementDecrement($2, "t_dec", final_update);
 				sprintf(ass_code, "%sDEC R%d, R%d\n", ass_code, reg, reg);
-				if(store_flag) {
-						sprintf(ass_code,"%sMOV %s, R%d\n", ass_code, local_var, reg);
-					}
 				};
 
 primary_no_new_array : 	primary_no_array 
@@ -611,11 +623,7 @@ statement_without_trailing_substatement : block
 
 empty_statement : PT_VIRGULA;
 
-expression_statement :	statement_expression {
-				if(store_flag) {
-						sprintf(ass_code, "%sMOV %s, R%d\n", ass_code, local_var, reg);
-					}
-				}
+expression_statement :	statement_expression {sprintf(ass_code, "%sMOV %s, R%d\n", ass_code, var_atrib, reg);}
 				PT_VIRGULA;
 
 switch_statement : SWITCH OPEN_PAREN assignment_expression {checkIsSwitchExpression($3);switch_type = $3;} CLOSE_PAREN switch_block;
@@ -645,7 +653,8 @@ break_statement : BREAK identifier_opt {checkLabelInCurrMethod($2);} PT_VIRGULA;
 
 continue_statement : CONTINUE identifier_opt {checkLabelInCurrMethod($2);} PT_VIRGULA;
 
-goto_statement : GOTO identifier {checkLabelInCurrMethod($2);} PT_VIRGULA;
+goto_statement : GOTO identifier {checkLabelInCurrMethod($2);
+			sprintf(ass_code,"%sMOV %s\n",ass_code, $2);} PT_VIRGULA;
 
 return_statement : RETURN expression_opt {checkReturnTypeAndLevelInCurrMethod($2, level_access+local_level);
 	} PT_VIRGULA;
@@ -664,7 +673,9 @@ int main(void) {
 	equalop = (char *) malloc(3);
 	shift = (char *) malloc(6);
 	var_atrib = (char *) malloc(100);
+	method_name = (char *) malloc(100);
 	reg = 0; label = 0;
+	inside_expr = 0;
 	yydebug=0;
 	return yyparse();
 }
