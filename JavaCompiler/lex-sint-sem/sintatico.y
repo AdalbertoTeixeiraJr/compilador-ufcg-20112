@@ -141,7 +141,7 @@ class_declaration :	CLASS identifier {createClassContext($2);setCurrentContext(G
 
 identifier :	ID;
 
-class_body :	BEG class_body_declaration END;
+class_body :	BEG {sprintf(ass_code,"%s.data\n",ass_code);} class_body_declaration END;
 
 class_body_declaration : class_member_declaration_opt static_initializer /*class_member_declaration_opt*/ ;
 
@@ -223,7 +223,9 @@ variable_declarator_ :          EQUAL variable_initializer
 variable_declarator_id :        identifier {$$ = $1;}; 
 
 static_initializer :	PUBLIC STATIC VOID MAIN OPEN_PAREN TYPE_STRING OPEN_COLC CLOSE_COLC 
-			ARGS CLOSE_PAREN {insertMethod("main", $3,0);array_level_def = 0;} block 
+			ARGS CLOSE_PAREN {insertMethod("main", $3,0);array_level_def = 0;
+					sprintf(ass_code,"%s\n\n.code\n",ass_code);}
+			block 
 			{checkRepeatedCurrentMethodSignature();}
 		|	/** empty **/;
 
@@ -258,7 +260,7 @@ conditional_or_expression_ : {reg++;} OR_LOGIC  conditional_and_expression {reg-
 				sprintf(ass_code,"%sADD R%d, R%d, R%d\n", ass_code, reg, reg, reg+1);
 				sprintf(ass_code,"%sJNZ label%d\n", ass_code, label);
 				sprintf(ass_code,"%sMOV R%d, #0\n", ass_code, reg);
-				sprintf(ass_code,"%sMOV label%d\n", ass_code, label+1);
+				sprintf(ass_code,"%sJMP label%d\n", ass_code, label+1);
 				sprintf(ass_code,"%slabel%d: MOV R%d, #1\nlabel%d: ", ass_code, label, label+1);
 				label++;
 				} conditional_or_expression_ {$$ = checkConditionalAndOrOperator($3,$5);}
@@ -270,7 +272,7 @@ conditional_and_expression_ : {reg++;} AND_LOGIC  inclusive_or_expression {reg--
 				sprintf(ass_code,"%sSUB R%d, R%d, R%d\n", ass_code, reg, reg, reg+1);
 				sprintf(ass_code,"%sJNZ label%d\n", ass_code, label);
 				sprintf(ass_code,"%sMOV R%d, #1\n", ass_code, reg);
-				sprintf(ass_code,"%sMOV label%d\n", ass_code, label+1);
+				sprintf(ass_code,"%sJMP label%d\n", ass_code, label+1);
 				sprintf(ass_code,"%slabel%d: MOV R%d, #0\nlabel%d: ", ass_code, label, label+1);
 				label++;
 				}
@@ -303,19 +305,19 @@ equality_expression : relational_expression equality_expression_ {$$ = checkEqua
 
 equality_expression_ : {reg++;} EQUALOP {strcpy(equalop,yytext);}  relational_expression {reg--;
 				if(strcmp(equalop,"==")==0){
-					sprintf(ass_code,"%sSUB R%d, R%d\n",ass_code, reg, reg, reg+1);
+					sprintf(ass_code,"%sSUB R%d, R%d, R%d\n",ass_code, reg, reg, reg+1);
 					sprintf(ass_code,"%sJNZ lab%d, R%d\n",ass_code, label, reg);
 					sprintf(ass_code,"%sMOV R%d, #1\n",ass_code,reg);
-					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
-					sprintf(ass_code,"%slab%d: MOV R%d, #0\nlab%d:",ass_code,reg, label, label+1);
+					sprintf(ass_code,"%sJMP lab%d\n", ass_code, label+1);
+					sprintf(ass_code,"%slab%d: MOV R%d, #0\nlab%d:",ass_code, label, reg, label+1);
 					label++;		
 					}
 				else{
-					sprintf(ass_code,"%sSUB R%d, R%d\n",ass_code, reg, reg, reg+1);
+					sprintf(ass_code,"%sSUB R%d, R%d, R%d\n",ass_code, reg, reg, reg+1);
 					sprintf(ass_code,"%sJNZ lab%d, R%d\n",ass_code, label,reg);
 					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
-					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
-					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
+					sprintf(ass_code,"%sJMP lab%d\n", ass_code, label+1);
+					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code, label, reg, label+1);
 					label++;		
 					}
 				}
@@ -328,28 +330,28 @@ relational_expression_ : {reg++;} RELOP {strcpy(relop,yytext);} shift_expression
 				if(strcmp(relop,">=")==0){
 					sprintf(ass_code,"%sJGE lab%d, R%d, R%d\n",ass_code, label,reg, reg+1);
 					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
-					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
+					sprintf(ass_code,"%sJMP lab%d\n", ass_code, label+1);
 					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
 					label++;		
 					}
 				else if(strcmp(relop,">")==0){
 					sprintf(ass_code,"%sJG lab%d, R%d, R%d\n",ass_code, label,reg, reg+1);
 					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
-					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
+					sprintf(ass_code,"%sJMP lab%d\n", ass_code, label+1);
 					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
 					label++;		
 					}
 				else if(strcmp(relop,"<=")==0){
 					sprintf(ass_code,"%sJLE lab%d, R%d, R%d\n",ass_code, label,reg, reg+1);
 					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
-					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
+					sprintf(ass_code,"%sJMP lab%d\n", ass_code, label+1);
 					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
 					label++;		
 					}
 				else {
 					sprintf(ass_code,"%sJL lab%d, R%d, R%d\n",ass_code, label,reg, reg+1);
 					sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
-					sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
+					sprintf(ass_code,"%sJMP lab%d\n", ass_code, label+1);
 					sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
 					label++;		
 					}
