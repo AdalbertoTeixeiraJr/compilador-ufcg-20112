@@ -740,12 +740,13 @@ void checkIncrementDecrement(char * varType, char * operType, int isFinal){
 	CHECK_RESULT(result);
 }
 
-int checkNumericalType(char * type){
-	int result = WRONG_NUMERICAL_TYPE;
+int checkNumericalTypeStatic(char * type){
+	return (checkIntegralType(type) == OK || checkFloatType(type) == OK) ? OK: WRONG_NUMERICAL_TYPE;
+}
 
-	if (checkIntegralType(type) == OK || checkFloatType(type) == OK){
-		result = OK;
-	}
+int checkNumericalType(char * type){
+	int result = checkNumericalTypeStatic(type);
+
 	CHECK_RESULT(result);
 	return result;
 }
@@ -909,8 +910,8 @@ char * checkEqualityOperator(char * leftType, char * rightType){
 	if (translateTypevalToInt(rightType) == OUR_EMPTY){
 		resultType = leftType;
 	}else if ((ourLeftType == OUR_BOOLEAN && ourRightType == OUR_BOOLEAN)	||
-		(ourLeftType == OUR_NULL && ourRightType == OUR_NULL) ||
-		(checkNumericalType(leftType) == OK && checkNumericalType(rightType) == OK)){
+		(ourLeftType == OUR_NULL && ourRightType == OUR_NULL)||
+		(checkNumericalTypeStatic(leftType) == OK && checkNumericalTypeStatic(rightType) == OK)){
 		resultType = "t_boolean";
 	}else{
 		result = WRONG_EQUALITY_OPERATION;
