@@ -338,7 +338,7 @@ relational_expression_ : {reg++;} RELOP {strcpy(relop,yytext);} shift_expression
 				}
 				
 				sprintf(ass_code,"%sMOV R%d, #0\n",ass_code,reg);
-				sprintf(ass_code,"%sMOV lab%d\n", ass_code, label+1);
+				sprintf(ass_code,"%sJMP lab%d\n", ass_code, label+1);
 				sprintf(ass_code,"%slab%d: MOV R%d, #1\nlab%d:",ass_code,reg, label, label+1);
 				label++;	
 				}
