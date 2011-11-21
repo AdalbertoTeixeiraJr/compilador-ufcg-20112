@@ -355,11 +355,11 @@ shift_expression : additive_expression shift_expression_ {$$ = checkShiftOperato
 shift_expression_ : {reg++;} SHIFTS {strcpy(shift,yytext);} additive_expression {
 				sprintf(ass_code,"%slab%d: ",ass_code, label); label++; 
 				if(strcmp(shift,"<<")==0){
-						sprintf(ass_code, "%sMUL R%d, R%d, #2\n", ass_code, reg, reg);
+					sprintf(ass_code, "%sMUL R%d, R%d, #2\n", ass_code, reg, reg);
 				} else if (strcmp(shift,">>")==0) {
-						sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg, reg);
+					sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg, reg);
 				} else {
-					sprintf(ass_code, "%sNAO SEI DESLOCAMENTO NUMERICO\n", ass_code);
+					sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg, reg); /*NAO SEI DESLOCAMENTO NUMERICO*/
 				}
 				sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg+1,reg+1, label-1, reg+1);
 				reg--;			
@@ -757,7 +757,7 @@ switch_label : CASE {sprintf(ass_code, "%slab%d: ",ass_code,label);label++;} ass
 
 do_statement : DO {label=100+(label-label%100);sprintf(ass_code,"%slab%d: ",ass_code,label);} 
 		statement WHILE OPEN_PAREN assignment_expression {checkIsBoolean($6);
-		sprintf(ass_code,"%sXOR R%d, R%d, #1\nJNZ lab%d, R%d\nlab%d: ", ass_code, reg, reg , 100+label-(label%100), reg, 100+label-(label%100)); 
+		sprintf(ass_code,"%sXOR R%d, R%d, #1\nJNZ lab%d, R%d\nlab%d: ", ass_code, reg, reg , label-(label%100), reg, 100+label-(label%100)); 
 		label = 100+(label-label%100);} CLOSE_PAREN PT_VIRGULA;
 
 break_statement : BREAK {sprintf(ass_code, "%sJMP lab%d\n", ass_code, label-(label%100)+100);} PT_VIRGULA;
