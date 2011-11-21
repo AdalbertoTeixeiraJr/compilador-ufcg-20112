@@ -153,6 +153,16 @@ char * getVarTypevalInGlobalContext (char * id){
 	return result;
 }
 
+char * getVarTypevalInMethodContext (char * id){
+	char * result = NULL;
+	VarNode * node = getVarNodeInList(getCurrentMethod()->varNodes, id);
+
+	if (node != NULL){
+		result = node->typeval;
+	}
+	return result;
+}
+
 int getVarArrayLevelInGlobalContext (char * id){
 	int result = -1;
 	VarNode * node = getVarNodeInList(classContext->varsContext, id);
