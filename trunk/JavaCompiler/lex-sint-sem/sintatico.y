@@ -46,6 +46,8 @@ int atrib;
 char* method_name;
 int if_label;
 int has_return;
+char* file_name;
+FILE* pf;
 %}
 
 %union {
@@ -140,17 +142,28 @@ compilation_unit :	class_declaration;
 class_declaration :	CLASS identifier {
 			createClassContext($2);
 			setCurrentContext(GLOBAL_CONTEXT);
-			sprintf(ass_code, "// class %s\n", $2 );
+			sprintf(ass_code, "; class %s\n", $2 );
 			} class_body {
-			displayClassContext();
-			printf("ASSEMBLY:\n%s",ass_code);
+			sprintf(file_name,"%s.ass",$2);
+			if((pf = fopen(file_name,"w")) ==NULL) {
+				printf("\nNao consigo abrir o arquivo !"); exit(1); }
+
+			fputs(ass_code, pf);
+			if(ferror(pf)) {
+				perror("Erro na gravacao");
+				fclose(pf); exit(1); 
+			}
+
+fclose(pf);
 			};
 
 identifier :	ID;
 
 class_body :	BEG {
-		sprintf(ass_code,"%s.static\n",ass_code);
-		} class_body_declaration END;
+			sprintf(ass_code,"%sstatic\n",ass_code);
+		} class_body_declaration END {
+			sprintf(ass_code,"%shalt\n",ass_code);
+		};
 
 class_body_declaration : class_member_declaration_opt static_initializer;
 
@@ -243,7 +256,7 @@ integral_type :		TYPE_BYTE
 floating_point_type :	TYPE_FLOAT 
                 |       TYPE_DOUBLE;
 
-variable_declarators :          variable_declarator {insertStringToStrList($1);} variable_declarators_ ;
+variable_declarators : variable_declarator {insertStringToStrList($1);} variable_declarators_ ;
 
 variable_declarator : variable_declarator_id variable_declarator_ {
 				$$ = $1;
@@ -442,14 +455,16 @@ shift_expression : additive_expression shift_expression_ {$$ = checkShiftOperato
 shift_expression_ : {reg++;} SHIFTS {strcpy(shift,yytext);} additive_expression {
 				sprintf(ass_code,"%slab%d: ",ass_code, label); label++; 
 				if(strcmp(shift,"<<")==0){
-					sprintf(ass_code, "%sMUL R%d, R%d, #2\n", ass_code, reg, reg);
+					sprintf(ass_code, "%sMUL R%d, R%d, #2\n", ass_code, reg-1, reg-1);
 				} else if (strcmp(shift,">>")==0) {
-					sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg, reg);
+					sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg-1, reg-1);
 				} else {
-					sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg, reg); 
-					/*NAO SEI DESLOCAMENTO NUMERICO*/
+					sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg-1, reg-1);
+					sprintf(ass_code,"%sJGE lab%d, R%d, #0\n", ass_code, label, reg-1);					sprintf(ass_code, "%sADD R%d, R%d, #4294967296\n", ass_code, reg-1, reg-1);
+					
 				}
-				sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg+1,reg+1, label-1, reg+1);
+				sprintf(ass_code, "%slab%d: DEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, label, reg,reg, label-1, reg);
+				label++;
 				reg--;			
 				} 
 				shift_expression_ 
@@ -621,7 +636,7 @@ primary_no_array : lit {
 					if(getVarTypevalInMethodContext($1)!=NULL) {
 						sprintf(ass_code,"%sLD R%d, %s\n", ass_code, reg, $1);
 					} else {
-						sprintf(ass_code,"%sLD R%d, .static.%s\n", ass_code, reg, $1);
+						sprintf(ass_code,"%sLD R%d, static.%s\n", ass_code, reg, $1);
 					}
 				} else {
 					if(getVarTypevalInMethodContext($1)!=NULL) {
@@ -1015,11 +1030,13 @@ int main(void) {
 	shift = (char *) malloc(6);
 	var_atrib = (char *) malloc(100);
 	method_name = (char *) malloc(100);
-	reg = 0; label = 0;
+	file_name = (char *) malloc(100);
+	reg = 0; 
+	label = 0;
 	inside_expr = 0;
 	if_label = 0;
-	yydebug=0;
 	has_return = 0;
+	yydebug=0;
 	return yyparse();
 }
 
