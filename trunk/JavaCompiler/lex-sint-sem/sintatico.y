@@ -45,6 +45,7 @@ char* var_atrib;
 int atrib;
 char* method_name;
 int if_label;
+int has_return;
 %}
 
 %union {
@@ -142,7 +143,7 @@ class_declaration :	CLASS identifier {createClassContext($2);setCurrentContext(G
 
 identifier :	ID;
 
-class_body :	BEG {sprintf(ass_code,"%s.data\n",ass_code);} class_body_declaration END;
+class_body :	BEG {sprintf(ass_code,"%s.static\n",ass_code);} class_body_declaration END;
 
 class_body_declaration : class_member_declaration_opt static_initializer /*class_member_declaration_opt*/ ;
 
@@ -172,14 +173,24 @@ colc_opt: OPEN_COLC CLOSE_COLC colc_opt_ {$$ = $3+1;}
 colc_opt_ : OPEN_COLC CLOSE_COLC colc_opt_ {$$ = $3+1;}
 	| /**empty **/ {$$ = 0;};
 
-method_declaration :	method_header method_body {$$ = $1;};
+method_declaration :	method_header method_body {$$ = $1;
+				sprintf(ass_code, "%sendproc\n", ass_code);
+				checkHasReturn(has_return); has_return=0;};
 
-method_header :	identifier {insertMethod($1, method_or_field_type, array_level_def);array_level_def = 0; }
+method_header :	identifier {insertMethod($1, method_or_field_type, array_level_def);
+				array_level_def = 0;
+				sprintf(ass_code, "%sproc %s:\n", ass_code, $1);
+				 }
 					method_declarator;
 
-void_method_declaration: VOID identifier {array_level_def = 0; insertMethod($2, $1, array_level_def);} method_declarator method_body ;
+void_method_declaration: VOID identifier {
+			array_level_def = 0; insertMethod($2, $1, array_level_def);
+			sprintf(ass_code, "%sproc %s:\n", ass_code, $2);
+			} method_declarator method_body {
+			sprintf(ass_code, "%sendproc\n", ass_code);
+			};
 
-method_declarator :	OPEN_PAREN { }
+method_declarator :	OPEN_PAREN
 			formal_parameter_list CLOSE_PAREN {checkRepeatedCurrentMethodSignature();};
 
 method_body :	block;
@@ -190,8 +201,12 @@ formal_parameter_list :	formal_parameter formal_parameter_list_
 formal_parameter_list_ : VIRGULA formal_parameter formal_parameter_list_
 		|	/** empty **/;
 
-formal_parameter :	primitive_type variable_declarator_id {addParamInCurrMethod($2, $1,0);}
-	|	primitive_type colc_opt_ variable_declarator_id {addParamInCurrMethod($3,$1,$2);};
+formal_parameter :	primitive_type variable_declarator_id {addParamInCurrMethod($2, $1,0);
+			sprintf(ass_code, "%sparam %s\n", ass_code, $2);
+			}
+	|	primitive_type colc_opt_ variable_declarator_id {addParamInCurrMethod($3,$1,$2);
+			sprintf(ass_code, "%sparam %s\n", ass_code, $2);
+			};
 
 field_declaration :	variable_declarators PT_VIRGULA;
 
@@ -405,13 +420,16 @@ multiplicative_expression_ : { reg++;} MULT  unary_expression {reg--;
 unary_expression : 	INCREMENT unary_expression {
 				checkNumericalType($2);$$ = $2;
 				sprintf(ass_code, "%sINC R%d, R%d\n", ass_code, reg, reg);
+				if(store_flag) {
+						sprintf(ass_code,"%sMOV %s, R%d\n", ass_code, local_var, reg);
+					}
 				}
 		|	DECREMENT unary_expression  {
 				checkNumericalType($2);$$ = $2;
 				sprintf(ass_code, "%sDEC R%d, R%d\n", ass_code, reg, reg);
-				/*if(store_flag) {
-						sprintf(ass_code,"%sST %s, R%d\n", ass_code, local_var, reg);
-					}*/
+				if(store_flag) {
+						sprintf(ass_code,"%sMOV %s, R%d\n", ass_code, local_var, reg);
+					}
 				}
 		|	PLUS unary_expression  {
 				checkNumericalType($2);$$ = $2;
@@ -452,9 +470,12 @@ postfix_expression :  primary_no_array {
 			checkIncrementDecrement($1, $3, final_update);
 			};	
 
-postfix_expression_ : INCREMENT {sprintf(ass_code, "%sINC R%d, R%d\n", ass_code, reg, reg);}
+postfix_expression_ : INCREMENT {sprintf(ass_code, "%sINC R%d, R%d\n", ass_code, reg, reg);
+				sprintf(ass_code,"%sMOV %s, R%d\n", ass_code, local_var, reg);}
 			postfix_expression_ {$$ = "t_inc_dec";}
-			| DECREMENT {sprintf(ass_code, "%sDEC R%d, R%d\n", ass_code, reg, reg);}
+			| DECREMENT {sprintf(ass_code, "%sDEC R%d, R%d\n", ass_code, reg, reg);
+				sprintf(ass_code,"%sMOV %s, R%d\n", ass_code, local_var, reg);}
+			
 			postfix_expression_ {$$ = "t_inc_dec";}
                         | /** empty **/ {$$ = "t_empty"; if(store_flag) store_flag=0;};
 
@@ -503,7 +524,7 @@ argument_list : 	assignment_expression {addArgsToCalledMethod($1,level_access);}
 		|	argument_list_;
 
 argument_list_ : 	VIRGULA assignment_expression {addArgsToCalledMethod($2,level_access);
-					sprintf(ass_code,"%s, R%d",ass_code, reg); reg++;} argument_list_ 
+					reg++;} argument_list_ 
                 | 	/** empty **/ {sprintf(ass_code,"%sinvoke %s",ass_code, method_name); 
 				for(i = reg_count; i<=reg;i++){
 					sprintf(ass_code,"%s, R%d",ass_code, i);
@@ -585,11 +606,11 @@ statement :	statement_without_trailing_substatement
 			};
 
 optional_else : statement {
-		sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, 100+label-label%100, 100+label-label%100); 
+		sprintf(ass_code, "%slab%d: JMP lab%d\nlab%d: ", ass_code, label, 100+label-label%100, 100+label-label%100); 
 		label = 100+label-label%100;
 		}
 	|	statement_no_short_if {
-		sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, 100+label-label%100, label); 
+		sprintf(ass_code, "%slab%d: JMP lab%d\nlab%d: ", ass_code, label, 100+label-label%100, label); 
 		label++;
 		} ELSE statement {if(if_label==(label-label%100)){
 			sprintf(ass_code, "%slab%d: ", ass_code, 100+label-label%100);
@@ -653,28 +674,28 @@ statement_expression_list_ : VIRGULA statement_expression statement_expression_l
                         |	/** empty **/;
 
 statement_expression :          incr_decrement_expression {inside_expr = 0;}
-                        |       primary_no_new_array assignment_operator {inside_expr = 1;} assignment_expression {
-				checkFinalUpdate(final_update);
+                        |       primary_no_new_array {checkFinalUpdate(final_update);
+				} assignment_operator {inside_expr = 1;} assignment_expression{
 				inside_expr = 0;
-				if(strcmp($2,"+=")==0){
+				if(strcmp($3,"+=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nADD R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
-				}else if(strcmp($2,"-=")==0){
+				}else if(strcmp($3,"-=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nSUB R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
-				}else if(strcmp($2,"/=")==0){
+				}else if(strcmp($3,"/=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nDIV R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
-				}else if(strcmp($2,"*=")==0){
+				}else if(strcmp($3,"*=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nMUL R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
-				}else if(strcmp($2,"%=")==0){
+				}else if(strcmp($3,"%=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nMOV R%d, R%d MOD R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
-				}else if(strcmp($2,"&=")==0){
+				}else if(strcmp($3,"&=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nAND R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
-				}else if(strcmp($2,"|=")==0){
+				}else if(strcmp($3,"|=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nOR R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
-				}else if(strcmp($2,"^=")==0){
-						 sprintf(ass_code,"%sLD R%d, %s\nXOR R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	}else if(strcmp($2,"<<=")==0){
+				}else if(strcmp($3,"^=")==0){
+						 sprintf(ass_code,"%sLD R%d, %s\nXOR R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	}else if(strcmp($3,"<<=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nlab%d: ",ass_code, reg+1, var_atrib,label); label++;
 						 sprintf(ass_code, "%sMUL R%d, R%d, #2\n", ass_code, reg+1, reg+1);
-						 sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg,reg, label-1, reg);		}else if(strcmp($2,">>=")==0){
+						 sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg,reg, label-1, reg);		}else if(strcmp($3,">>=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nlab%d: ",ass_code, reg+1, var_atrib,label); label++;
 						 sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg+1, reg+1);
 						 sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg,reg, label-1, reg);	}
@@ -728,8 +749,11 @@ statement_without_trailing_substatement : block
 
 empty_statement : PT_VIRGULA;
 
-expression_statement :	statement_expression {sprintf(ass_code, "%sMOV %s, R%d\n", ass_code, var_atrib, reg);
+expression_statement :	statement_expression {
+				if(strcmp(var_atrib,"")!=0){
+					sprintf(ass_code, "%sMOV %s, R%d\n", ass_code, var_atrib, reg);
 					strcpy(var_atrib,"");}
+				}
 				PT_VIRGULA;
 
 switch_statement : SWITCH OPEN_PAREN assignment_expression {checkIsSwitchExpression($3);switch_type = $3;reg++;} CLOSE_PAREN switch_block {reg--;label = 100+label-label%100;sprintf(ass_code, "%slab%d: ", ass_code, label);};
@@ -768,6 +792,7 @@ goto_statement : GOTO identifier {checkLabelInCurrMethod($2);
 			sprintf(ass_code,"%sJMP %s\n",ass_code, $2);} PT_VIRGULA;
 
 return_statement : RETURN expression_opt_return {checkReturnTypeAndLevelInCurrMethod($2, level_access+local_level);
+			has_return++;
 	} PT_VIRGULA;
 
 %%
@@ -786,6 +811,7 @@ int main(void) {
 	inside_expr = 0;
 	if_label = 0;
 	yydebug=0;
+	has_return = 0;
 	return yyparse();
 }
 
