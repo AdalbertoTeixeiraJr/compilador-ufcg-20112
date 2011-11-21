@@ -250,6 +250,15 @@ int isVarFinalInBothContexts(char * id){
 	return (isVarFinalInCurrMethodContext(id) == YES || isVarFinalInGlobalContext(id) == YES)? YES : NO;
 }
 
+int isParamInCurrMethodContext(char * id){
+	int result = NO;
+	VarNode * node = getVarNodeInList(getCurrentMethod()->params, id);
+
+	if (node != NULL){
+		result = YES;
+	}
+	return result;
+}
 
 //// FREEING
 

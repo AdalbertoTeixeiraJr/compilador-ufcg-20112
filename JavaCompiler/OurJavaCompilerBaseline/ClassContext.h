@@ -52,6 +52,7 @@ char * getVarTypevalInBothContexts (char * id);
 int isVarFinalInGlobalContext(char * id);
 int isVarFinalInCurrMethodContext(char * id);
 int isVarFinalInBothContexts(char * id);
+int isParamInCurrMethodContext(char * id);
 
 //// FREEING
 void freeClassContext();
