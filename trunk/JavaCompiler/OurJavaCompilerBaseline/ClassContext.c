@@ -23,7 +23,7 @@ static MethodNode * getCurrentMethod();
 static VarNode * getVarInCurrMethodContext(char * id);
 
 //// STRLIST
-static StrNode * createStrNode(char * str);
+static StrNode * createStrNode(char * str, int wasUpdated);
 static StrNode * getIdInStrList(char * id);
 static void freeStrList();
 
@@ -101,7 +101,7 @@ void insertVarListInGlobalContext(char * typeval, int isFinal, int arrayLevels){
 		VarNode * nodeTmp = NULL;
 
 		while(strNode != NULL){
-			nodeTmp = insertVarInVarNodeList(classContext->varsContext, strNode->str, typeval, isFinal, arrayLevels);
+			nodeTmp = insertVarInVarNodeList(classContext->varsContext, strNode->str, strNode->wasUpdated, typeval, isFinal, arrayLevels);
 			if (nodeTmp != NULL){
 				classContext->varsContext = nodeTmp;
 				strNode = strNode->next;
@@ -161,6 +161,17 @@ char * getVarTypevalInMethodContext (char * id){
 		result = node->typeval;
 	}
 	return result;
+}
+
+char * getParamTypevalInCurrMethodContext(char * id){
+
+	char * resultType = NULL;
+	VarNode * node = getVarNodeInList(getCurrentMethod()->params, id);
+
+	if (node != NULL){
+		resultType = node->typeval;
+	}
+	return resultType;
 }
 
 int getVarArrayLevelInGlobalContext (char * id){
@@ -250,12 +261,26 @@ int isVarFinalInBothContexts(char * id){
 	return (isVarFinalInCurrMethodContext(id) == YES || isVarFinalInGlobalContext(id) == YES)? YES : NO;
 }
 
-int isParamInCurrMethodContext(char * id){
-	int result = NO;
-	VarNode * node = getVarNodeInList(getCurrentMethod()->params, id);
+int wasVarUpdated(char * id){
+	int result = -1;
+	VarNode * node = getVarNodeInList(getCurrentMethod()->varNodes, id);
 
 	if (node != NULL){
-		result = YES;
+		result = node->wasUpdated;
+	}else{
+		node = getVarNodeInList(getCurrentMethod()->params, id);
+
+		if (node != NULL){
+			result = node->wasUpdated;
+		}else{
+			node = getVarNodeInList(classContext->varsContext, id);
+
+			if (node != NULL){
+				result = node->wasUpdated;
+			}else{
+				result = -1;
+			}
+		}
 	}
 	return result;
 }
@@ -328,7 +353,7 @@ void insertVarListInCurrMethodContext(char * typeval, int isFinal, int arrayLeve
 		VarNode * nodeTmp = NULL;
 
 		while(strNode != NULL){
-			nodeTmp = insertVarInVarNodeList(methodNode->varNodes, strNode->str, typeval, isFinal, arrayLevels);
+			nodeTmp = insertVarInVarNodeList(methodNode->varNodes, strNode->str, strNode->wasUpdated, typeval, isFinal, arrayLevels);
 			if (nodeTmp != NULL){
 				methodNode->varNodes = nodeTmp;
 				strNode = strNode->next;
@@ -342,6 +367,27 @@ void insertVarListInCurrMethodContext(char * typeval, int isFinal, int arrayLeve
 		CHECK_RESULT(result);
 	}
 }
+
+void setVarUpdated(char * id){
+	VarNode * node = getVarNodeInList(getCurrentMethod()->varNodes, id);
+
+	if (node != NULL){
+		node->wasUpdated = YES;
+	}else{
+		node = getVarNodeInList(getCurrentMethod()->params, id);
+
+		if (node != NULL){
+			node->wasUpdated = YES;
+		}else{
+			node = getVarNodeInList(classContext->varsContext, id);
+
+			if (node != NULL){
+				node->wasUpdated = YES;
+			}
+		}
+	}
+}
+
 
 // GETTING
 
@@ -358,7 +404,7 @@ VarNode * getVarInCurrMethodContext(char * id){
  * STATIC FUNCTIONS
  */
 
-static StrNode * createStrNode(char * str){
+static StrNode * createStrNode(char * str, int wasUpdated){
 
 	StrNode * node;
 
@@ -366,6 +412,7 @@ static StrNode * createStrNode(char * str){
 
 	if (node != NULL){
 		node->str = (char *) malloc(sizeof(char) * MAX_ID_SIZE);
+		node->wasUpdated = wasUpdated;
 		if (node->str != NULL){
 			strncpy(node->str, str, MAX_ID_SIZE);
 		}else{
@@ -406,7 +453,7 @@ static void freeStrList(){
  * PUBLIC FUNCTIONS
  */
 
-void insertStringToStrList(char * id){
+void insertStringToStrList(char * id, int wasUpdated){
 
 	int result = OK;
 	StrNode * node = strList;
@@ -430,12 +477,12 @@ void insertStringToStrList(char * id){
 			while(node->next != NULL){
 				node = node->next;
 			}
-			node->next = createStrNode(id);
+			node->next = createStrNode(id, wasUpdated);
 			if (node->next == NULL){
 				result = STR_LIST_INSERION_MALLOC_ERROR;
 			}
 		}else{
-			strList = createStrNode(id);
+			strList = createStrNode(id, wasUpdated);
 			if (strList == NULL){
 				result = STR_LIST_INSERION_MALLOC_ERROR;
 			}

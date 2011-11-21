@@ -10,9 +10,9 @@ int main(){
 
 	createClassContext("Classe A");
 
-	insertStringToStrList("a");
-	insertStringToStrList("b");
-	insertStringToStrList("c");
+	insertStringToStrList("a",NO);
+	insertStringToStrList("b",NO);
+	insertStringToStrList("c",NO);
 
 	insertVarListInGlobalContext("STRING", NO, 0);
 
@@ -25,19 +25,19 @@ int main(){
 
 	setCurrentContext(LOCAL_CONTEXT);
 
-		insertStringToStrList("d");
-		insertStringToStrList("e");
-		insertStringToStrList("Param1");
-		insertStringToStrList("g");
-		insertStringToStrList("y");
-		insertStringToStrList("1");
-		insertStringToStrList("8");
-		insertStringToStrList("e");
-		insertStringToStrList("s");
-		insertStringToStrList("a");
-		insertStringToStrList("yx");
-		insertStringToStrList("1xxx");
-		insertStringToStrList("8alkl");
+		insertStringToStrList("d",NO);
+		insertStringToStrList("e",YES);
+		insertStringToStrList("Param1", NO);
+		insertStringToStrList("g",YES);
+		insertStringToStrList("y",YES);
+		insertStringToStrList("1",YES);
+		insertStringToStrList("8",YES);
+		insertStringToStrList("e",YES);
+		insertStringToStrList("s",YES);
+		insertStringToStrList("a",YES);
+		insertStringToStrList("yx",NO);
+		insertStringToStrList("1xxx",NO);
+		insertStringToStrList("8alkl",NO);
 		insertVarListInCurrMethodContext("DOUBLE", NO, 0);
 
 		addLabel("01");
@@ -62,13 +62,13 @@ int main(){
 
 	setCurrentContext(LOCAL_CONTEXT);
 
-		insertStringToStrList("d");
-		insertStringToStrList("e");
-		insertStringToStrList("f");
-		insertStringToStrList("g");
-		insertStringToStrList("y");
-		insertStringToStrList("1");
-		insertStringToStrList("8");
+		insertStringToStrList("d",NO);
+		insertStringToStrList("e",NO);
+		insertStringToStrList("f",NO);
+		insertStringToStrList("g",NO);
+		insertStringToStrList("y",NO);
+		insertStringToStrList("1",YES);
+		insertStringToStrList("8",YES);
 
 		insertVarListInCurrMethodContext("FLOAT", YES, 1);
 
@@ -81,7 +81,7 @@ int main(){
 	checkReturnTypeAndLevelInCurrMethod("t_int", 1);
 	checkReturnTypeAndLevelInCurrMethod("t_long", 0);
 
-	checkHasReturnType(NO);
+	checkHasReturn(NO);
 
 	displayClassContext();
 

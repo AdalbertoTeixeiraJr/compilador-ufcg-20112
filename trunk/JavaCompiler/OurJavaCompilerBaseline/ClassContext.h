@@ -41,18 +41,19 @@ void insertVarListInGlobalContext(char * typeval, int isFinal, int arrayLevels);
 void insertMethod(char * idName, char * typeReturn, int arrayLevels);
 void addParamInCurrMethod(char * id, char * typeval, int arrayLevels);
 void insertVarListInCurrMethodContext(char * typeval, int isFinal, int arrayLevels);
+void setVarUpdated(char * id);
 
 ////GETTING
 char * getVarTypevalInGlobalContext (char * id);
 char * getVarTypevalInMethodContext (char * id);
-char * getVarTypevalInMethodContext (char * id);
+char * getParamTypevalInCurrMethodContext(char * id);
 int getVarArrayLevelInGlobalContext (char * id);
 int getVarArrayLevelInBothContexts (char * id);
 char * getVarTypevalInBothContexts (char * id);
 int isVarFinalInGlobalContext(char * id);
 int isVarFinalInCurrMethodContext(char * id);
 int isVarFinalInBothContexts(char * id);
-int isParamInCurrMethodContext(char * id);
+int wasVarUpdated(char * id);
 
 //// FREEING
 void freeClassContext();
@@ -62,7 +63,7 @@ void displayClassContext();
 
 /*************** STRING NODE FUNCTIONS ***************/
 //// INSERTING
-void insertStringToStrList(char * id);
+void insertStringToStrList(char * id, int wasUpdated);
 
 /*************** CALLED METHODS FUNCTIONS ***************/
 void addCalledMethod(char * idName);

@@ -18,13 +18,14 @@
  * =============== VARNODE FUNCTION DEFINITIONS
  */
 
-VarNode * createVarNode(char * id, char * typeval, int isFinal, int arrayLevels){
+VarNode * createVarNode(char * id, char * typeval, int wasUpdated, int isFinal, int arrayLevels){
 
 	VarNode * node = (VarNode*) malloc(sizeof(VarNode));
 
 	if(node != NULL){
-		// Set the isFinal field
+		// Set the fields
 		node->isFinal = isFinal;
+		node->wasUpdated = wasUpdated;
 		node->arrayLevels = arrayLevels;
 
 		// Allocate and copy the id char value
@@ -46,9 +47,9 @@ VarNode * createVarNode(char * id, char * typeval, int isFinal, int arrayLevels)
 	return node;
 }
 
-VarNode * insertVarInVarNodeList(VarNode * nodeList, char * id, char * typeval, int isFinal, int arrayLevels){
+VarNode * insertVarInVarNodeList(VarNode * nodeList, char * id, int wasUpdated, char * typeval, int isFinal, int arrayLevels){
 
-	VarNode * node = createVarNode(id, typeval, isFinal, arrayLevels);
+	VarNode * node = createVarNode(id, typeval, wasUpdated, isFinal, arrayLevels);
 	VarNode * nodeListTmp = nodeList;
 
 	if (node != NULL){
@@ -94,7 +95,7 @@ int isVarNodeEqual(VarNode * var, char * newId){
 
 void displayVarNodeList(VarNode * varNodeList){
 	while(varNodeList != NULL){
-		printf("\tID: %s; Typeval: %s; IsFinal: %d; ArrayLevels: %d\n", varNodeList->id, varNodeList->typeval, varNodeList->isFinal, varNodeList->arrayLevels);
+		printf("\tID: %s; Typeval: %s; wasUpdated: %d; IsFinal: %d; ArrayLevels: %d\n", varNodeList->id, varNodeList->wasUpdated, varNodeList->typeval, varNodeList->isFinal, varNodeList->arrayLevels);
 		varNodeList = varNodeList->nextNode;
 	}
 	printf("\n");
@@ -141,9 +142,9 @@ MethodNode * addParamInMethod(MethodNode * method, char * id, char * type, int a
 		while(params->nextNode != NULL){
 			params = params->nextNode;
 		}
-		params->nextNode = createVarNode(id, type, NO, arrayLevels);
+		params->nextNode = createVarNode(id, type, NO, NO, arrayLevels);
 	}else{
-		method->params = createVarNode(id, type, NO, arrayLevels);
+		method->params = createVarNode(id, type, NO, NO, arrayLevels);
 	}
 	return method;
 }
