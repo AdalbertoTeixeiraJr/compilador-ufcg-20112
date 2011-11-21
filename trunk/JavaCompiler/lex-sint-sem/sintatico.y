@@ -550,7 +550,7 @@ statement :	statement_without_trailing_substatement
 			if_label = label-label%100;
 			checkIsBoolean($3);
 			} CLOSE_PAREN {
-			sprintf(ass_code, "%sXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, label, reg);
+			sprintf(ass_code, "%sXOR R%d, R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, reg, label, reg);
 			} 
 			optional_else 
 	|       WHILE { 
@@ -560,7 +560,7 @@ statement :	statement_without_trailing_substatement
 			} 
 			OPEN_PAREN assignment_expression {
 			checkIsBoolean($4);
-			sprintf(ass_code, "%sXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, 100+(label-label%100), reg);}
+			sprintf(ass_code, "%sXOR R%d, R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, reg, 100+(label-label%100), reg);}
 			CLOSE_PAREN statement {
 			sprintf(ass_code, "%sJMP lab%d\nlab%d:", ass_code, label-1, 100+(label-label%100));
 			label = 100+(label-label%100);
@@ -608,7 +608,7 @@ statement_no_short_if :        statement_without_trailing_substatement
 			if_label = label-label%100;
 			checkIsBoolean($3);
 			} CLOSE_PAREN {
-			sprintf(ass_code, "%sXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, label, reg);
+			sprintf(ass_code, "%sXOR R%d, R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, reg, label, reg);
 			} 
 			optional_else 
 	|       WHILE { 
@@ -618,7 +618,7 @@ statement_no_short_if :        statement_without_trailing_substatement
 			} 
 			OPEN_PAREN assignment_expression {
 			checkIsBoolean($4);
-			sprintf(ass_code, "%sXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, 100+(label-label%100), reg);}
+			sprintf(ass_code, "%sXOR R%d, R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, reg, 100+(label-label%100), reg);}
 			CLOSE_PAREN statement_no_short_if {
 			sprintf(ass_code, "%sJMP lab%d\nlab%d:", ass_code, label-1, 100+(label-label%100));
 			label = 100+(label-label%100);
@@ -752,12 +752,12 @@ switch_labels_ : switch_label switch_labels_
 	|	/** empty **/;
 
 switch_label : CASE {sprintf(ass_code, "%slab%d: ",ass_code,label);label++;} assignment_expression {checkEqualsTypeval($3,switch_type);
-			sprintf(ass_code, "%sSUB R1, R0, R1\nXOR R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg, reg, label, reg);} TWO_POINTS
+			sprintf(ass_code, "%sSUB R1, R0, R1\nXOR R%d, R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, reg, label, reg);} TWO_POINTS
 	|       DEFAULT {sprintf(ass_code, "%slab%d: ", ass_code, label);} TWO_POINTS;
 
 do_statement : DO {label=100+(label-label%100);sprintf(ass_code,"%slab%d: ",ass_code,label);} 
 		statement WHILE OPEN_PAREN assignment_expression {checkIsBoolean($6);
-		sprintf(ass_code,"%sXOR R%d, R%d\nJNZ lab%d, R%d\nlab%d: ", ass_code,reg, reg , 100+label-(label%100), reg, 100+label-(label%100)); 
+		sprintf(ass_code,"%sXOR R%d, R%d, #1\nJNZ lab%d, R%d\nlab%d: ", ass_code, reg, reg , 100+label-(label%100), reg, 100+label-(label%100)); 
 		label = 100+(label-label%100);} CLOSE_PAREN PT_VIRGULA;
 
 break_statement : BREAK {sprintf(ass_code, "%sJMP lab%d\n", ass_code, label-(label%100)+100);} PT_VIRGULA;
