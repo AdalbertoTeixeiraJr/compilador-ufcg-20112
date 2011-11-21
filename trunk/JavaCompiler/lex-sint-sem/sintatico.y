@@ -46,8 +46,10 @@ int atrib;
 char* method_name;
 int if_label;
 int has_return;
+int was_update;
 char* file_name;
 FILE* pf;
+char* static_pref;
 %}
 
 %union {
@@ -160,7 +162,7 @@ fclose(pf);
 identifier :	ID;
 
 class_body :	BEG {
-			sprintf(ass_code,"%sstatic\n",ass_code);
+			sprintf(ass_code,"%s.static\n",ass_code);
 		} class_body_declaration END {
 			sprintf(ass_code,"%shalt\n",ass_code);
 		};
@@ -203,7 +205,7 @@ colc_opt_ : OPEN_COLC CLOSE_COLC colc_opt_ {
 
 method_declaration :	method_header method_body {
 				$$ = $1;
-				sprintf(ass_code, "%sendproc\n", ass_code);
+				sprintf(ass_code, "%sendproc\n\n", ass_code);
 				checkHasReturn(has_return); has_return=0;
 			};
 
@@ -217,7 +219,7 @@ void_method_declaration: VOID identifier {
 			array_level_def = 0; insertMethod($2, $1, array_level_def);
 			sprintf(ass_code, "%sproc %s:\n", ass_code, $2);
 			} method_declarator method_body {
-			sprintf(ass_code, "%sendproc\n", ass_code);
+			sprintf(ass_code, "%sendproc\n\n", ass_code);
 			};
 
 method_declarator :	OPEN_PAREN
@@ -256,7 +258,7 @@ integral_type :		TYPE_BYTE
 floating_point_type :	TYPE_FLOAT 
                 |       TYPE_DOUBLE;
 
-variable_declarators : variable_declarator {insertStringToStrList($1);} variable_declarators_ ;
+variable_declarators : variable_declarator {insertStringToStrList($1, was_update);} variable_declarators_ ;
 
 variable_declarator : variable_declarator_id variable_declarator_ {
 				$$ = $1;
@@ -264,13 +266,14 @@ variable_declarator : variable_declarator_id variable_declarator_ {
 				};
 
 variable_declarators_ :         VIRGULA  variable_declarator {
-				insertStringToStrList($2);
+				insertStringToStrList($2, was_update);
 				} variable_declarators_	
                         |       /** empty **/;
 
-variable_declarator_ :          EQUAL variable_initializer
+variable_declarator_ :          EQUAL variable_initializer {was_update = 1;}
                         |       /** empty **/ {
 				sprintf(ass_code,"%sLD R%d, #0\n",ass_code,reg);
+				was_update = 0;
 				};
 
 variable_declarator_id :        identifier {$$ = $1;}; 
@@ -417,7 +420,7 @@ equality_expression_ : {reg++;} EQUALOP {strcpy(equalop,yytext);}  relational_ex
 					sprintf(ass_code,"%sJNZ lab%d, R%d\n",ass_code, label,reg);
 					sprintf(ass_code,"%sMOV R%d, #0 ;Result is false\n",ass_code,reg);
 					sprintf(ass_code,"%sJMP lab%d\n", ass_code, label+1);
-					sprintf(ass_code,"%slab%d: MOV R%d, #1 ;Result is false\nlab%d: ",ass_code, label, reg, label+1);
+					sprintf(ass_code,"%slab%d: MOV R%d, #1 ;Result is true\nlab%d: ",ass_code, label, reg, label+1);
 					label+=2;		
 					}
 				}
@@ -604,6 +607,9 @@ primary_no_array : lit {
 					sprintf(ass_code, "%sLD R%d, #1 ;True literal\n", ass_code, reg);
 				} else if(strcmp(yytext,"false") == 0){
 					sprintf(ass_code, "%sLD R%d, #0 ;False literal\n", ass_code, reg);
+				} else if(atoi(yytext)<0){
+					sprintf(ass_code, "%sLD R%d, #%d\n", ass_code, reg, atoi(yytext)*(-1));
+					sprintf(ass_code, "%sNEG R%d, R%d\n", ass_code, reg, reg);
 				} else {
 					sprintf(ass_code, "%sLD R%d, #%s\n", ass_code, reg, yytext);
 				}
@@ -622,7 +628,8 @@ primary_no_array : lit {
 					sprintf(var_atrib,"static.%s",$1);
 				}
 				store_flag = 1;
-				sprintf(local_var,"static.%s",$1);} 
+				sprintf(local_var,"static.%s",$1);
+				sprintf(static_pref,"%s",$1);} 
 		|	method_invocation {
 				$$ = $1;
 				level_access = checkMethodLevelsAfterConversion();
@@ -652,7 +659,9 @@ primary_no_array : lit {
 					} else {
 						strcpy(local_var, $1);
 						sprintf(local_var,"static.%s",$1);
-					}};
+					}
+				strcpy(static_pref, $1);				
+				};
 
 field_access : identifier  {
 		checkStaticClassId($1);
@@ -771,7 +780,7 @@ statement :	statement_without_trailing_substatement
 			checkIsBoolean($4);
 			sprintf(ass_code, "%sXOR R%d, R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, reg, 100+(label-label%100), reg);}
 			CLOSE_PAREN statement {
-			sprintf(ass_code, "%sJMP lab%d\nlab%d:", ass_code, label-1, 100+(label-label%100));
+			sprintf(ass_code, "%sJMP lab%d\nlab%d:", ass_code, (label-label%100), 100+(label-label%100));
 			label = 100+(label-label%100);
 			}
 	|       FOR OPEN_PAREN for_init PT_VIRGULA  {
@@ -830,7 +839,7 @@ statement_no_short_if :	statement_without_trailing_substatement
 			checkIsBoolean($4);
 			sprintf(ass_code, "%sXOR R%d, R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, reg, 100+(label-label%100), reg);}
 			CLOSE_PAREN statement_no_short_if {
-			sprintf(ass_code, "%sJMP lab%d\nlab%d:", ass_code, label-1, 100+(label-label%100));
+			sprintf(ass_code, "%sJMP lab%d\nlab%d:", ass_code, (label-label%100), 100+(label-label%100));
 			label = 100+(label-label%100);
 			}
 	|       FOR OPEN_PAREN for_init PT_VIRGULA  {
@@ -865,7 +874,12 @@ statement_expression :          incr_decrement_expression {
 					inside_expr = 0;
 				}
                         |       primary_no_new_array {
-					checkFinalUpdate(final_update);
+					if(wasVarUpdated(static_pref)==1){
+						checkFinalUpdate(isVarFinalInBothContexts(static_pref));
+						setVarUpdated(static_pref);
+					}
+
+					
 				} assignment_operator {
 					inside_expr = 1;
 				} assignment_expression {
@@ -1034,6 +1048,7 @@ int main(void) {
 	var_atrib = (char *) malloc(100);
 	method_name = (char *) malloc(100);
 	file_name = (char *) malloc(100);
+	static_pref = (char *) malloc(100);
 	reg = 0; 
 	label = 0;
 	inside_expr = 0;
