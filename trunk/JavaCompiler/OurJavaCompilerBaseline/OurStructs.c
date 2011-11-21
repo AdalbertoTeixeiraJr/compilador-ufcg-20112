@@ -95,7 +95,7 @@ int isVarNodeEqual(VarNode * var, char * newId){
 
 void displayVarNodeList(VarNode * varNodeList){
 	while(varNodeList != NULL){
-		printf("\tID: %s; Typeval: %s; wasUpdated: %d; IsFinal: %d; ArrayLevels: %d\n", varNodeList->id, varNodeList->wasUpdated, varNodeList->typeval, varNodeList->isFinal, varNodeList->arrayLevels);
+		printf("\tID: %s; Typeval: %s; wasUpdated: %d; IsFinal: %d; ArrayLevels: %d\n", varNodeList->id, varNodeList->typeval, varNodeList->wasUpdated, varNodeList->isFinal, varNodeList->arrayLevels);
 		varNodeList = varNodeList->nextNode;
 	}
 	printf("\n");
