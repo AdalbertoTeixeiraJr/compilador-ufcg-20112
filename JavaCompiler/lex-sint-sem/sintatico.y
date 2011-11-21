@@ -903,13 +903,14 @@ statement_expression :          incr_decrement_expression {
 				}else if(strcmp($3,"<<=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nlab%d: ",ass_code, reg+1, var_atrib,label); label++;
 						 sprintf(ass_code, "%sMUL R%d, R%d, #2\n", ass_code, reg+1, reg+1);
-						 sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg,reg, label-1, reg);		}else if(strcmp($3,">>=")==0){
+						 sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg,reg, label-1, reg);				 sprintf(ass_code, "%sMOV R%d, R%d\n", ass_code, reg, reg+1);				}else if(strcmp($3,">>=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nlab%d: ",ass_code, reg+1, var_atrib,label); label++;
 						 sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg+1, reg+1);
-						 sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg,reg, label-1, reg);		}else if(strcmp($3,">>>=")==0){
+						 sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg,reg, label-1, reg);				 sprintf(ass_code, "%sMOV R%d, R%d\n", ass_code, reg, reg+1);	}else if(strcmp($3,">>>=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nlab%d: ",ass_code, reg+1, var_atrib,label); label++;
-						sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg, reg);
-						sprintf(ass_code,"%sJGE lab%d, R%d, #0\n", ass_code, label, reg);						sprintf(ass_code, "%sADD R%d, R%d, #4294967296\n", ass_code, reg, reg);						sprintf(ass_code, "%slab%d: DEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, label, reg, reg, label-1, reg);	label++;	}
+						sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg+1, reg+1);
+						sprintf(ass_code,"%sJGE lab%d, R%d, #0\n", ass_code, label, reg+1);						sprintf(ass_code, "%sADD R%d, R%d, #4294967296\n", ass_code, reg, reg);						sprintf(ass_code, "%slab%d: DEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, label, reg, reg, label-1, reg);			sprintf(ass_code, "%sMOV R%d, R%d\n", ass_code, reg, reg+1);
+						label++;	}
 				};
 
 incr_decrement_expression : preincrement_expression 
@@ -1009,7 +1010,7 @@ switch_label : CASE {
 
 do_statement : DO {
 			label=100+(label-label%100);
-			sprintf(ass_code,"%slab%d: ",ass_code,label);
+			sprintf(ass_code,"%slab%d: ",ass_code,label);label++;
 		} 
 		statement WHILE OPEN_PAREN assignment_expression {
 			checkIsBoolean($6);
