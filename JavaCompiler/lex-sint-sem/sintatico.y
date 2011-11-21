@@ -44,6 +44,7 @@ int i;
 char* var_atrib;
 int atrib;
 char* method_name;
+int if_label;
 %}
 
 %union {
@@ -545,12 +546,12 @@ statement :	statement_without_trailing_substatement
 			TWO_POINTS statement
 
 	|       IF OPEN_PAREN assignment_expression {
+			if_label = label-label%100;
 			checkIsBoolean($3);
 			} CLOSE_PAREN {
 			sprintf(ass_code, "%sXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, label, reg);
 			} 
 			optional_else 
-
 	|       WHILE { 
 			label = 100+(label-label%100); 
 			sprintf(ass_code, "%slab%d: ", ass_code, label); 
@@ -583,32 +584,59 @@ statement :	statement_without_trailing_substatement
 			}
 
 optional_else : statement {
-		sprintf(ass_code, "%slab%d: ", ass_code, label); 
-		label++;
+		sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, 100+label-label%100, 100+label-label%100); 
+		label = 100+label-label%100;
 		}
 	|	statement_no_short_if {
-		sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label+1, label); 
-		label+=2;
-		} ELSE statement;
+		sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, 100+label-label%100, label); 
+		label++;
+		} ELSE statement {if(if_label==(label-label%100)){
+			sprintf(ass_code, "%slab%d: ", ass_code, 100+label-label%100);
+			label = 100+label-label%100;
+			}
+		};
 
 statement_no_short_if :         statement_without_trailing_substatement 
                         |       identifier {addLabel($1);
 					sprintf(ass_code,"%s%s: ",ass_code, $1);} TWO_POINTS statement_no_short_if 
-                        |       IF OPEN_PAREN assignment_expression {
-					checkIsBoolean($3);
-					} CLOSE_PAREN {
-					sprintf(ass_code, "%sJNZ lab%d, R%d\n", ass_code, label, reg);} 
-				 statement_no_short_if
-					{sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label+1, label); label+=2;}
-				ELSE statement_no_short_if {sprintf(ass_code, "%slab%d: ", ass_code, label); label++;}
-                        |       WHILE {label = 100+(label-label%100); sprintf(ass_code, "%slab%d: ", ass_code, label); label++;} 
-					OPEN_PAREN assignment_expression 
-					{checkIsBoolean($4);
-					sprintf(ass_code, "%asXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, 100+(label-label%100), reg);} 				CLOSE_PAREN statement_no_short_if {sprintf(ass_code, "%sJMP lab%d\nlab%d:", ass_code, label-1, 100+(label-label%100));label = 100+(label-label%100);}
-                        |       FOR OPEN_PAREN for_init PT_VIRGULA  {label = 100+(label-label%100); sprintf(ass_code, "%slab%d: ", ass_code, label);label++;} 
-			expression_opt_for {checkIsEmptyOrBool($6);sprintf(ass_code, "%sJNZ lab%d, R%d\nJMP lab%d\n", ass_code, 100+(label-label%100), reg, label+1, reg);} 
-			PT_VIRGULA {sprintf(ass_code, "%slab%d: ", ass_code, label);label++;}
-			for_update_opt {sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-(label%100), label); label++;} CLOSE_PAREN  statement_no_short_if {sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-2,100+(label-label%100));label = 100+(label-label%100);}
+                        |        IF OPEN_PAREN  assignment_expression {
+				checkIsBoolean($3);
+				} CLOSE_PAREN {
+				sprintf(ass_code, "%sXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, label, reg);
+				} 
+				statement_no_short_if
+				{
+				sprintf(ass_code, "%sJMP lab%d\n", ass_code, 100+label-label%100);
+				}
+				ELSE statement_no_short_if {label = 100+label-label%100;}
+                        |       WHILE {
+				label = 100+(label-label%100); 
+				sprintf(ass_code, "%slab%d: ", ass_code, label); label++;} 
+				OPEN_PAREN assignment_expression {
+				checkIsBoolean($4);
+				sprintf(ass_code, "%asXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, 100+(label-label%100), reg);
+				}
+ 				CLOSE_PAREN statement_no_short_if {
+				sprintf(ass_code, "%sJMP lab%d\nlab%d:", ass_code, label-1, 100+(label-label%100));
+				label = 100+(label-label%100);
+				}
+                        |       FOR OPEN_PAREN for_init PT_VIRGULA  {
+				label = 100+(label-label%100); 
+				sprintf(ass_code, "%slab%d: ", ass_code, label);label++;
+				} 
+				expression_opt_for {
+				checkIsEmptyOrBool($6);
+				sprintf(ass_code, "%sJNZ lab%d, R%d\nJMP lab%d\n", ass_code, 100+(label-label%100), reg, label+1, reg);
+				} 
+				PT_VIRGULA {
+				sprintf(ass_code, "%slab%d: ", ass_code, label);label++;
+				}
+				for_update_opt {
+				sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-(label%100), label); label++;
+				} CLOSE_PAREN  statement_no_short_if {
+				sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-2,100+(label-label%100));
+				label = 100+(label-label%100);
+				}
 
 
 for_init : statement_expression_list 
@@ -747,6 +775,7 @@ int main(void) {
 	method_name = (char *) malloc(100);
 	reg = 0; label = 0;
 	inside_expr = 0;
+	if_label = 0;
 	yydebug=0;
 	return yyparse();
 }
