@@ -213,13 +213,17 @@ floating_point_type :	TYPE_FLOAT
 
 variable_declarators :          variable_declarator {insertStringToStrList($1);} variable_declarators_ ;
 
-variable_declarator : variable_declarator_id variable_declarator_ {$$ = $1;};
+variable_declarator : variable_declarator_id variable_declarator_ {$$ = $1;
+				sprintf(ass_code,"%sST %s, R%d\n",ass_code,$1,reg);
+				};
 
 variable_declarators_ :         VIRGULA  variable_declarator {insertStringToStrList($2);} variable_declarators_	
                         |       /** empty **/;
 
 variable_declarator_ :          EQUAL variable_initializer 
-                        |       /** empty **/;
+                        |       /** empty **/{
+				sprintf(ass_code,"%sLD R%d, #0\n",ass_code,reg);
+				};;
 
 variable_declarator_id :        identifier {$$ = $1;}; 
 
@@ -348,20 +352,17 @@ relational_expression_ : {reg++;} RELOP {strcpy(relop,yytext);} shift_expression
 
 shift_expression : additive_expression shift_expression_ {$$ = checkShiftOperator($1,$2);};
 
-shift_expression_ : {reg++;} SHIFTS {strcpy(shift,yytext);} additive_expression {reg--;
+shift_expression_ : {reg++;} SHIFTS {strcpy(shift,yytext);} additive_expression {
+				sprintf(ass_code,"%slab%d: ",ass_code, label); label++; 
 				if(strcmp(shift,"<<")==0){
-					for(i = 0; i<atoi(yytext); i++){
 						sprintf(ass_code, "%sMUL R%d, R%d, #2\n", ass_code, reg, reg);
-					}
-					}
-				else if (strcmp(shift,">>")==0){
-					for(i = 0; i<atoi(yytext); i++){
+				} else if (strcmp(shift,">>")==0) {
 						sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg, reg);
-					}
-					}
-				else {
+				} else {
 					sprintf(ass_code, "%sNAO SEI DESLOCAMENTO NUMERICO\n", ass_code);
-				}			
+				}
+				sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg+1,reg+1, label-1, reg+1);
+				reg--;			
 				} 
 				shift_expression_ 
 				{$$ = checkShiftOperator($4,$6);} 
@@ -581,7 +582,7 @@ statement :	statement_without_trailing_substatement
 			sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-(label%100), label); label++;} 				CLOSE_PAREN  statement {
 			sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-2,100+(label-label%100));
 			label = 100+(label-label%100);
-			}
+			};
 
 optional_else : statement {
 		sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, 100+label-label%100, 100+label-label%100); 
@@ -596,47 +597,50 @@ optional_else : statement {
 			}
 		};
 
-statement_no_short_if :         statement_without_trailing_substatement 
-                        |       identifier {addLabel($1);
-					sprintf(ass_code,"%s%s: ",ass_code, $1);} TWO_POINTS statement_no_short_if 
-                        |        IF OPEN_PAREN  assignment_expression {
-				checkIsBoolean($3);
-				} CLOSE_PAREN {
-				sprintf(ass_code, "%sXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, label, reg);
-				} 
-				statement_no_short_if
-				{
-				sprintf(ass_code, "%sJMP lab%d\n", ass_code, 100+label-label%100);
-				}
-				ELSE statement_no_short_if {label = 100+label-label%100;}
-                        |       WHILE {
-				label = 100+(label-label%100); 
-				sprintf(ass_code, "%slab%d: ", ass_code, label); label++;} 
-				OPEN_PAREN assignment_expression {
-				checkIsBoolean($4);
-				sprintf(ass_code, "%asXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, 100+(label-label%100), reg);
-				}
- 				CLOSE_PAREN statement_no_short_if {
-				sprintf(ass_code, "%sJMP lab%d\nlab%d:", ass_code, label-1, 100+(label-label%100));
-				label = 100+(label-label%100);
-				}
-                        |       FOR OPEN_PAREN for_init PT_VIRGULA  {
-				label = 100+(label-label%100); 
-				sprintf(ass_code, "%slab%d: ", ass_code, label);label++;
-				} 
-				expression_opt_for {
-				checkIsEmptyOrBool($6);
-				sprintf(ass_code, "%sJNZ lab%d, R%d\nJMP lab%d\n", ass_code, 100+(label-label%100), reg, label+1, reg);
-				} 
-				PT_VIRGULA {
-				sprintf(ass_code, "%slab%d: ", ass_code, label);label++;
-				}
-				for_update_opt {
-				sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-(label%100), label); label++;
-				} CLOSE_PAREN  statement_no_short_if {
-				sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-2,100+(label-label%100));
-				label = 100+(label-label%100);
-				}
+statement_no_short_if :        statement_without_trailing_substatement
+	|       identifier {
+			addLabel($1);
+			sprintf(ass_code,"%s%s: ",ass_code, $1);
+			} 
+			TWO_POINTS statement_no_short_if
+
+	|       IF OPEN_PAREN assignment_expression {
+			if_label = label-label%100;
+			checkIsBoolean($3);
+			} CLOSE_PAREN {
+			sprintf(ass_code, "%sXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, label, reg);
+			} 
+			optional_else 
+	|       WHILE { 
+			label = 100+(label-label%100); 
+			sprintf(ass_code, "%slab%d: ", ass_code, label); 
+			label++;
+			} 
+			OPEN_PAREN assignment_expression {
+			checkIsBoolean($4);
+			sprintf(ass_code, "%sXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, 100+(label-label%100), reg);}
+			CLOSE_PAREN statement_no_short_if {
+			sprintf(ass_code, "%sJMP lab%d\nlab%d:", ass_code, label-1, 100+(label-label%100));
+			label = 100+(label-label%100);
+			}
+	|       FOR OPEN_PAREN for_init PT_VIRGULA  {
+			label = 100+(label-label%100); 
+			sprintf(ass_code, "%slab%d: ", ass_code, label);
+			label++;
+			} 
+			expression_opt_for {
+			checkIsEmptyOrBool($6);
+			sprintf(ass_code, "%sJNZ lab%d, R%d\nJMP lab%d\n", ass_code,label+1 , reg, 100+(label-label%100), reg);	
+			} 
+			PT_VIRGULA {
+			sprintf(ass_code, "%slab%d: ", ass_code, label);
+			label++;
+			}
+			for_update_opt {
+			sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-(label%100), label); label++;} 				CLOSE_PAREN  statement_no_short_if {
+			sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-2,100+(label-label%100));
+			label = 100+(label-label%100);
+			};
 
 
 for_init : statement_expression_list 
@@ -667,8 +671,7 @@ statement_expression :          incr_decrement_expression {inside_expr = 0;}
 				}else if(strcmp($2,"|=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nOR R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
 				}else if(strcmp($2,"^=")==0){
-						 sprintf(ass_code,"%sLD R%d, %s\nXOR R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);
-				}
+						 sprintf(ass_code,"%sLD R%d, %s\nXOR R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);}
 				};
 
 incr_decrement_expression : preincrement_expression 
