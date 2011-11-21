@@ -538,23 +538,58 @@ dim_expr_opt: dim_expr dim_expr_opt {$$ = $2+1;}
 	|	/** empty **/ {$$ = 0;};
 
 statement :	statement_without_trailing_substatement
-	|       identifier {addLabel($1);
-			sprintf(ass_code,"%s%s: ",ass_code, $1);} TWO_POINTS statement
-	|       IF OPEN_PAREN assignment_expression {checkIsBoolean($3);} CLOSE_PAREN {
-			sprintf(ass_code, "%sXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, label, reg);} 
-			optional_else 
-	|       WHILE { label +=100; sprintf(ass_code, "%slab%d: ", ass_code, label); label++;} 
-			OPEN_PAREN assignment_expression {checkIsBoolean($4);
-				sprintf(ass_code, "%sXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, label, reg);}
-			CLOSE_PAREN
-				statement {sprintf(ass_code, "%sJMP lab%d\nlab%d:", ass_code, label-1, label);label-=100;}
-	|       FOR OPEN_PAREN for_init PT_VIRGULA  {label += 100; sprintf(ass_code, "%slab%d: ", ass_code, label);label++;} 
-			expression_opt_for {checkIsEmptyOrBool($6);sprintf(ass_code, "%sJNZ lab%d, R%d\nJMP lab%d\n", ass_code, label+1, reg, label+2, reg);} 
-			PT_VIRGULA {sprintf(ass_code, "%slab%d: ", ass_code, label);label++;}
-			for_update_opt {sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-(label%100), label); label++;} CLOSE_PAREN  statement {sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-2,label);label++;};
+	|       identifier {
+			addLabel($1);
+			sprintf(ass_code,"%s%s: ",ass_code, $1);
+			} 
+			TWO_POINTS statement
 
-optional_else : statement {sprintf(ass_code, "%slab%d: ", ass_code, label); label++;}
-	|	statement_no_short_if {sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label+1, label); label+=2;} ELSE statement;
+	|       IF OPEN_PAREN assignment_expression {
+			checkIsBoolean($3);
+			} CLOSE_PAREN {
+			sprintf(ass_code, "%sXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, label, reg);
+			} 
+			optional_else 
+
+	|       WHILE { 
+			label = 100+(label-label%100); 
+			sprintf(ass_code, "%slab%d: ", ass_code, label); 
+			label++;
+			} 
+			OPEN_PAREN assignment_expression {
+			checkIsBoolean($4);
+			sprintf(ass_code, "%sXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, 100+(label-label%100), reg);}
+			CLOSE_PAREN statement {
+			sprintf(ass_code, "%sJMP lab%d\nlab%d:", ass_code, label-1, 100+(label-label%100));
+			label = 100+(label-label%100);
+			}
+	|       FOR OPEN_PAREN for_init PT_VIRGULA  {
+			label = 100+(label-label%100); 
+			sprintf(ass_code, "%slab%d: ", ass_code, label);
+			label++;
+			} 
+			expression_opt_for {
+			checkIsEmptyOrBool($6);
+			sprintf(ass_code, "%sJNZ lab%d, R%d\nJMP lab%d\n", ass_code,label+1 , reg, 100+(label-label%100), reg);	
+			} 
+			PT_VIRGULA {
+			sprintf(ass_code, "%slab%d: ", ass_code, label);
+			label++;
+			}
+			for_update_opt {
+			sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-(label%100), label); label++;} 				CLOSE_PAREN  statement {
+			sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-2,100+(label-label%100));
+			label = 100+(label-label%100);
+			}
+
+optional_else : statement {
+		sprintf(ass_code, "%slab%d: ", ass_code, label); 
+		label++;
+		}
+	|	statement_no_short_if {
+		sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label+1, label); 
+		label+=2;
+		} ELSE statement;
 
 statement_no_short_if :         statement_without_trailing_substatement 
                         |       identifier {addLabel($1);
@@ -566,18 +601,14 @@ statement_no_short_if :         statement_without_trailing_substatement
 				 statement_no_short_if
 					{sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label+1, label); label+=2;}
 				ELSE statement_no_short_if {sprintf(ass_code, "%slab%d: ", ass_code, label); label++;}
-                        |       WHILE {label +=100; sprintf(ass_code, "%slab%d: ", ass_code, label); label++;} 
+                        |       WHILE {label = 100+(label-label%100); sprintf(ass_code, "%slab%d: ", ass_code, label); label++;} 
 					OPEN_PAREN assignment_expression 
 					{checkIsBoolean($4);
-					sprintf(ass_code, "%asXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, label, reg);} 				CLOSE_PAREN statement_no_short_if 
-                        |       FOR OPEN_PAREN for_init PT_VIRGULA 
-				{sprintf(ass_code, "%slab%d: ", ass_code, label);label++;}
-				expression_opt_for 
-				{checkIsEmptyOrBool($6);sprintf(ass_code, "%sJNZ lab%d, R%d\nJMP lab%d\n", ass_code, label+1, reg, label+2, reg);} 
-				PT_VIRGULA {sprintf(ass_code, "%slab%d: ", ass_code, label);label++;} 
-				for_update_opt
- 				{sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-2, label); label++;}
-			CLOSE_PAREN statement_no_short_if {sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-2,label);label++;};
+					sprintf(ass_code, "%asXOR R%d, #1\nJNZ lab%d, R%d\n", ass_code, reg, 100+(label-label%100), reg);} 				CLOSE_PAREN statement_no_short_if {sprintf(ass_code, "%sJMP lab%d\nlab%d:", ass_code, label-1, 100+(label-label%100));label = 100+(label-label%100);}
+                        |       FOR OPEN_PAREN for_init PT_VIRGULA  {label = 100+(label-label%100); sprintf(ass_code, "%slab%d: ", ass_code, label);label++;} 
+			expression_opt_for {checkIsEmptyOrBool($6);sprintf(ass_code, "%sJNZ lab%d, R%d\nJMP lab%d\n", ass_code, 100+(label-label%100), reg, label+1, reg);} 
+			PT_VIRGULA {sprintf(ass_code, "%slab%d: ", ass_code, label);label++;}
+			for_update_opt {sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-(label%100), label); label++;} CLOSE_PAREN  statement_no_short_if {sprintf(ass_code, "%sJMP lab%d\nlab%d: ", ass_code, label-2,100+(label-label%100));label = 100+(label-label%100);}
 
 
 for_init : statement_expression_list 
@@ -664,7 +695,7 @@ expression_statement :	statement_expression {sprintf(ass_code, "%sMOV %s, R%d\n"
 					strcpy(var_atrib,"");}
 				PT_VIRGULA;
 
-switch_statement : SWITCH OPEN_PAREN assignment_expression {checkIsSwitchExpression($3);switch_type = $3;} CLOSE_PAREN switch_block;
+switch_statement : SWITCH OPEN_PAREN assignment_expression {checkIsSwitchExpression($3);switch_type = $3;reg++;} CLOSE_PAREN switch_block {reg--;label = 100+label-label%100;sprintf(ass_code, "%slab%d: ", ass_code, label);};
 
 switch_block : BEG switch_block_statement_groups switch_labels END;
 
@@ -674,7 +705,8 @@ switch_block_statement_groups : switch_block_statement_group switch_block_statem
 switch_block_statement_groups_ : switch_block_statement_group switch_block_statement_groups_ 
                         |	/** empty **/;
 
-switch_block_statement_group : switch_labels block_statements_;
+switch_block_statement_group : switch_labels block_statements_
+			{sprintf(ass_code, "%sJMP lab%d\n", ass_code, 100+label-label%100);} ;
 
 switch_labels : switch_label switch_labels_     
 	| 	switch_labels_ ;
@@ -682,16 +714,18 @@ switch_labels : switch_label switch_labels_
 switch_labels_ : switch_label switch_labels_ 
 	|	/** empty **/;
 
-switch_label : CASE assignment_expression {checkEqualsTypeval($2,switch_type);} TWO_POINTS
-	|       DEFAULT TWO_POINTS;
+switch_label : CASE {sprintf(ass_code, "%slab%d: ",ass_code,label);label++;} assignment_expression {checkEqualsTypeval($3,switch_type);
+			sprintf(ass_code, "%sSUB R1, R0, R1\nXOR R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg, reg, label, reg);} TWO_POINTS
+	|       DEFAULT {sprintf(ass_code, "%slab%d: ", ass_code, label);} TWO_POINTS;
 
-do_statement : DO {label+=(100-label%100);sprintf(ass_code,"%slab%d: ",ass_code,label);} 
+do_statement : DO {label=100+(label-label%100);sprintf(ass_code,"%slab%d: ",ass_code,label);} 
 		statement WHILE OPEN_PAREN assignment_expression {checkIsBoolean($6);
-		sprintf(ass_code,"%sJNZ lab%d, R%d\n", ass_code, label-(label%100), reg) ;} CLOSE_PAREN PT_VIRGULA;
+		sprintf(ass_code,"%sXOR R%d, R%d\nJNZ lab%d, R%d\nlab%d: ", ass_code,reg, reg , 100+label-(label%100), reg, 100+label-(label%100)); 
+		label = 100+(label-label%100);} CLOSE_PAREN PT_VIRGULA;
 
-break_statement : BREAK PT_VIRGULA;
+break_statement : BREAK {sprintf(ass_code, "%sJMP lab%d\n", ass_code, label-(label%100)+100);} PT_VIRGULA;
 
-continue_statement : CONTINUE PT_VIRGULA;
+continue_statement : CONTINUE {sprintf(ass_code, "%sJMP lab%d\n", ass_code, label-(label%100));} PT_VIRGULA;
 
 goto_statement : GOTO identifier {checkLabelInCurrMethod($2);
 			sprintf(ass_code,"%sJMP %s\n",ass_code, $2);} PT_VIRGULA;
