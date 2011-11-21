@@ -671,7 +671,13 @@ statement_expression :          incr_decrement_expression {inside_expr = 0;}
 				}else if(strcmp($2,"|=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nOR R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	
 				}else if(strcmp($2,"^=")==0){
-						 sprintf(ass_code,"%sLD R%d, %s\nXOR R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);}
+						 sprintf(ass_code,"%sLD R%d, %s\nXOR R%d, R%d, R%d\n",ass_code, reg+1, var_atrib, reg, reg+1, reg);	}else if(strcmp($2,"<<=")==0){
+						 sprintf(ass_code,"%sLD R%d, %s\nlab%d: ",ass_code, reg+1, var_atrib,label); label++;
+						 sprintf(ass_code, "%sMUL R%d, R%d, #2\n", ass_code, reg+1, reg+1);
+						 sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg,reg, label-1, reg);		}else if(strcmp($2,">>=")==0){
+						 sprintf(ass_code,"%sLD R%d, %s\nlab%d: ",ass_code, reg+1, var_atrib,label); label++;
+						 sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg+1, reg+1);
+						 sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg,reg, label-1, reg);	}
 				};
 
 incr_decrement_expression : preincrement_expression 
