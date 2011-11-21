@@ -23,6 +23,7 @@ struct VARNODE{
 	char * id;
 	char * typeval;
 	int isFinal;
+	int wasUpdated;
 	int arrayLevels;
 	VarNode *nextNode;
 };
@@ -57,13 +58,14 @@ struct METHODNODE{
 typedef struct STRNODE StrNode;
 struct STRNODE{
 	char* str;
+	int wasUpdated;
 	StrNode * next;
 };
 
 /***************** FUNCTION DECLARATIONS *****************/
 
-VarNode * createVarNode(char * id, char * typeval, int isFinal, int arrayLevels);
-VarNode * insertVarInVarNodeList(VarNode * nodeList, char * id, char * typeval, int isFinal, int arrayLevels);
+VarNode * createVarNode(char * id, char * typeval, int wasUpdated, int isFinal, int arrayLevels);
+VarNode * insertVarInVarNodeList(VarNode * nodeList, char * id, int wasUpdated, char * typeval, int isFinal, int arrayLevels);
 VarNode * getVarNodeInList (VarNode * nodeList, char * id);
 void freeVarNodeList(VarNode * list);
 void displayVarNodeList(VarNode * list);
