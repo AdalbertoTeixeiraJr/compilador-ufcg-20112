@@ -892,7 +892,10 @@ statement_expression :          incr_decrement_expression {
 						 sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg,reg, label-1, reg);		}else if(strcmp($3,">>=")==0){
 						 sprintf(ass_code,"%sLD R%d, %s\nlab%d: ",ass_code, reg+1, var_atrib,label); label++;
 						 sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg+1, reg+1);
-						 sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg,reg, label-1, reg);	}
+						 sprintf(ass_code, "%sDEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, reg,reg, label-1, reg);		}else if(strcmp($3,">>>=")==0){
+						 sprintf(ass_code,"%sLD R%d, %s\nlab%d: ",ass_code, reg+1, var_atrib,label); label++;
+						sprintf(ass_code, "%sDIV R%d, R%d, #2\n", ass_code, reg, reg);
+						sprintf(ass_code,"%sJGE lab%d, R%d, #0\n", ass_code, label, reg);						sprintf(ass_code, "%sADD R%d, R%d, #4294967296\n", ass_code, reg, reg);						sprintf(ass_code, "%slab%d: DEC R%d, R%d\nJNZ lab%d, R%d\n", ass_code, label, reg, reg, label-1, reg);	label++;	}
 				};
 
 incr_decrement_expression : preincrement_expression 
