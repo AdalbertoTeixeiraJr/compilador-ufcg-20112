@@ -802,11 +802,7 @@ statement :	statement_without_trailing_substatement
 			label = 100+(label-label%100);
 			};
 
-optional_else : statement {
-		sprintf(ass_code, "%slab%d: JMP lab%d\nlab%d: ", ass_code, label, 100+label-label%100, 100+label-label%100); 
-		label = 100+label-label%100;
-		}
-	|	statement_no_short_if {
+optional_else : statement_no_short_if {
 		sprintf(ass_code, "%slab%d: JMP lab%d\nlab%d: ", ass_code, label, 100+label-label%100, label); 
 		label++;
 		} ELSE statement {
